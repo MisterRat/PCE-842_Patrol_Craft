@@ -28,6 +28,19 @@ jobs:
       - name: Publish the game as index.html
         run: cp PCE-842.html index.html
 
+      # The README's screenshot is taken from the game itself on every build (headless Chromium, software WebGL)
+      # and published with the site; a failure here never stops the deploy.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Take the README screenshot
+        continue-on-error: true
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+          python scripts/readme_screenshot.py
+
       # Adds the Google Analytics tag only to the copy published on GitHub Pages.
       # The ID comes from the repo's GA_MEASUREMENT_ID variable (Settings → Secrets
       # and variables → Actions → Variables); with no variable, nothing is added.
