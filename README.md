@@ -9,7 +9,7 @@ Take any station aboard USS PCE-842 on coastal patrol, March 1945: conn her from
 
 by [MrRat Gaming](https://github.mrrat.org/) &nbsp;·&nbsp; [Discord](https://discord.gg/FybAhsxQHZ)
 
-![USS PCE-842 under way in Measure 32 dazzle](screenshots/chase_underway.jpg)
+![USS PCE-842 under way in Measure 32 dazzle](https://github.mrrat.org/PCE-842_Patrol_Craft/screenshots/chase_underway.jpg)
 
 </div>
 
