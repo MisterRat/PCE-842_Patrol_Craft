@@ -1,0 +1,17 @@
+{
+  "name": "PCE-842 Patrol Craft Escort",
+  "short_name": "PCE-842",
+  "description": "Offline WWII patrol craft escort ship simulator",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "landscape",
+  "background_color": "#0a1220",
+  "theme_color": "#0a1220",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
