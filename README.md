@@ -21,9 +21,9 @@ by [MrRat Gaming](https://github.mrrat.org/) &nbsp;·&nbsp; [Discord](https://di
 | **2 Engineering** | The forward engine room: the engine-order telegraph rings, the engineer answers, the gauges follow the engine. |
 | **3 Communications** | One seat, three devices: a sweeping surface-search radar, the sonar (range recorder, bearing repeater, ping and echo with Doppler) and the radio printing the traffic. |
 | **4 Quartermaster** | The pilothouse: the wheel turns with the helm, rudder-angle indicator, compass, telegraphs. |
-| **5 Gunner** | Man the 3"/50 forward (telescope), the 20 mm amidships (cartwheel ring sight, standing in the shoulder rests) or the twin 40 mm aft (ring sight). Real ballistics, magazines, drum changes and loaders. |
-| **6 Torpedoman** | Set the depth, roll charges off the stern racks or fire the K-guns. |
-| **Practice** | T puts out target rafts for the 3"/50, towed sleeves for the 40 mm and 20 mm, and a dived exercise submarine for the sonar and the depth charges. |
+| **5 Gunner** | Man the 3"/50 forward (telescope), the 20 mm amidships (cartwheel ring sight, standing in the shoulder rests) or the twin 40 mm aft (ring sight). Real ballistics, magazines, drum changes and loaders. Kill rates on the towed sleeves follow the US Navy's wartime rounds per aircraft destroyed (Hardcore; game mode is 24 times faster). |
+| **6 Torpedoman** | The OOD runs an attack on the exercise submarine and gives his orders by phone: be at the right weapon, set and armed, on time. Ripple-fire the Hedgehog, fire the K-guns each side, roll charges off the stern racks, then read the debrief and the pattern plot. Hardcore: walk the deck between them. |
+| **Practice** | T puts out target rafts (two inside 20 mm range), towed sleeves for the 40 mm and 20 mm, and a dived exercise submarine for the sonar, the Hedgehog and the depth charges. |
 
 ## Game mode or Hardcore
 - **Game mode:** engines and rudder from any station, wave motion can be switched off, sight rings show where to aim, shell cam follows your shots, targets are marked.
@@ -37,7 +37,8 @@ Pause menu (P) > Mode.
 | W / S | engines ahead / astern (the order stays where you leave it) |
 | A / D | rudder |
 | 1 - 6 | stations (again for the next view) |
-| Mouse | at a gun: aims; Space or click fires; X looks up from the sight |
+| Mouse | at a gun: aims (hold ` for big moves); Space or left click fires; X looks up from the sight; R reloads |
+| 6, J | torpedoman: next position, go to the ordered one; Page Up / Down depth, X arm / safe, R load the Hedgehog |
 | T | practice targets on / off |
 | C | chase camera / back to your station |
 | H | the on-screen controls box |
@@ -51,7 +52,7 @@ The model is built from the PCE-874 Booklet of General Plans and photographs of 
 ## Files
 - `PCE-842.html`: the whole game (three.js r128 inside). The site serves it as `index.html`.
 
-Version 0.10 (pre-release).
+Version 0.20 (pre-release).
 
 ## License
 Free for noncommercial use under the PolyForm Noncommercial License 1.0.0. See [LICENSE](LICENSE).

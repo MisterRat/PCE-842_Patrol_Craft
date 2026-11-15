@@ -1,6 +1,6 @@
 /* PCE-842 service worker: the whole game is one HTML file, so cache it and the icons and it runs offline.
    Pages are fetched from the network first (cache is the offline fallback), so an update shows on the next launch. */
-const CACHE = 'pce842-v1';
+const CACHE = 'pce842-v2';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));
