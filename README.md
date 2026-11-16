@@ -2,10 +2,14 @@
 
 # PCE-842 Patrol Craft Escort
 
+![Status: Alpha](https://img.shields.io/badge/status-alpha-orange)
+
 **Crew a WWII patrol craft escort in a single offline HTML file.**
 Take any station aboard USS PCE-842 on coastal patrol, March 1945: conn her from the open bridge, answer the bells in the engine room, work the radar, sonar and radio, steer from the pilothouse, lay and fire her guns, and drop depth charges from the fantail.
 
-### [Play it in your browser](https://github.mrrat.org/PCE-842_Patrol_Craft/)
+> **Alpha:** this game is an early work in progress. Expect missing features, rough edges, bugs and changes between versions. It is not yet listed on the MrRat Gaming site.
+
+### [Play the alpha in your browser](https://github.mrrat.org/PCE-842_Patrol_Craft/)
 
 by [MrRat Gaming](https://github.mrrat.org/) &nbsp;·&nbsp; [Discord](https://discord.gg/FybAhsxQHZ)
 
@@ -52,7 +56,7 @@ The model is built from the PCE-874 Booklet of General Plans and photographs of 
 ## Files
 - `PCE-842.html`: the whole game (three.js r128 inside). The site serves it as `index.html`.
 
-Version 0.32 (pre-release).
+Version 0.32 (alpha).
 
 ## License
 Free for noncommercial use under the PolyForm Noncommercial License 1.0.0. See [LICENSE](LICENSE).
