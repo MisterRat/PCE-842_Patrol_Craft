@@ -599,7 +599,7 @@ const _el = {},
                            tolerated; corrupt saved data is reported and ignored.
    logWarn(what, e)      - optional browser features (wake lock, vibration, fullscreen, audio...): a failure is logged, never fatal. */
 /* VERSION: major.minor. The user decides when the major number changes; the minor number goes up with every change. */
-const VERSION = '0.20';
+const VERSION = '0.32';
 document.querySelectorAll('.verTag').forEach((e) => (e.textContent = 'Version ' + VERSION));
 /* the player's ship mesh and her start line (filled in where the world places the PCE) */
 const SHIPM = { mesh: null, wake: null, pts: null, Y: -8.15 /* waterline at the sea plane */ };
@@ -933,6 +933,58 @@ const SND = {
     this.wg = gain(0);
     this.wo.connect(this.wg);
     this.wg.connect(m);
+    /* THE PCE'S MACHINERY AND THE SEA (audioUpd sets them): two GM 12-278A two-stroke diesels, port and starboard, each a V-12 firing
+       12 times a revolution (a sawtooth at the firing rate, a square an octave down for the throb, a lumpiness at the revolution
+       rate), their Roots blowers' whine, the exhaust's low rumble, the propellers' beat in the water aft, the wash along the hull
+       (swelling slowly with the sea) and the wind over the deck (the old wind voice) */
+    const D = { eng: [] };
+    for (let k = 0; k < 2; k++) {
+      const v = {
+        o: osc('sawtooth', 60),
+        q: osc('square', 30),
+        lf: osc('sine', 5),
+        wh: osc('triangle', 500),
+        f: filt('lowpass', 500, 0.8),
+        amp: gain(0),
+        lfG: gain(0.25),
+        whG: gain(0),
+      };
+      const mx = gain(0.5),
+        qG = gain(0.6),
+        body = gain(1);
+      v.o.connect(mx);
+      v.q.connect(qG);
+      qG.connect(mx);
+      mx.connect(v.f);
+      v.f.connect(body);
+      v.lf.connect(v.lfG);
+      v.lfG.connect(body.gain);
+      body.connect(v.amp);
+      v.amp.connect(m);
+      v.wh.connect(v.whG);
+      v.whG.connect(m);
+      D.eng.push(v);
+    }
+    D.ex = { f: filt('lowpass', 160, 0.7), g: gain(0) };
+    noise().connect(D.ex.f);
+    D.ex.f.connect(D.ex.g);
+    D.ex.g.connect(m);
+    D.pr = { f: filt('lowpass', 110, 0.8), g: gain(0), mod: gain(0), lfo: osc('square', 10), body: gain(0.5) };
+    noise().connect(D.pr.f);
+    D.pr.f.connect(D.pr.body);
+    D.pr.lfo.connect(D.pr.mod);
+    D.pr.mod.connect(D.pr.body.gain);
+    D.pr.body.connect(D.pr.g);
+    D.pr.g.connect(m);
+    D.wa = { f: filt('bandpass', 700, 0.5), f2: filt('lowpass', 2500, 0.5), g: gain(0), sw: gain(1), lfo: osc('sine', 0.13), lfoG: gain(0.35) };
+    noise().connect(D.wa.f);
+    D.wa.f.connect(D.wa.f2);
+    D.wa.f2.connect(D.wa.sw);
+    D.wa.lfo.connect(D.wa.lfoG);
+    D.wa.lfoG.connect(D.wa.sw.gain);
+    D.wa.sw.connect(D.wa.g);
+    D.wa.g.connect(m);
+    this.d = D;
   },
   /* one-shot helpers */
   burst(f0, f1, dur, vol, q, type, delay) {
@@ -3222,6 +3274,19 @@ const PCEM = (() => {
     for (const s of [-1, 1]) {
       add(new THREE.TorusGeometry(1, 0.17, 6, 18), 0x8b8d78, XF(29.5), Y2 - 0.75, s * 5.32, 0, 0, 0, 0.95, 0.42, 1);
       P[P.length - 1].m = new M4().compose(new THREE.Vector3(XF(29.5), Y2 - 0.75, s * 5.32), new THREE.Quaternion(), new THREE.Vector3(0.95, 0.42, 1));
+      /* the Carley float's bottom: a wooden grating slung inside the ring (its floor), seen from outboard as the raft hangs */
+      add(new THREE.CylinderGeometry(1, 1, 0.05, 20), 0x6e6450, XF(29.5), Y2 - 0.75, s * 5.27);
+      P[P.length - 1].m = new M4().compose(
+        new THREE.Vector3(XF(29.5), Y2 - 0.75, s * 5.27),
+        new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2),
+        new THREE.Vector3(0.86, 1, 0.37),
+      );
+      for (let i = -3; i <= 3; i++) {
+        const xs = i * 0.22,
+          h = 2 * 0.37 * Math.sqrt(Math.max(0, 1 - (xs / 0.86) ** 2));
+        add(new THREE.BoxGeometry(0.07, h, 0.03), 0x8a7a5a, XF(29.5) + xs, Y2 - 0.75, s * 5.3);
+      }
+      add(new THREE.BoxGeometry(1.6, 0.06, 0.03), 0x8a7a5a, XF(29.5), Y2 - 0.75, s * 5.3);
     }
     /* 03: the open bridge on the pilothouse roof: bulwark and windscreen, with the A/S hut at its forward end */
     {
@@ -3467,12 +3532,14 @@ const PCEM = (() => {
      training carriage (with the crew), the elevating guns (level, about the trunnions at 0.05, 1.1, 0) and the pointer.
      own = the player's mount: its pointer's ring sight is a separate part on a linkage (so it is left off the carriage) */
   const T40_PIV = [0.05, 1.1, 0];
-  const twin40parts = (own) => {
+  const twin40parts = (own, one) => {
+    const pz = one ? 0.36 : 0.62 /* the carriage side plates: a single mount's carriage is narrower */,
+      bz = one ? [0] : [-0.29, 0.29] /* the barrels */;
     const base = grab(() => C(1.0, 1.05, 0.28, GUNC, 0, 0.14, 0, 0, 0, 0, 20));
     const train = grab(() => {
       B(1.3, 0.7, 1.4, GUNC, -0.1, 0.62, 0);
       for (const s of [-1, 1]) {
-        B(1.2, 0.95, 0.1, GUNC, 0, 1.0, s * 0.62);
+        B(1.2, 0.95, 0.1, GUNC, 0, 1.0, s * pz);
         /* the pointer's (left) and trainer's (right) seats with their hand cranks and ring sights */
         B(0.36, 0.06, 0.34, STEEL, -0.55, 0.95, s * 1.05);
         C(0.03, 0.03, 0.6, STEEL, -0.55, 0.65, s * 1.05, 0, 0, 0, 5);
@@ -3484,12 +3551,14 @@ const PCEM = (() => {
       }
       /* the crew: the trainer (right) on his seat, two loaders standing behind the breeches with clips */
       man(-0.78, 0.36, 1.05, 0, 'sit', 'wheel', true);
-      man(-1.05, 0.28, -0.32, 0, 'stand', 'clip');
-      man(-1.05, 0.28, 0.32, 0, 'stand', 'clip');
+      if (one) man(-1.05, 0.28, 0, 0, 'stand', 'clip');
+      else {
+        man(-1.05, 0.28, -0.32, 0, 'stand', 'clip');
+        man(-1.05, 0.28, 0.32, 0, 'stand', 'clip');
+      }
     });
     const elev = grab(() => {
-      for (const s of [-1, 1]) {
-        const z = s * 0.29;
+      for (const z of bz) {
         Cx(0.05, 2.15, BARREL, 1.35, 0.0, z, 10);
         add(cyl(0.085, 0.055, 0.35, 10), DARK, 2.55, 0.0, z, 0, 0, -HP);
         Cx(0.095, 1.05, 0x5b6268, 0.55, 0.0, z, 12);
@@ -3498,14 +3567,91 @@ const PCEM = (() => {
         B(0.32, 0.42, 0.16, STEEL, -0.2, 0.38, z);
         for (let k = 0; k < 4; k++) C(0.022, 0.022, 0.38, BRASS, -0.33 + k * 0.08, 0.66, z, 0, 0, 0, 5);
       }
-      B(0.5, 0.22, 0.4, GUNC, -0.15, -0.12, 0);
+      B(0.5, 0.22, one ? 0.26 : 0.4, GUNC, -0.15, -0.12, 0);
     });
     /* the pointer (left seat) */
     const pm = grab(() => man(-0.78, 0.36, -1.05, 0, 'sit', 'wheel'));
     return { base, train, elev, pm };
   };
-  const twin40 = (elev) => {
-    const g = twin40parts(false),
+  /* the single 40 mm (Army M1 / Navy Mk 3 type, from the References 3-D drawings): a square pedestal with round lightening holes, the
+     carriage on a toothed training ring, the pointer's and trainer's seats on outrigger arms with foot rests, the loader's platform
+     with its railing behind, the clip guide on the breech, the recoil cylinder under the barrel, the flared flash hider, and the
+     cross-bar ring sights out at the two layers' eyes. Built along +x about the trunnions at T40_PIV */
+  const single40parts = () => {
+    const base = grab(() => {
+      B(1.6, 0.03, 1.6, STEEL, 0, 0.015, 0);
+      C(0.52, 0.78, 0.34, GUNC, 0, 0.2, 0, 0, PI / 4, 0, 4);
+      for (const [x, z, ry] of [
+        [0.33, 0, 0],
+        [-0.33, 0, 0],
+        [0, 0.33, HP],
+        [0, -0.33, HP],
+      ])
+        C(0.11, 0.11, 0.02, DARK, x * 1.02, 0.2, z * 1.02, HP, ry, 0, 14) /* the lightening holes */;
+    });
+    const train = grab(() => {
+      /* the loader's platform and its railing */
+      B(1.15, 0.04, 1.35, STEEL, -0.55, 0.39, 0);
+      for (const z of [-0.66, 0.66]) for (const x of [-1.1, -0.6, -0.1]) C(0.02, 0.02, 0.75, STEEL, x, 0.78, z, 0, 0, 0, 6);
+      for (const x of [-1.1]) for (const z of [-0.3, 0.3]) C(0.02, 0.02, 0.75, STEEL, x, 0.78, z, 0, 0, 0, 6);
+      for (const y of [0.62, 0.9, 1.15]) {
+        for (const z of [-0.66, 0.66]) B(1.0, 0.03, 0.03, STEEL, -0.6, y, z);
+        B(0.03, 0.03, 1.32, STEEL, -1.1, y, 0);
+      }
+      /* the training ring with its teeth, the carriage and its cheeks */
+      C(0.42, 0.42, 0.1, GUNC, 0, 0.47, 0, 0, 0, 0, 24);
+      for (let i = 0; i < 28; i++) {
+        const a = (i / 28) * 2 * PI;
+        B(0.05, 0.08, 0.04, STEEL, Math.cos(a) * 0.43, 0.47, Math.sin(a) * 0.43, -a);
+      }
+      C(0.3, 0.34, 0.42, GUNC, 0, 0.72, 0, 0, 0, 0, 16);
+      for (const z of [-0.24, 0.24]) B(0.62, 0.5, 0.06, GUNC, 0.02, 1.0, z);
+      /* the seats on their outriggers, foot rests forward, the elevating and training hand cranks */
+      for (const k of [-1, 1]) {
+        bone([0, 0.55, k * 0.3], [-0.55, 0.9, k * 1.02], 0.05, 0.05, STEEL);
+        C(0.17, 0.17, 0.035, STEEL, -0.55, 0.95, k * 1.05, 0, 0, 0, 14);
+        for (let j = 0; j < 6; j++) C(0.018, 0.018, 0.04, DARK, -0.55 + 0.09 * Math.cos(j), 0.96, k * 1.05 + 0.09 * Math.sin(j), 0, 0, 0, 5);
+        bone([0.05, 0.5, k * 0.3], [0.45, 0.42, k * 0.95], 0.04, 0.04, STEEL);
+        B(0.36, 0.03, 0.15, GUNC, 0.55, 0.45, k * 0.98, k * 0.35, 0, -0.35);
+        add(new THREE.TorusGeometry(0.11, 0.015, 4, 12), STEEL, -0.12, 1.02, k * 0.72, 0, 0, 0);
+        C(0.015, 0.015, 0.12, DARK, -0.12, 1.02, k * 0.79, HP, 0, 0, 5);
+      }
+      /* the crew: the trainer (right), the loader on his platform with a clip */
+      man(-0.78, 0.36, 1.05, 0, 'sit', 'wheel', true);
+      man(-1.0, 0.41, 0, 0, 'stand', 'clip');
+    });
+    const elev = grab(() => {
+      B(0.95, 0.4, 0.34, GUNC, -0.12, 0.02, 0) /* the breech casing */;
+      B(0.3, 0.12, 0.38, GUNC, -0.45, 0.1, 0) /* the loader's tray */;
+      /* the clip guide on top with a clip of four rounds */
+      for (const z of [-0.09, 0.09]) B(0.36, 0.42, 0.04, STEEL, -0.28, 0.42, z);
+      for (let k = 0; k < 4; k++) C(0.022, 0.022, 0.4, BRASS, -0.4 + k * 0.08, 0.48, 0, 0, 0, 0, 6);
+      Cz(0.07, 0.6, STEEL, 0, 0, 0, 10) /* the trunnions */;
+      Cx(0.075, 1.0, 0x5b6268, 0.6, -0.13, 0, 12) /* the recoil cylinder */;
+      Cx(0.085, 0.4, GUNC, 0.5, 0.06, 0, 12);
+      Cx(0.05, 2.15, BARREL, 1.55, 0.06, 0, 10);
+      C(0.06, 0.06, 0.06, STEEL, 1.95, 0.06, 0, 0, 0, -HP, 10);
+      add(cyl(0.1, 0.05, 0.38, 12), DARK, 2.8, 0.06, 0, 0, 0, -HP) /* the flash hider */;
+      /* the cross-bar sights: a bar over the breech out to each layer, an eye ring aft and the cartwheel forward */
+      Cz(0.02, 1.5, STEEL, 0.05, 0.36, 0, 6);
+      for (const k of [-1, 1]) {
+        Cx(0.018, 0.75, STEEL, 0.1, 0.36, k * 0.75, 6);
+        add(new THREE.TorusGeometry(0.06, 0.012, 4, 14), DARK, -0.25, 0.42, k * 0.75, 0, HP, 0);
+        add(new THREE.TorusGeometry(0.11, 0.012, 4, 18), DARK, 0.46, 0.42, k * 0.75, 0, HP, 0);
+        for (let j = 0; j < 4; j++) B(0.008, 0.22, 0.008, DARK, 0.46, 0.42, k * 0.75, HP, (j * PI) / 4, 0);
+      }
+    });
+    const pm = grab(() => man(-0.78, 0.36, -1.05, 0, 'sit', 'wheel'));
+    return { base, train, elev, pm };
+  };
+  const single40 = (elev) => {
+    const g = single40parts(),
+      T = new M4().compose(new THREE.Vector3(...T40_PIV), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, elev)), new THREE.Vector3(1, 1, 1));
+    for (const e of g.elev) e.m = new M4().multiplyMatrices(T, e.m);
+    return [...g.base, ...g.train, ...g.pm, ...g.elev];
+  };
+  const twin40 = (elev, one) => {
+    const g = twin40parts(false, one),
       T = new M4().compose(new THREE.Vector3(...T40_PIV), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, elev)), new THREE.Vector3(1, 1, 1));
     for (const e of g.elev) e.m = new M4().multiplyMatrices(T, e.m);
     return [...g.base, ...g.train, ...g.pm, ...g.elev];
@@ -3668,8 +3814,24 @@ const PCEM = (() => {
      the shield, the shoulder rests and the cartwheel ring sight (elevating about 0, 1.3, 0); the gunner stands strapped into the
      shoulder rests and rides the gun, his loader stands by with a spare drum */
   const O20_PIV = [0, 1.2, 0];
-  const oer20parts = () => {
+  const oer20parts = (legs) => {
     const base = grab(() => {
+      if (legs) {
+        /* the Mk 10 pedestal: four splayed legs on foot pads to a cap plate, the column from it */
+        for (const [a, b] of [
+          [1, 1],
+          [1, -1],
+          [-1, 1],
+          [-1, -1],
+        ]) {
+          bone([a * 0.42, 0.02, b * 0.42], [a * 0.1, 0.8, b * 0.1], 0.07, 0.035, GUNC);
+          B(0.16, 0.03, 0.16, STEEL, a * 0.43, 0.015, b * 0.43);
+        }
+        for (const [a, b] of [[1, 0], [0, 1]]) B(a ? 0.62 : 0.04, 0.04, b ? 0.62 : 0.04, GUNC, 0, 0.32, 0) /* the cross braces */;
+        C(0.2, 0.2, 0.06, GUNC, 0, 0.8, 0, 0, 0, 0, 14);
+        C(0.11, 0.13, 0.1, GUNC, 0, 0.86, 0, 0, 0, 0, 12);
+        return;
+      }
       C(0.2, 0.28, 0.9, GUNC, 0, 0.45, 0, 0, 0, 0, 12);
       C(0.34, 0.34, 0.05, GUNC, 0, 0.03, 0, 0, 0, 0, 14);
     });
@@ -3706,8 +3868,8 @@ const PCEM = (() => {
     const pm = grab(() => man(-0.62, 0, 0, 0, 'lean', 'rests'));
     return { base, train, elev, pm };
   };
-  const oer20 = () => {
-    const g = oer20parts(),
+  const oer20 = (legs) => {
+    const g = oer20parts(legs),
       T = new M4().compose(new THREE.Vector3(...O20_PIV), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, 0.3)), new THREE.Vector3(1, 1, 1));
     for (const e of g.elev) e.m = new M4().multiplyMatrices(T, e.m);
     return [...g.base, ...g.train, ...g.pm, ...g.elev];
@@ -4124,7 +4286,7 @@ bool iIs(vec3 c, vec3 k){ return distance(c, k) < 0.012; }
      diamond tread plate underfoot, and the deckhead's beams over cork insulation. Fittings keep their colours, with a little wear */
   vec3 col = vColor;
   vec3 N = normalize(vMn);
-  float fl = vMp.y < -0.5 ? -1.55 : vMp.y < IY3 - 0.2 ? IY2 : IY3; /* the deck of the room the point is in */
+  float fl = (vMp.x > IERX0 && vMp.x < IERX1 && vMp.y < 2.6) ? -1.55 : vMp.y < IY3 - 0.2 ? IY2 : IY3; /* the deck of the room the point is in (the engine room by its length along the ship, not its height: by height, the engine room's walls above -0.5 m were taken for the pilothouse's and darkened, which drew a false waterline round them) */
   float h = vMp.y - fl;
   float m = 1.0;
   if (iIs(col, vec3(IW)) || iIs(col, vec3(IEW))) {
@@ -4256,7 +4418,13 @@ bool iIs(vec3 c, vec3 k){ return distance(c, k) < 0.012; }
     mesh.add(FLG.flagOnly('us', 1.6, XF(39.8) - 0.55, 16.25, 0, PI));
     mesh.add(FLG.flagOnly('us', 1.25, XF(89.7) - 0.04, hm(89.7) + 0.12 + 3.35, 0, PI));
   }
-  return { XF, hb, top, WL, F_STEM, F_END, STN, ER, build, buildInterior, flags, mounts, solid, material, intMaterial, FACES, WHEEL, OOD, Y2, Y3, hd, hm };
+  return { XF, hb, top, WL, F_STEM, F_END, STN, ER, build, buildInterior, flags, mounts, solid, material, intMaterial, FACES, WHEEL, OOD, Y2, Y3, hd, hm,
+    /* for other craft (PT-105): a 20 mm Oerlikon on its Mk 4 mount with gunner and loader, a twin 40 mm, and a crewman, as parts at their own origins */
+    oer20: () => oer20(),
+    twin40: (k) => twin40(k),
+    single40: (k) => single40(k) /* the single 40 mm (Army M1 / Navy Mk 3 type) for small craft */,
+    oer20pt: () => oer20(true) /* the 20 mm on the four-legged Mk 10 pedestal, for small craft */,
+    crew: (x, y, z, yaw, pose, arms) => grab(() => man(x, y, z, yaw, pose, arms)) };
 })();
 
 let TREES = null;
@@ -13051,6 +13219,9 @@ const OCEAN = (() => {
     wTex: { value: wTex },
     uQ: { value: 2 } /* graphics tier: 0 low, 1 medium, 2 high */,
     uShip: { value: new THREE.Vector4(0, 0, 0, 0) } /* the player's ship: x, z, heading, speed m/s */,
+    uB0: { value: new THREE.Vector4(0, 0, 0, 0) } /* another hull the water keeps out of: x, z, heading (model +x), kind (1 PT-105, 2 the sled, 0 none) */,
+    uB1: { value: new THREE.Vector4(0, 0, 0, 0) },
+    uBY: { value: new THREE.Vector2(0, 0) } /* their waterline heights: water is cut away inside them only above these (washing over the deck), never round the hull */,
     uTr: { value: Array.from({ length: NTR }, () => new THREE.Vector3(0, 0, -1)) } /* her wake: x, z, time laid (-1 = none) */,
     uWL: { value: PCEM.WL.slice() } /* her half-breadth at the waterline, 32 stations from stem to stern */,
   };
@@ -13088,7 +13259,7 @@ const OCEAN = (() => {
     sh.fragmentShader = sh.fragmentShader
       .replace(
         '#include <common>',
-        '#include <common>\nuniform float uTime;uniform float uQ;uniform vec4 uShip;uniform vec3 uTr[' + NTR + '];uniform float uWL[32];uniform sampler2D shoreTex;uniform sampler2D wTex;varying vec3 vOW;varying float vDep;\n' +
+        '#include <common>\nuniform vec4 uB0;uniform vec4 uB1;uniform vec2 uBY;uniform float uTime;uniform float uQ;uniform vec4 uShip;uniform vec3 uTr[' + NTR + '];uniform float uWL[32];uniform sampler2D shoreTex;uniform sampler2D wTex;varying vec3 vOW;varying float vDep;\n' +
           glDepth +
           'float ohs(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}' +
           'float ovn(vec2 p){vec2 i=floor(p),u=fract(p);u=u*u*(3.0-2.0*u);return mix(mix(ohs(i),ohs(i+vec2(1,0)),u.x),mix(ohs(i+vec2(0,1)),ohs(i+1.0),u.x),u.y);}' +
@@ -13097,6 +13268,10 @@ const OCEAN = (() => {
       .replace(
         '#include <color_fragment>',
         '#include <color_fragment>\n' +
+          /* no water inside the other hulls either (PT-105, her sled): their outlines in their own frames */
+          'for(int bi=0;bi<2;bi++){vec4 bb=bi==0?uB0:uB1;if(bb.w>0.5&&vOW.y>(bi==0?uBY.x:uBY.y)+0.35){vec2 d=vOW.xz-bb.xy;float bc=cos(bb.z),bs=sin(bb.z);float lx=d.x*bc-d.y*bs,lz=d.x*bs+d.y*bc;' +
+          'if(bb.w<1.5){if(lx>-12.0&&lx<9.0){float hw=lx<-2.2?2.25:2.25*sqrt(max(0.0,1.0-pow(max(0.0,lx+2.2)/11.2,2.0)));if(abs(lz)<hw)discard;}}' + /* her waterline, well inside the flare of her topsides */
+          'else if(abs(lx)<4.2&&abs(lz)<1.45)discard;}}\n' +
           'vec2 P=vOW.xz;float fp=length(fwidth(P));float dep=ocDepth(P);float am=smoothstep(6.0,30.0,dep);float nx=0.0,nz=0.0,ny=1.0,cr=0.0;\n' +
           glF +
           /* ripples: two drifting octaves of noise, only near the eye and above the lowest graphics tier */
@@ -23341,26 +23516,71 @@ function audioUpd() {
     rpm = alive ? Math.min(3300, 700 + thr * 2300 + Math.max(0, v * 2.237 - 420) * 3) : 250 + v * 4,
     cockpit = camMode === 1;
   set(S.master.gain, S.on && !paused ? S.vol : 0, 0.05);
-  const e = S.e,
-    fire = (rpm / 60) * 6,
-    rough = FM.hot || (DM.on && DM.eng > 0.3) ? 1.04 : 1;
-  set(e.o1.frequency, fire);
-  set(e.o2.frequency, fire * 1.012 * rough);
-  set(e.o3.frequency, fire / 2);
-  set(e.bl.frequency, (rpm / 60) * 3);
-  set(e.lfo.frequency, 6 + (rpm / 60) * 0.4);
-  set(e.lfoG.gain, 0.04 + 0.12 * (1 - thr) + (FM.hot ? 0.2 : 0));
-  set(e.f.frequency, (220 + thr * 380 + (alive ? 0 : -100)) * (cockpit ? 0.75 : 1));
-  set(e.raspG.gain, 0.05 + thr * 0.2);
-  let lvl = alive ? (0.3 + 0.5 * thr) * S.eng * (1 - 0.35 * (DM.on ? DM.eng : 0)) : 0.04;
-  if (alive && DM.on && DM.eng > 0.3 && Math.random() < 0.15 * DM.eng) lvl *= 0.4; /* coughing */
-  if (alive && FM.use('fuel') && FM.fuel < 0.03 && Math.random() < 0.4) lvl *= 0.15; /* sputtering */
-  set(e.out.gain, live ? lvl : 0, 0.12);
-  const w = Math.min(1, Math.pow(ias / 150, 2)),
-    extra = 1 + (gearOn ? 0.25 : 0) + (flapLvl > 0 ? 0.25 : 0) + Math.min(1, buffet) * 0.6;
-  set(S.w.f.frequency, 350 + ias * 9);
-  set(S.w.g.gain, live ? 0.55 * S.eng * w * extra * (cockpit ? 0.55 : 1) : 0, 0.1);
-  set(S.r.g.gain, live && onGround ? Math.min(1, v / 35) * 0.55 : 0, 0.1);
+  /* the P-51's Merlin voices stay silent: the ship has her own (below) */
+  set(S.e.out.gain, 0, 0.1);
+  /* THE PCE: her two diesels follow the engine room's answer from about 300 rpm (stop, declutched) to 744 at full ahead (or
+     astern), firing 12 times a revolution, the port engine a little off the starboard so the two beat slowly against each other.
+     What you hear depends on where you are: the engine room is all engines and blowers; the bridge and the guns hear the exhaust,
+     the wash and the wind, the after stations the screws */
+  {
+    const D = S.d,
+      a = Math.min(1, Math.abs(ENG.ans)),
+      rpm = 300 + 444 * a,
+      sp = Math.min(1.2, Math.abs(SHIP.u) / SHIP.VMAX),
+      sub = SHIP.sub || 0,
+      st = camMode === 1 ? SHIP.stn : 0,
+      /* the mix by station: engines, their muffling (low-pass Hz), blower whine, exhaust, screws, wash, wind */
+      MX = {
+        0: [0.55, 650, 0.1, 0.7, 0.5, 1.0, 0.8] /* outside, the chase camera */,
+        1: [0.35, 420, 0.05, 0.9, 0.15, 0.85, 1.0] /* the open bridge */,
+        2: [1.6, 2400, 1.0, 0.25, 0.35, 0.12, 0.0] /* the forward engine room */,
+        3: [0.45, 320, 0.1, 0.25, 0.15, 0.25, 0.08] /* communications */,
+        4: [0.4, 360, 0.08, 0.35, 0.12, 0.4, 0.25] /* the pilothouse */,
+        5: [
+          [0.3, 450, 0.03, 0.4, 0.1, 1.1, 1.0] /* the 3"/50 on the forecastle */,
+          [0.65, 650, 0.12, 0.8, 0.3, 0.8, 0.9] /* the 20 mm amidships */,
+          [0.5, 600, 0.08, 0.6, 0.9, 0.7, 0.9] /* the 40 mm aft */,
+        ],
+        6: [
+          [0.3, 450, 0.03, 0.4, 0.1, 1.1, 1.0] /* the Hedgehog forward */,
+          [0.55, 600, 0.1, 0.6, 0.9, 0.8, 0.9] /* the K-guns aft */,
+          [0.55, 600, 0.1, 0.6, 0.9, 0.8, 0.9],
+          [0.4, 520, 0.05, 0.5, 1.3, 0.8, 0.9] /* the stern racks */,
+        ],
+      },
+      mx0 = MX[st] || MX[0],
+      mx = Array.isArray(mx0[0]) ? mx0[Math.min(sub, mx0.length - 1)] : mx0,
+      on = live ? S.eng : 0;
+    D.eng.forEach((g, k) => {
+      const r = rpm * (k ? 1.006 : 1) * (1 + 0.004 * Math.sin(t * (0.21 + k * 0.07))) /* the governors hunt a little */,
+        rev = r / 60;
+      set(g.o.frequency, rev * 12);
+      set(g.q.frequency, rev * 6);
+      set(g.lf.frequency, rev);
+      set(g.lfG.gain, 0.12 + 0.18 * (1 - a));
+      set(g.wh.frequency, rev * 52 * (k ? 1.004 : 1));
+      set(g.f.frequency, mx[1] * (0.75 + 0.45 * a));
+      set(g.amp.gain, on * mx[0] * (0.35 + 0.65 * a) * 0.55, 0.25);
+      set(g.whG.gain, on * mx[2] * (0.04 + 0.1 * a) * 0.35, 0.25);
+    });
+    set(D.ex.g.gain, on * mx[3] * (0.25 + 0.75 * a) * 0.5, 0.25);
+    /* the screws: three blades, the shafts geared down about 2.5:1, a beat of 6 to 15 a second in the water aft */
+    set(D.pr.lfo.frequency, ((rpm / 2.5) / 60) * 3);
+    set(D.pr.mod.gain, 0.4);
+    set(D.pr.g.gain, on * mx[4] * (0.08 + 0.92 * a) * 0.8, 0.3);
+    /* the wash along the hull: a slop of sea at rest, a rush that builds with speed */
+    set(D.wa.f.frequency, 450 + 500 * sp);
+    set(D.wa.g.gain, on * mx[5] * (0.05 + 0.6 * Math.pow(sp, 1.5)) * 0.9, 0.3);
+    /* the wind over the deck: the true wind (the weather's) less the ship's own way through the water */
+    const n = WX.wnd || { spd: 0, from: 0 },
+      wd = ((n.from + 180) * Math.PI) / 180,
+      wx = (WX.wx_ || Math.sin(wd) * n.spd) + Math.sin(SHIP.hdg) * SHIP.u,
+      wz = (WX.wz_ || -Math.cos(wd) * n.spd) + Math.cos(SHIP.hdg) * SHIP.u,
+      rel = Math.hypot(wx, wz);
+    set(S.w.f.frequency, 300 + rel * 22);
+    set(S.w.g.gain, on * mx[6] * Math.min(1, Math.pow(rel / 16, 2)) * 0.5, 0.2);
+  }
+  set(S.r.g.gain, 0, 0.1) /* the P-51's tyre rumble: not on a ship */;
   set(S.rn.g.gain, live ? 0.2 * Math.min(1.5, WX.rainK) * (cockpit ? 0.7 : 1) : 0, 0.3);
   set(S.gun.gain, live && performance.now() < S.gunUntil ? 0.45 : 0, 0.02);
   /* warning tone: spin > stall > redline > overstress */
@@ -23381,7 +23601,7 @@ function audioUpd() {
     wv = (ph * 4) % 1 < 0.4 ? 0.06 : 0;
   }
   if (wf) set(S.wo.frequency, wf, 0.01);
-  set(S.wg.gain, wv, 0.01);
+  set(S.wg.gain, 0, 0.01) /* the P-51's stall and overspeed horns: not on a ship */;
 }
 $$('go').onclick = () => {
   started = true;
@@ -24555,6 +24775,30 @@ function gunRangefind(G) {
     .applyMatrix4(Mi)
     .applyQuaternion(qL)
     .add(new V3(pos.x, SHIPM.Y, pos.z));
+  /* game mode: the sight-setter ranges the target the pointer is engaging, the one nearest the line of sight within about 7 deg,
+     to where she will be when the shell arrives (the line of sight is on the ring, well ahead of a moving target, so it does not
+     pass over her). Ranged off the water a target riding the waves threw the range about wildly (the line of sight grazes the sea,
+     so a bob of half a metre is hundreds of metres of range) and the sight's superelevation, and the ring with it, jumped */
+  {
+    let bt = null,
+      bk = 0.12;
+    const w = new V3(),
+      zero = new V3(),
+      chk = (t, tp) => {
+        w.copy(tp).sub(o);
+        const r = w.length();
+        if (r < 60 || r > 13000) return;
+        const ang = Math.acos(Math.max(-1, Math.min(1, w.dot(d) / r)));
+        if (ang < bk) (bk = ang), (bt = t);
+      };
+    if (PT.on) for (const t of PT.L) if (t.p && !t.dead && !(t.gone > 0) && t.kind !== 'sub') chk(t, t.p);
+    for (const e of EN) if (!e.dying && e.p) chk(e, e.p);
+    if (bt) {
+      const q = new V3(),
+        tv = bt.v || (bt.fwd ? bt.fwd.clone().multiplyScalar(bt.sp || 0) : zero);
+      return gunAim(G, bt.p, tv, q, PT.L.includes(bt) && bt.kind !== 'raft' ? ptAt(bt) : null) ? Math.hypot(q.x - o.x, q.z - o.z) : bt.p.distanceTo(o);
+    }
+  }
   if (d.y > 0.02) return 0;
   const under = (t) => o.y + d.y * t <= H(o.x + d.x * t, o.z + d.z * t);
   let t = 0;
@@ -24971,7 +25215,19 @@ function gunAim(G, tp, tv, out, at) {
 }
 /* a practice target's position t seconds ahead: tugs and sleeves fly their circle */
 function ptAt(tg) {
-  if (!tg || !tg.o || tg.kind === 'sub') return null;
+  if (tg && tg.kind === 'sled') {
+    /* the sled's future is the boat's track: in t seconds it will be where she was (300 m - her speed x t) ahead of it */
+    const tb = PT.L.find((t) => t.kind === 'ptboat'),
+      o = tg.o;
+    return (t, v) => {
+      const spd = Math.max(1, Math.hypot(tb.v.x, tb.v.z)),
+        d = PTOW.TOW - spd * t;
+      if (d >= 0) ptTrail(o, d, v);
+      else v.copy(o.trail[0].p).addScaledVector(tb.v, -d / spd);
+      return (v.y = tg.p.y), v;
+    };
+  }
+  if (!tg || !tg.o || tg.kind === 'sub' || tg.kind === 'ptboat') return null;
   const o = tg.o,
     a0 = tg.kind === 'tug' ? o.a : o.a - 450 / o.R;
   return (t, v) => {
@@ -25003,7 +25259,7 @@ function gunRings() {
     L = [],
     zero = GUN.V[1].set(0, 0, 0);
   g.clearRect(0, 0, W, H);
-  if (PT.on) for (const t of PT.L) if (t.kind === 'raft' || (t.kind === 'sleeve' && !(t.gone > 0))) L.push([t.p, t.kind === 'raft' || !t.v ? zero : t.v, ptAt(t)]);
+  if (PT.on) for (const t of PT.L) if (t.kind === 'raft' || t.kind === 'sled' || (t.kind === 'sleeve' && !(t.gone > 0))) L.push([t.p, t.kind === 'raft' || !t.v ? zero : t.v, ptAt(t)]);
   for (const e of EN) if (!e.dying && e.p) L.push([e.p, e.v || (e.fwd ? e.fwd.clone().multiplyScalar(e.sp || 0) : zero)]);
   /* the gun's effective range: the 20 mm's was about 1,000 yd (NavWeaps); the 40 mm out to its tracer burn-out and self-destruct, about
      4,000 yd; the 3"/50 as far as it can be ranged. Beyond it the ring turns grey and says OUT OF RANGE */
@@ -25058,7 +25314,7 @@ function gunRings() {
    where the last of them passes closest to an airborne target (if it comes within 250 m of one), or else where it comes down,
    framed with the nearest surface target, drifts slowly round it while they land, holds for the
    splashes, and cuts back to the gun. Firing again cuts back at once. */
-const SCAM = { want: store.get('pce842scam', true) !== false, on: false, t: 0, end: 0, hold: 0, F: new THREE.Vector3(), L: new THREE.Vector3(), tg: null, a: 0, D: 60, p0: new THREE.Vector3(), q0: new THREE.Quaternion() };
+const SCAM = { want: store.get('pce842scam2', false) === true, on: false, t: 0, end: 0, hold: 0, F: new THREE.Vector3(), L: new THREE.Vector3(), tg: null, a: 0, D: 60, p0: new THREE.Vector3(), q0: new THREE.Quaternion() };
 /* fly a copy of the shell on until it comes down (or bursts); on the way, find its closest pass to each airborne target (each one
    flown on along its own course too). Returns the landing point in out, and the nearest air pass { d, p (where), t (when), tg } */
 function scamPredict(b, out, air) {
@@ -25104,7 +25360,7 @@ function scamStart() {
     SCAM.hold = pass.t + 2.5;
   } else {
     /* otherwise where it comes down, with the nearest surface target */
-    for (const c of [...(PT.on ? PT.L.filter((t) => t.kind === 'raft').map((t) => t.p) : []), ...T.filter((t) => t.type === 'ship' && !t.dead).map((t) => t.c)]) {
+    for (const c of [...(PT.on ? PT.L.filter((t) => t.kind === 'raft' || t.kind === 'sled').map((t) => t.p) : []), ...T.filter((t) => t.type === 'ship' && !t.dead).map((t) => t.c)]) {
       const d = c.distanceTo(SCAM.L);
       if (d < bd) {
         bd = d;
@@ -25158,7 +25414,7 @@ function scamCam(dt) {
   c.checked = SCAM.want;
   c.onchange = () => {
     SCAM.want = c.checked;
-    store.set('pce842scam', SCAM.want);
+    store.set('pce842scam2', SCAM.want);
     if (!SCAM.want) SCAM.on = false;
   };
 }
@@ -25267,6 +25523,905 @@ const PT = {
   c: new THREE.Vector3(),
   hits: { raft: 0, sleeve: 0 },
 };
+/* =====================================================================================================================
+   PT-105, THE TOW BOAT, AND HER TARGET SLED
+   PT-105 was an 80 ft Elco (PT-103 class, the same as PT-109). Built from the PT-109 general arrangement in the References folder
+   (plan, profile and lines) and the Elco cutaway: 80 ft (24.38 m) long, 20 ft 8 in (6.30 m) beam, hard-chine planing hull of
+   mahogany planking. Deck at the side 1.45 m above the waterline at the transom rising to 2.4 m at the stem; flat aft bottom,
+   the chine sweeping up forward to meet the stem. Late-war armament (NavSource): one single 40 mm, one 37 mm, one 20 mm, two
+   twin .50s and four torpedoes. From aft: smoke generator and the tow bitt on the transom deck, the single 40 mm Bofors on the
+   stern, the 20 mm Oerlikon on the after end of the day cabin roof, the day cabin and engine-room trunk with its ventilators (four Mk 13 torpedoes on roll-off racks along
+   the deck edges, two aft, two forward), the port twin .50 turret, the cockpit and chart house with the mast, the
+   starboard twin .50 turret, the 37 mm M4 on the forward deck and the crew's hatch. Three Packard V-12s on three screws, three rudders.
+   Paint: green (Measure 31 style) on hull and deck, red anti-fouling below the chine. Five crew shown: the helmsman, both
+   turret gunners, the 20 mm gunner and a man aft tending the tow.
+   Model frame, as for the PCE: bow toward +x, starboard +z, waterline y = 0, origin amidships (s = distance from the transom,
+   x = s - 12.19). PTB.build() makes the boat (one vertex-coloured mesh plus her spray), PTB.sled() the target sled.
+   ===================================================================================================================== */
+const PTB = (() => {
+  const L = 24.38,
+    X = (s) => s - L / 2,
+    sst = (a) => (a <= 0 ? 0 : a >= 1 ? 1 : a * a * (3 - 2 * a)),
+    /* the hull: deck at the side, half-breadth at the deck, the chine (half-breadth, height) and the keel, against s */
+    yd = (s) => 1.45 + 0.95 * Math.pow(s / L, 1.8),
+    hb = (s) => (s < 10 ? 2.78 + 0.39 * sst(s / 10) : 3.17 * Math.sqrt(Math.max(0, 1 - Math.pow((s - 10) / 14.38, 2.2)))),
+    bc = (s) => hb(s) * 0.88 * (1 - sst((s - 13) / 9.6)),
+    yc = (s) => -0.05 + 1.3 * Math.pow(sst((s - 8) / 14.6), 1.3),
+    yk = (s) => -0.85 + 1.5 * Math.pow(sst((s - 12.5) / 11.88), 1.6),
+    dy = (s, z) => yd(s) + 0.12 * (1 - Math.min(1, (z / Math.max(0.01, hb(s))) ** 2)) /* the deck, with its crown */;
+  const GREEN = 0x5c6b4d,
+    DECK = 0x67765a,
+    RED = 0x9a2c24,
+    DARK = 0x2c302a,
+    GUNM = 0x3a3d3a,
+    STEEL = 0x707670,
+    TUBE = 0x5f6a57,
+    DUNG = 0x4a5d7a,
+    SKIN = 0xc79c7a,
+    HELM = 0x515a46,
+    KAPOK = 0xa89660;
+  function hull() {
+    /* lofted from 60 sections; the quads are emitted per colour (deck, topsides, bottom, transom) */
+    const G = { d: [], t: [], b: [], tr: [] },
+      Q = (a, A, B, C, D) => a.push(...A, ...B, ...C, ...A, ...C, ...D),
+      N = 60,
+      sec = (s, k) => [
+        [X(s), dy(s, 0), 0],
+        [X(s), yd(s), k * hb(s)],
+        [X(s), yc(s), k * bc(s)],
+        [X(s), yk(s), 0],
+      ];
+    for (let i = 0; i < N; i++) {
+      const s0 = (L * i) / N,
+        s1 = (L * (i + 1)) / N;
+      for (const k of [1, -1]) {
+        const A = sec(s0, k),
+          B = sec(s1, k);
+        Q(G.d, A[0], A[1], B[1], B[0]);
+        Q(G.t, A[1], A[2], B[2], B[1]);
+        Q(G.b, A[2], A[3], B[3], B[2]);
+      }
+    }
+    for (const k of [1, -1]) {
+      const A = sec(0, k);
+      Q(G.tr, A[0], A[1], A[2], A[3]);
+    }
+    const geo = (a) => {
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(a, 3));
+      g.computeVertexNormals();
+      return g;
+    };
+    return [GX.part(geo(G.d), DECK, 0, 0, 0), GX.part(geo(G.t), GREEN, 0, 0, 0), GX.part(geo(G.b), RED, 0, 0, 0), GX.part(geo(G.tr), GREEN, 0, 0, 0)];
+  }
+  function details() {
+    const P = [],
+      { part, bx, cyl, sph } = GX,
+      B = (sx, sy, sz, hex, x, y, z, rx, ry, rz) => P.push(part(bx(sx, sy, sz), hex, x, y, z, rx, ry, rz)),
+      C = (r1, r2, h, hex, x, y, z, rx, ry, rz, n) => P.push(part(cyl(r1, r2, h, n || 12), hex, x, y, z, rx, ry, rz)),
+      S = (r, hex, x, y, z, sx, sy, sz) => P.push(part(sph(10), hex, x, y, z, 0, 0, 0, r * (sx || 1), r * (sy || 1), r * (sz || 1))),
+      T = (r, t, hex, x, y, z, rx, ry, rz) => P.push(part(new THREE.TorusGeometry(r, t, 6, 18), hex, x, y, z, rx, ry, rz));
+    /* a crewman standing at (s, z) on the deck, turned to yaw; low: only head and shoulders show (in a turret) */
+    const man = (s, z, yaw, h0) => {
+      const y = h0 === undefined ? dy(s, z) : h0,
+        x = X(s);
+      if (PCEM.crew) return P.push(...PCEM.crew(x, y, z, yaw, 'stand'));
+      C(0.09, 0.09, 0.8, DUNG, x, y + 0.4, z - 0.1);
+      C(0.09, 0.09, 0.8, DUNG, x, y + 0.4, z + 0.1);
+      C(0.2, 0.18, 0.62, DUNG, x, y + 1.12, z);
+      C(0.23, 0.23, 0.42, KAPOK, x, y + 1.15, z);
+      S(0.11, SKIN, x + Math.cos(yaw) * 0.02, y + 1.58, z - Math.sin(yaw) * 0.02);
+      S(0.135, HELM, x, y + 1.64, z, 1, 0.55, 1);
+      for (const k of [-1, 1]) C(0.06, 0.055, 0.6, DUNG, x + Math.cos(yaw) * 0.15, y + 1.15, z + k * 0.24, 0, 0, 0.4);
+    };
+    /* four Mk 13 torpedoes on Mk 1 roll-off racks along the deck edges (late-war, as on PT-131 in 1944; the References rack drawing
+       and the Mk 13 manual): 22.4 in (0.569 m) diameter, 13 ft 5 in (4.09 m) long, a rounded nose, the parallel body, the tapered
+       afterbody and the box tail round the fins and the two contra-rotating screws. The rack: a long base plate, two stands with posts
+       either side of the body, clamp bands over it, a top bar between the stands, and the tipping arms on the outboard side that roll
+       her off over the side */
+    const torpedo = (sm, z) => {
+      const y = dy(sm, z) + 0.42,
+        sF = sm + 2.045,
+        k = Math.sign(z),
+        r = 0.285;
+      TD.push([X(sF), y, z]) /* for the shark mouth decal (build) */;
+      P.push(part(sph(14), TORP, X(sF - 0.42), y, z, 0, 0, 0, 0.42, r, r)) /* the nose */;
+      C(0.03, 0.03, 0.04, STEEL, X(sF) + 0.01, y, z, 0, 0, Math.PI / 2, 8);
+      C(r, r, 2.33, TORP, X(sF - 1.585), y, z, 0, 0, Math.PI / 2, 18) /* the warhead and air flask */;
+      C(r, 0.12, 0.8, TORP, X(sF - 3.15), y, z, 0, 0, Math.PI / 2, 18) /* the afterbody */;
+      for (const f of [0.62, 1.4, 2.35, 2.75]) C(r + 0.006, r + 0.006, 0.03, 0x4a3f26, X(sF - f), y, z, 0, 0, Math.PI / 2, 18) /* joint bands */;
+      for (const f of [1.75, 2.0, 2.2]) B(0.18, 0.12, 0.02, 0x6a5834, X(sF - f), y + 0.18, z + k * 0.21, 0.9 * k, 0, 0) /* hand-hole plates */;
+      /* the tail: the shaft, four fins, the box shroud round them, the two screws */
+      C(0.05, 0.05, 0.6, TORP, X(sF - 3.82), y, z, 0, 0, Math.PI / 2, 8);
+      for (const q of [0, 1]) B(0.42, 0.5, 0.015, TORP, X(sF - 3.75), y, z, q * Math.PI / 2, 0, 0);
+      for (const [dy2, dz] of [
+        [0.25, 0],
+        [-0.25, 0],
+        [0, 0.25],
+        [0, -0.25],
+      ])
+        B(0.3, dz ? 0.5 : 0.015, dz ? 0.015 : 0.5, TORP, X(sF - 3.82), y + dy2, z + dz);
+      for (const f of [3.98, 4.06]) for (const q of [0.4, 1.97, 3.54]) B(0.03, 0.2, 0.06, 0x8a7a50, X(sF - f), y + Math.sin(q + f * 5) * 0.09, z + Math.cos(q + f * 5) * 0.09, -(q + f * 5), 0, 0);
+      /* the rack */
+      const yb = dy(sm, z);
+      B(1.9, 0.04, 0.62, STEEL, X(sm), yb + 0.02, z);
+      for (const ds of [-0.58, 0.58]) {
+        for (const pz of [-0.34, 0.34]) B(0.12, 0.62, 0.05, GUNM, X(sm + ds), yb + 0.33, z + pz);
+        T(0.31, 0.02, GUNM, X(sm + ds), y, z, 0, Math.PI / 2, 0) /* the clamp band */;
+        B(0.06, 0.06, 0.74, GUNM, X(sm + ds), y + 0.38, z) /* the cross head */;
+        B(0.1, 0.3, 0.06, GUNM, X(sm + ds), yb + 0.18, z + k * 0.42, 0, 0, 0) /* the tipping arm */;
+        B(0.1, 0.06, 0.3, GUNM, X(sm + ds), yb + 0.32, z + k * 0.5, 0, 0, 0);
+      }
+      B(1.2, 0.05, 0.05, GUNM, X(sm), y + 0.38, z) /* the top bar */;
+    };
+    torpedo(4.1, -2.5);
+    torpedo(4.1, 2.5);
+    torpedo(11.6, -2.72);
+    torpedo(11.6, 2.72);
+    /* the day cabin and engine-room trunk: hatches, skylights and the ventilators */
+    const tk = dy(7.6, 0);
+    B(7.0, 0.62, 2.25, GREEN, X(7.6), tk + 0.29, 0.1);
+    B(7.04, 0.06, 2.29, DECK, X(7.6), tk + 0.61, 0.1);
+    for (const s of [6.6, 8.3]) B(1.0, 0.1, 1.1, DARK, X(s), tk + 0.67, 0.1);
+    for (const s of [9.6, 10.4]) B(0.55, 0.12, 0.55, 0x8a9a9a, X(s), tk + 0.66, -0.55);
+    for (const [s, z] of [
+      [4.6, -1.15],
+      [5.75, 1.3],
+    ]) {
+      C(0.11, 0.11, 1.1, GREEN, X(s), dy(s, z) + 0.55, z);
+      C(0.11, 0.11, 0.35, GREEN, X(s) + 0.12, dy(s, z) + 1.12, z, 0, 0, -Math.PI / 2);
+      C(0.15, 0.15, 0.06, DARK, X(s) + 0.3, dy(s, z) + 1.12, z, 0, 0, -Math.PI / 2);
+    }
+    /* life rafts (floater nets) on the trunk */
+    B(1.5, 0.28, 0.75, 0x9e8f5f, X(8.9), tk + 0.78, 0.55);
+    T(0.32, 0.07, 0xc8b070, X(10.2), tk + 0.7, 0.55, Math.PI / 2, 0, 0);
+    /* the cockpit (armoured, open-topped) and the chart house forward of it */
+    const ck = dy(12.2, 0);
+    /* the cockpit is narrow and to port (PT-109 plan): the forward turret stands outboard of it to starboard */
+    for (const z of [-1.3, 0.45]) B(2.2, 0.98, 0.06, GREEN, X(12.2), ck + 0.49, z);
+    B(0.06, 0.98, 1.81, GREEN, X(11.1), ck + 0.49, -0.425);
+    B(2.2, 0.06, 1.7, DARK, X(12.2), ck + 0.04, -0.425);
+    const ch = dy(14.6, 0);
+    B(3.0, 1.25, 2.6, GREEN, X(14.8), ch + 0.62, 0);
+    B(1.2, 0.06, 2.4, GREEN, X(16.55), ch + 0.92, 0, 0, 0, -0.62) /* the sloped front */;
+    B(3.04, 0.06, 2.64, DECK, X(14.8), ch + 1.26, 0);
+    for (const z of [-1.31, 1.31]) for (const s of [13.8, 14.8, 15.8]) B(0.5, 0.25, 0.02, 0x1d2428, X(s), ch + 0.9, z);
+    for (const z of [-0.8, 0, 0.8]) B(0.02, 0.24, 0.55, 0x1d2428, X(16.35), ch + 1.03, z);
+    /* the windscreen, wheel, throttles, compass and the helmsman */
+    B(0.06, 0.35, 2.3, 0x9bb3c0, X(13.33), ch + 1.42, 0, 0, 0, 0.2);
+    T(0.24, 0.025, 0x3a2a1a, X(13.1), ck + 1.0, -0.1, 0, Math.PI / 2, 0);
+    C(0.04, 0.04, 0.35, STEEL, X(13.22), ck + 1.0, -0.1, 0, 0, Math.PI / 2);
+    for (const z of [-0.6, -0.5, -0.4]) B(0.06, 0.22, 0.04, 0xb02020, X(13.1), ck + 1.05, z, 0, 0, 0.4);
+    C(0.13, 0.15, 0.25, 0x9a8a50, X(13.1), ck + 1.0, -0.95);
+    man(12.6, -0.1, 0, ck);
+    /* the mast (aft end of the chart house), yard, the ensign and the red "Baker" flag she flies while towing; a whip aerial */
+    const mt = ch + 1.27,
+      xm = X(13.5);
+    C(0.06, 0.04, 4.0, 0x8a8a7a, xm, mt + 2.0, 0);
+    B(0.05, 0.05, 1.7, 0x8a8a7a, xm, mt + 3.2, 0);
+    /* the flags stream aft from their halyards: the red "Baker" at the starboard yardarm, the ensign at the masthead with its union
+       at the hoist (next to the mast) */
+    B(0.75, 0.45, 0.02, 0xc8202a, xm - 0.42, mt + 2.95, 0.78);
+    for (let i = 0; i < 7; i++) B(0.95, 0.06, 0.02, i % 2 ? 0xf0f0ea : 0xb8202a, xm - 0.55, mt + 3.75 - i * 0.06, 0);
+    B(0.4, 0.24, 0.026, 0x2a3a6a, xm - 0.28, mt + 3.66, 0);
+    C(0.012, 0.006, 3.6, 0x30302a, X(16.0), ch + 1.26 + 1.8, -1.0);
+    /* the twin .50 turrets (Mk 17): a ring tub, twin M2s on the scarf ring, ammunition boxes, the gunner */
+    /* the tubs stand high (PT-109 plan and profile): the rim about 1.85 m above the deck, the highest thing on her decks, the shell
+       running down to the deck past the cabin side, the gunner's floor 0.9 m up inside */
+    const turret = (s, z, yaw) => {
+      const y0 = dy(s, z),
+        y = y0 + 0.9;
+      P.push(part(new THREE.CylinderGeometry(0.85, 0.88, y + 0.95 - y0, 22, 1, true), GREEN, X(s), (y0 + y + 0.95) / 2, z)) /* the tub, open at the top */;
+      C(0.8, 0.8, y + 0.6 - y0, DARK, X(s), (y0 + y + 0.6) / 2, z, 0, 0, 0, 22) /* the tub's floor */;
+      for (let i = 0; i < 22; i++) {
+        const a = (i / 22) * 2 * Math.PI;
+        B(0.03, 0.36, 0.24, 0x3c4a34, X(s) + Math.cos(a) * 0.8, y + 0.78, z - Math.sin(a) * 0.8, 0, a, 0) /* its inner wall */;
+      }
+      T(0.84, 0.04, STEEL, X(s), y + 0.95, z, Math.PI / 2, 0, 0);
+      man(s - Math.cos(yaw) * 0.45, z + Math.sin(yaw) * 0.45, yaw, y + 0.05);
+      /* the Mk 17 mount: the twin M2 heavy barrels on a cradle on the ring's post, built along +x then turned to yaw and elevated 8 deg */
+      const G = [],
+        put = (g, hex, x, yy, zz, rx, ry, rz) => G.push(part(g, hex, x, yy, zz, rx, ry, rz)),
+        el = 0.14;
+      put(cyl(0.05, 0.06, 0.5, 8), STEEL, 0, 0.25, 0);
+      put(bx(0.35, 0.08, 0.5), GUNM, 0.05, 0.52, 0);
+      for (const k of [-0.11, 0.11]) {
+        put(bx(0.62, 0.16, 0.11), GUNM, 0.0, 0.62, k) /* the receiver */;
+        put(bx(0.12, 0.1, 0.1), 0x2c2e2c, -0.36, 0.6, k) /* the back plate */;
+        for (const g of [-0.04, 0.04]) put(cyl(0.012, 0.012, 0.16, 5), 0x3a2a1a, -0.46, 0.57, k + g, 0, 0, Math.PI / 2) /* spade grips */;
+        put(cyl(0.032, 0.032, 0.42, 10), 0x30322f, 0.5, 0.64, k, 0, 0, -Math.PI / 2) /* the barrel jacket */;
+        for (const q of [0.36, 0.46, 0.56, 0.66]) put(cyl(0.034, 0.034, 0.025, 10), 0x1c1d1c, q, 0.64, k, 0, 0, -Math.PI / 2) /* its cooling holes */;
+        put(cyl(0.019, 0.019, 0.85, 8), GUNM, 1.12, 0.64, k, 0, 0, -Math.PI / 2) /* the heavy barrel */;
+        put(cyl(0.03, 0.026, 0.09, 8), 0x1c1d1c, 1.56, 0.64, k, 0, 0, -Math.PI / 2) /* the muzzle */;
+        put(bx(0.16, 0.04, 0.1), 0x9a8a50, 0.0, 0.66, k + Math.sign(k) * 0.1, 0, 0, 0.2) /* the belt feeding in from outboard */;
+      }
+      put(new THREE.TorusGeometry(0.08, 0.008, 4, 14), GUNM, 0.25, 0.86, 0, 0, Math.PI / 2, 0) /* the ring sight */;
+      /* the curved ammunition trays (Mk 17 plan in the References): one each side round the inside of the ring, from abeam the
+         guns aft, rounds showing, the belt chutes up into the guns; they turn with the mount, not with the guns' elevation */
+      const TR = [];
+      for (const k of [-1, 1])
+        for (let i = 0; i < 9; i++) {
+          const a = k * (0.75 + i * 0.2),
+            cx = Math.cos(a) * 0.6,
+            cz = -Math.sin(a) * 0.6;
+          TR.push(part(bx(0.13, 0.22, 0.19), 0x4a4f38, cx, 0.76, cz, 0, a, 0));
+          TR.push(part(bx(0.11, 0.03, 0.17), 0x9a8a50, cx, 0.88, cz, 0, a, 0));
+        }
+      for (const k of [-1, 1]) TR.push(part(bx(0.3, 0.05, 0.08), 0x9a8a50, 0.1, 1.05, -k * 0.3, 0, -k * 0.5, 0.35));
+      put(cyl(0.006, 0.006, 0.18, 4), GUNM, 0.25, 0.77, 0);
+      const M = new THREE.Matrix4().compose(
+        new THREE.Vector3(X(s) + Math.cos(yaw) * 0.1, y + 0.62, z - Math.sin(yaw) * 0.1),
+        new THREE.Quaternion().setFromEuler(new THREE.Euler(0, yaw, el, 'YXZ')),
+        new THREE.Vector3(1, 1, 1),
+      );
+      for (const q of G) (q.m = new THREE.Matrix4().multiplyMatrices(M, q.m)), P.push(q);
+      const My = GX.xf(X(s), y, z, yaw);
+      for (const q of TR) (q.m = new THREE.Matrix4().multiplyMatrices(My, q.m)), P.push(q);
+    };
+    turret(7.45, -1.15, 0.4);
+    turret(12.4, 1.4, -0.2);
+    /* her late-war guns (NavSource: one single 40 mm, one 37 mm, one 20 mm and the two twin .50s):
+       the single 40 mm Bofors on the stern trained aft (the PCE's 40 mm model with one barrel, its pointer, trainer and loader) on a
+       round deck plate; the 20 mm Oerlikon moved up onto the after end of the day cabin roof, trained aft over the Bofors; the
+       37 mm M4 (the P-39's cannon on a pedestal) on the forward deck */
+    const put = (Q, T) => {
+      for (const q of Q) (q.m = q.m ? new THREE.Matrix4().multiplyMatrices(T, q.m) : T.clone()), P.push(q);
+    };
+    const s40 = 1.85,
+      y40 = dy(s40, 0);
+    C(1.12, 1.12, 0.06, STEEL, X(s40), y40 + 0.03, 0, 0, 0, 0, 24);
+    if (PCEM.single40) put(PCEM.single40(0.12), GX.xf(X(s40), y40 + 0.06, 0, Math.PI));
+    const s20 = 4.75;
+    if (PCEM.oer20pt) put(PCEM.oer20pt(), GX.xf(X(s20), dy(7.6, 0) + 0.64, 0.1, Math.PI));
+    {
+      /* the 37 mm (Mk 9 drawing in the References): built along +x about the trunnions 1.0 m up, elevated 0.12 rad, then placed.
+         The pedestal: a flanged deck ring with gussets, a cone, and a narrow yoke up to the trunnions. The gun: a long receiver, the
+         barrel 2 m ahead of the trunnions, the tall clip box standing on the receiver just aft of them, the shoulder yoke at the breech */
+      const s37 = 19.5,
+        y37 = dy(s37, 0),
+        G = [],
+        E = [],
+        g = (A, geo, hex, x, y, z, rx, ry, rz) => A.push(part(geo, hex, x, y, z, rx, ry, rz)),
+        HP = Math.PI / 2;
+      g(G, cyl(0.5, 0.5, 0.04, 24), STEEL, 0, 0.02, 0) /* the deck ring */;
+      for (let i = 0; i < 10; i++) {
+        const a = (i / 10) * 2 * Math.PI;
+        g(G, bx(0.16, 0.1, 0.03), GUNM, Math.cos(a) * 0.4, 0.07, Math.sin(a) * 0.4, 0, -a, 0) /* the gussets */;
+      }
+      g(G, cyl(0.17, 0.36, 0.3, 16), GUNM, 0, 0.19, 0) /* the cone */;
+      g(G, cyl(0.17, 0.17, 0.05, 16), STEEL, 0, 0.36, 0);
+      for (const k of [-1, 1]) g(G, bx(0.08, 0.62, 0.05), GUNM, 0, 0.68, k * 0.1, k * 0.12, 0, 0) /* the yoke arms */;
+      g(G, cyl(0.06, 0.06, 0.28, 10), STEEL, 0, 1.0, 0, HP, 0, 0) /* the trunnion boss */;
+      g(E, bx(1.25, 0.16, 0.16), 0x3a3d3a, -0.35, 0, 0) /* the receiver, from the breech forward past the trunnions */;
+      g(E, bx(0.9, 0.04, 0.12), 0x2c2e2c, -0.35, -0.11, 0) /* the slide under it */;
+      g(E, bx(0.18, 0.12, 0.12), 0x2c2e2c, -1.03, 0.02, 0) /* the back plate */;
+      g(E, cyl(0.05, 0.05, 0.45, 10), GUNM, 0.45, 0.02, 0, 0, 0, -HP) /* the recoil sleeve */;
+      g(E, cyl(0.03, 0.034, 2.0, 10), 0x30322f, 1.65, 0.02, 0, 0, 0, -HP) /* the barrel */;
+      g(E, cyl(0.04, 0.04, 0.08, 10), 0x1c1d1c, 2.62, 0.02, 0, 0, 0, -HP);
+      /* the clip box: tall, banded, standing on the receiver */
+      g(E, bx(0.3, 0.6, 0.2), 0x4a4f38, -0.36, 0.38, 0);
+      for (const y of [0.15, 0.62]) g(E, bx(0.32, 0.04, 0.22), STEEL, -0.36, y, 0);
+      for (let i = 0; i < 3; i++) g(E, cyl(0.025, 0.025, 0.2, 6), 0x9a8a50, -0.46 + i * 0.1, 0.7, 0, HP, 0, 0) /* rounds showing */;
+      /* the shoulder yoke behind the breech, the hand grip and trigger, a ring sight on the left */
+      g(E, bx(0.05, 0.05, 0.44), STEEL, -1.18, -0.02, 0);
+      for (const k of [-1, 1]) {
+        g(E, new THREE.TorusGeometry(0.08, 0.025, 5, 10, Math.PI), 0x262626, -1.2, 0.06, k * 0.22, 0, HP, -HP);
+        g(E, bx(0.3, 0.035, 0.035), STEEL, -1.05, -0.02, k * 0.2);
+      }
+      g(E, cyl(0.018, 0.018, 0.18, 5), 0x262626, -0.85, -0.18, 0.08, 0, 0, 0.3);
+      g(E, bx(0.04, 0.2, 0.04), GUNM, -0.15, 0.18, -0.16);
+      g(E, new THREE.TorusGeometry(0.09, 0.008, 4, 16), GUNM, -0.15, 0.3, -0.16, 0, HP, 0);
+      const Te = new THREE.Matrix4().compose(new THREE.Vector3(0, 1.0, 0), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, 0.12)), new THREE.Vector3(1, 1, 1));
+      for (const q of E) (q.m = new THREE.Matrix4().multiplyMatrices(Te, q.m)), G.push(q);
+      const Tm = GX.xf(X(s37), y37, 0, 0);
+      put(G, Tm);
+      /* the gunner leaning into the rests, and his loader with a round */
+      if (PCEM.crew) {
+        put(PCEM.crew(-1.5, 0, 0, 0, 'lean', 'rests'), Tm);
+        put(PCEM.crew(-0.5, 0, 0.75, -0.5, 'stand', 'round'), Tm);
+      }
+    }
+    man(0.9, 1.4, Math.PI, dy(0.9, 1.4));
+    /* the tow bitt, the smoke generator, cleats and chocks */
+    C(0.12, 0.14, 0.5, STEEL, X(0.7), dy(0.7, 0) + 0.25, 0);
+    C(0.18, 0.12, 0.06, STEEL, X(0.7), dy(0.7, 0) + 0.52, 0);
+    C(0.27, 0.27, 1.05, 0x6b6b5e, X(0.45), dy(0.45, -2.2) + 0.3, -2.2, Math.PI / 2, 0, 0);
+    for (const [s, z] of [
+      [23.6, 0],
+      [20.5, 1.7],
+      [20.5, -1.7],
+      [3.5, 2.6],
+      [3.5, -2.6],
+    ])
+      B(0.3, 0.1, 0.1, STEEL, X(s), dy(s, z) + 0.06, z);
+    /* the crew's hatch and the forward deck's dorades */
+    B(0.8, 0.12, 0.8, DARK, X(20.9), dy(20.9, 0) + 0.06, 0);
+    for (const z of [-0.9, 0.9]) C(0.09, 0.09, 0.35, GREEN, X(18.2), dy(18.2, z) + 0.17, z);
+    /* the exhausts in the transom, the three screws on their struts, three rudders */
+    for (const z of [-2.1, -1.4, -0.6, 0.6, 1.4, 2.1]) C(0.1, 0.1, 0.12, DARK, X(0) - 0.02, 0.35, z, 0, 0, Math.PI / 2, 10);
+    for (const z of [-1.25, 0, 1.25]) {
+      C(0.045, 0.045, 4.0, STEEL, X(2.6), -0.95, z, 0, 0, Math.PI / 2 - 0.08, 8);
+      C(0.33, 0.33, 0.06, 0xb08a40, X(0.75), -1.1, z, 0, 0, Math.PI / 2, 14);
+      B(0.55, 0.62, 0.04, STEEL, X(0.15), -1.0, z);
+      B(0.12, 0.55, 0.06, STEEL, X(1.4), -0.75, z, 0, 0, 0.5);
+    }
+
+    /* ---- more of her fittings ---- */
+    const ck2 = dy(12.2, 0),
+      ch2 = dy(14.6, 0),
+      top = ch2 + 1.27;
+    /* running lights on the chart house sides in their screens (red port, green starboard), the searchlight and the siren */
+    for (const [z, hex] of [
+      [-1.36, 0xd02020],
+      [1.36, 0x20c040],
+    ]) {
+      B(0.3, 0.22, 0.03, GREEN, X(15.9), ch2 + 1.0, z + Math.sign(z) * 0.05);
+      B(0.1, 0.12, 0.08, hex, X(15.95), ch2 + 1.0, z + Math.sign(z) * 0.1);
+    }
+    C(0.16, 0.18, 0.26, GUNM, X(15.6), top + 0.25, 0.6, 0, 0, Math.PI / 2, 12);
+    C(0.14, 0.14, 0.02, 0xfff4c8, X(15.6) + 0.14, top + 0.25, 0.6, 0, 0, Math.PI / 2, 12);
+    C(0.05, 0.07, 0.2, STEEL, X(15.6), top + 0.08, 0.6);
+    C(0.05, 0.11, 0.3, 0x8a8a7a, X(13.5) + 0.12, top + 2.5, 0, 0, 0, -Math.PI / 2, 8);
+    /* the stern staff and the radio aerial from the masthead to it */
+    const ss = [X(0.15), dy(0.15, -0.4), -0.4];
+    C(0.03, 0.02, 1.9, 0x8a8a7a, ss[0], ss[1] + 0.95, ss[2]);
+    const wire = (a, b) => {
+      const dx = b[0] - a[0],
+        dyy = b[1] - a[1],
+        dz = b[2] - a[2],
+        len = Math.hypot(dx, dyy, dz),
+        m = new THREE.Matrix4().lookAt(new THREE.Vector3(...a), new THREE.Vector3(...b), new THREE.Vector3(0, 1, 0)),
+        q = new THREE.Quaternion().setFromRotationMatrix(m).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2)),
+        e = new THREE.Euler().setFromQuaternion(q);
+      C(0.008, 0.008, len, 0x202020, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2, e.x, e.y, e.z, 4);
+    };
+    wire([X(13.5), top + 3.9, 0], [ss[0], ss[1] + 1.85, ss[2]]);
+    wire([X(13.5), top + 3.4, 0], [X(17.2), dy(17.2, 0) + 0.1, 0]);
+    /* the anchor on the forward deck, its chain to the hawse, a mushroom vent or two */
+    const sa = 21.9,
+      ya = dy(sa, 0);
+    B(1.1, 0.07, 0.09, STEEL, X(sa), ya + 0.05, 0.35);
+    B(0.07, 0.07, 0.75, STEEL, X(sa) - 0.5, ya + 0.05, 0.35);
+    B(0.25, 0.05, 0.05, STEEL, X(sa) - 0.5, ya + 0.08, 0.04, 0, 0.6, 0);
+    B(0.25, 0.05, 0.05, STEEL, X(sa) - 0.5, ya + 0.08, 0.66, 0, -0.6, 0);
+    for (let i = 0; i < 9; i++) B(0.09, 0.05, 0.05, 0x404040, X(sa + 0.65 + i * 0.12), dy(sa + 0.65 + i * 0.12, 0.2) + 0.03, 0.35 - i * 0.04, 0, (i % 2) * 1.57, 0);
+    C(0.12, 0.12, 0.06, STEEL, X(23.4), dy(23.4, 0) + 0.03, 0);
+    for (const [sv, z] of [
+      [17.3, 0],
+      [9.0, 1.8],
+      [9.0, -1.8],
+    ]) {
+      C(0.05, 0.05, 0.12, STEEL, X(sv), dy(sv, z) + 0.06, z);
+      C(0.13, 0.13, 0.05, STEEL, X(sv), dy(sv, z) + 0.13, z);
+    }
+    /* hatch hinges and dogs on the trunk and the crew's hatch */
+    const tk2 = dy(7.6, 0);
+    for (const sh of [6.6, 8.3]) {
+      C(0.025, 0.025, 1.0, STEEL, X(sh) - 0.5, tk2 + 0.73, 0.1, Math.PI / 2, 0, 0, 6);
+      B(0.08, 0.04, 0.04, STEEL, X(sh) + 0.45, tk2 + 0.74, 0.1);
+    }
+    C(0.025, 0.025, 0.75, STEEL, X(20.9) - 0.4, dy(20.9, 0) + 0.13, 0, Math.PI / 2, 0, 0, 6);
+    /* a life ring on the trunk side, extinguishers by the cockpit and the engine hatch, a boat hook on the trunk */
+    T(0.3, 0.07, 0xe8e2d0, X(9.4), tk2 + 0.32, 1.26, 0, 0, 0);
+    for (const q of [0, 1, 2, 3]) B(0.08, 0.15, 0.03, 0xc84020, X(9.4) + Math.cos(q * 1.57) * 0.3, tk2 + 0.32 + Math.sin(q * 1.57) * 0.3, 1.29);
+    for (const [sx, z, y] of [
+      [11.3, -1.0, ck2],
+      [4.3, 0.95, tk2],
+    ])
+      C(0.08, 0.08, 0.45, 0xb02020, X(sx), y + 0.23, z);
+    C(0.02, 0.02, 3.2, 0x8a6a44, X(7.6), tk2 + 0.67, -0.85, 0, 0, Math.PI / 2, 6);
+    /* ammunition ready lockers by the turrets */
+    B(0.6, 0.45, 0.4, 0x4f5a42, X(9.1), dy(9.1, -2.0) + 0.23, -2.0);
+    B(0.6, 0.45, 0.4, 0x4f5a42, X(13.9), dy(13.9, 2.0) + 0.23, 2.0);
+    /* in the cockpit: the binnacle hood, voice tubes and the radio */
+    S(0.12, 0x9a8a50, X(13.1), ck2 + 1.18, -0.6, 1, 0.6, 1);
+    for (const z of [-0.3, -0.42]) C(0.035, 0.035, 0.8, 0x9a8a50, X(13.18), ck2 + 0.6, z);
+    B(0.4, 0.35, 0.3, 0x3a4038, X(11.5), ck2 + 0.55, 0.9);
+    /* the smoke generator's valve wheel and the transom's underwater exhaust boxes */
+    T(0.1, 0.015, 0xb02020, X(0.45), dy(0.45, -2.2) + 0.3, -1.62, 0, 0, 0);
+    for (const k of [-1, 1]) B(0.6, 0.25, 0.35, GUNM, X(0.3), 0.15, k * 2.55);
+    return P;
+  }
+  /* the rub rail along the sheer, the toe rail on the deck edge and the spray rails along the chines: lofted strips */
+  function rails() {
+    const S = { rub: [], toe: [], spr: [] },
+      Q = (a, A, B, C, D) => a.push(...A, ...B, ...C, ...A, ...C, ...D),
+      N = 48;
+    for (let i = 0; i < N; i++) {
+      const s0 = 0.05 + ((L - 0.4) * i) / N,
+        s1 = 0.05 + ((L - 0.4) * (i + 1)) / N;
+      for (const k of [1, -1]) {
+        const o = (s, d, y) => [X(s), y, k * (hb(s) + d)];
+        /* the rub rail: a half-round wooden fender just below the deck edge */
+        Q(S.rub, o(s0, 0.07, yd(s0) - 0.04), o(s0, 0.07, yd(s0) - 0.16), o(s1, 0.07, yd(s1) - 0.16), o(s1, 0.07, yd(s1) - 0.04));
+        Q(S.rub, o(s0, 0.0, yd(s0) - 0.01), o(s0, 0.07, yd(s0) - 0.04), o(s1, 0.07, yd(s1) - 0.04), o(s1, 0.0, yd(s1) - 0.01));
+        Q(S.rub, o(s0, 0.07, yd(s0) - 0.16), o(s0, 0.0, yd(s0) - 0.19), o(s1, 0.0, yd(s1) - 0.19), o(s1, 0.07, yd(s1) - 0.16));
+        /* the toe rail on the deck edge */
+        Q(S.toe, o(s0, -0.03, yd(s0)), o(s0, -0.03, yd(s0) + 0.07), o(s1, -0.03, yd(s1) + 0.07), o(s1, -0.03, yd(s1)));
+        /* the spray rail along the chine, forward of amidships */
+        if (s0 > 10 && bc(s1) > 0.05) {
+          const c = (s, d, y) => [X(s), y, k * (bc(s) + d)];
+          Q(S.spr, c(s0, 0, yc(s0)), c(s0, 0.1, yc(s0) + 0.02), c(s1, 0.1, yc(s1) + 0.02), c(s1, 0, yc(s1)));
+        }
+      }
+    }
+    const geo = (a) => {
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(a, 3));
+      g.computeVertexNormals();
+      return g;
+    };
+    return [GX.part(geo(S.rub), 0x4a3a28, 0, 0, 0), GX.part(geo(S.toe), 0x8a7a5a, 0, 0, 0), GX.part(geo(S.spr), GREEN, 0, 0, 0)];
+  }
+  /* her paint, worked in the shader from the model-space position and the part's colour (no textures to load): planked plywood
+     topsides with salt streaks, a black boot top and grime along the waterline; plywood deck panels with non-skid speckle and
+     worn walkways; mottled anti-fouling with a scum line; weathering on the fittings */
+  /* the torpedoes: bare steel and bronze under a coat of cosmoline that weathers to a dull brass */
+  const TORP = 0x6c5f3b,
+    TD = [];
+  function paint(mat) {
+    const v = (n) => [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255].map((x) => x.toFixed(5)).join(', ');
+    mat.onBeforeCompile = (sh) => {
+      sh.vertexShader = sh.vertexShader
+        .replace('#include <common>', '#include <common>\nvarying vec3 vMp;\nvarying vec3 vMn;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMp = position;\nvMn = normal;');
+      sh.fragmentShader = sh.fragmentShader
+        .replace(
+          '#include <common>',
+          `#include <common>
+varying vec3 vMp;
+varying vec3 vMn;
+float pH(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float pN(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(pH(i), pH(i + vec2(1.0, 0.0)), f.x), mix(pH(i + vec2(0.0, 1.0)), pH(i + vec2(1.0, 1.0)), f.x), f.y); }
+float pF(vec2 p){ return 0.5 * pN(p) + 0.25 * pN(p * 2.03 + 7.1) + 0.125 * pN(p * 4.1 + 3.3) + 0.0625 * pN(p * 8.3 + 1.7); }
+float pL(float u, float s){ float f = fract(u / s); return min(f, 1.0 - f) * s; }
+bool pIs(vec3 c, vec3 k){ return distance(c, k) < 0.012; }`,
+        )
+        .replace(
+          '#include <color_fragment>',
+          `#include <color_fragment>
+{
+  vec3 c = vColor;
+  vec3 N = normalize(vMn);
+  float m = 1.0;
+  if (pIs(c, vec3(${v(GREEN)})) && abs(N.y) < 0.6 && abs(vMp.z) > 1.6 && vMp.y < 2.5) {
+    /* topsides: the planking's seams faint under the paint, salt streaks running down, grime and the boot top at the waterline */
+    m *= 1.0 - 0.07 * (1.0 - smoothstep(0.004, 0.012, pL(vMp.y + 0.03 * vMp.x, 0.2)));
+    m *= 1.0 - 0.06 * (1.0 - smoothstep(0.004, 0.012, pL(vMp.x, 2.44)));
+    m *= 0.92 + 0.12 * pF(vec2(vMp.x * 0.8, vMp.y * 3.0));
+    float st = smoothstep(0.62, 0.9, pN(vec2(vMp.x * 6.0, vMp.y * 0.35))) * smoothstep(0.0, 1.0, vMp.y);
+    diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.82, 0.84, 0.8), st * 0.25);
+    diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.2, 0.22, 0.14), (1.0 - smoothstep(0.1, 0.55, vMp.y)) * 0.45 * (0.6 + 0.4 * pN(vMp.xz * 2.0)));
+    if (vMp.y < 0.17 && vMp.y > -0.02) diffuseColor.rgb = vec3(0.06, 0.065, 0.06);
+  } else if (pIs(c, vec3(${v(DECK)}))) {
+    /* the deck: 4 x 8 ft plywood panels, non-skid speckle, a worn walkway down each side of the trunk */
+    float d = min(pL(vMp.x + 0.3, 2.44), pL(vMp.z + 0.2, 1.22));
+    m *= 1.0 - 0.25 * (1.0 - smoothstep(0.004, 0.012, d));
+    m *= 0.9 + 0.2 * pH(floor(vMp.xz * 90.0)) * 0.6 + 0.08 * pF(vMp.xz * 1.5);
+    float walk = smoothstep(0.7, 0.0, abs(abs(vMp.z) - 1.75)) * smoothstep(-11.0, -6.0, vMp.x) * smoothstep(6.0, 2.0, vMp.x);
+    m *= 1.0 + 0.12 * walk * pN(vMp.xz * 3.0);
+    m *= 1.0 - 0.12 * smoothstep(0.6, 0.9, pN(vMp.xz * 5.0 + 3.0));
+  } else if (pIs(c, vec3(${v(RED)}))) {
+    /* the anti-fouling: mottled, darker toward the keel, a scum line of weed at the waterline */
+    m *= 0.86 + 0.24 * pF(vec2(vMp.x * 1.2, vMp.z * 1.2 + vMp.y * 4.0));
+    m *= 0.8 + 0.2 * smoothstep(-0.9, 0.0, vMp.y);
+    diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.22, 0.28, 0.14), smoothstep(-0.25, 0.0, vMp.y) * 0.55 * pN(vMp.xz * 4.0));
+  } else {
+    /* paint wear and grime on the cabins, tubes and fittings */
+    m *= 0.9 + 0.16 * pF(vMp.xy * 3.0 + vMp.zz * 2.0);
+    if (pIs(c, vec3(${v(TORP)}))) {
+      /* cosmoline: a dull waxy brass, runs and drips streaking along the body, darker dirty smears, a little green verdigris */
+      float rn = pN(vec2(vMp.x * 1.5, vMp.y * 11.0 + vMp.z * 11.0));
+      m *= 0.82 + 0.22 * pF(vMp.xy * 4.0 + vMp.zz * 3.0) + 0.1 * smoothstep(0.5, 0.95, rn);
+      m *= 0.92 + 0.1 * smoothstep(-0.3, 0.8, N.y);
+      diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.25, 0.2, 0.12), smoothstep(0.62, 0.85, pN(vMp.xz * 3.0 + vMp.yy * 4.0)) * 0.45);
+      diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.36, 0.44, 0.32), smoothstep(0.78, 0.95, pN(vMp.xy * 9.0 + 5.0)) * 0.3);
+    }
+    if (pIs(c, vec3(${v(TUBE)}))) {
+      m *= 1.0 + 0.12 * smoothstep(0.0, 1.0, N.y);
+      diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.42, 0.26, 0.14), smoothstep(0.8, 0.95, pN(vec2(vMp.x * 5.0, vMp.y * 14.0))) * 0.25);
+    }
+  }
+  diffuseColor.rgb *= m;
+}`,
+        );
+    };
+  }
+  /* the hull number on each bow (white on green), drawn on a canvas */
+  function number(txt) {
+    const c = document.createElement('canvas');
+    c.width = 128;
+    c.height = 64;
+    const g = c.getContext('2d');
+    g.fillStyle = '#eceae0';
+    g.font = 'bold 50px Arial';
+    g.textAlign = 'center';
+    g.fillText(txt, 64, 50);
+    const mat = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false }),
+      grp = new THREE.Group();
+    for (const k of [1, -1]) {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.7), mat),
+        s = 20.3;
+      m.position.set(X(s), yd(s) - 0.55, k * (hb(s) + 0.03));
+      m.rotation.y = k > 0 ? 0.1 : Math.PI - 0.1;
+      grp.add(m);
+    }
+    return grp;
+  }
+  /* the shark mouths on the torpedoes' noses, as on the Mustang: a skin just over the nose and the front of the body (a lathe of the
+     nose's profile, u round the body, v along it from the tip) carrying a canvas with a mouth and an eye on each side */
+  let SHK = null;
+  function sharkTex() {
+    if (SHK) return SHK;
+    /* drawn in the body's own terms so the mouth wraps round the nose: d metres aft of the tip, y up, phi round the body (phi 0 to
+       starboard, pi/2 down, pi to port, 3pi/2 up, as the lathe lays u). The mouth is a band between the lips' heights, open at the
+       tip where the two sides meet, closing to its corners 0.95 m aft; the teeth along both lips; an eye above each corner, along
+       the body, its forward end lower */
+    const W = 1024,
+      H = 512,
+      L = 1.4,
+      R = 0.291,
+      c = document.createElement('canvas');
+    c.width = W;
+    c.height = H;
+    const g = c.getContext('2d'),
+      rad = (d) => (d < 0.42 ? R * Math.sqrt(Math.max(0, 1 - (1 - d / 0.42) * (1 - d / 0.42))) : R),
+      DC = 0.95,
+      yU = (d) => 0.11 - 0.14 * Math.pow(Math.min(1, d / DC), 1.3),
+      yL = (d) => -0.17 + 0.14 * Math.pow(Math.min(1, d / DC), 0.8),
+      /* chart pixel of a point d aft, y up, on the starboard (side 1) or port (side -1) of the body */
+      PX = (d, y, side) => {
+        const r = rad(d),
+          q = Math.asin(Math.max(-1, Math.min(1, -y / r))),
+          phi = side > 0 ? q : Math.PI - q;
+        return [(((phi / (2 * Math.PI)) % 1) + 1) % 1 * W, (d / L) * H];
+      };
+    /* the mouth, pixel by pixel: black under the upper lip shading to red in the throat */
+    const img = g.createImageData(W, H),
+      D = img.data;
+    for (let j = 0; j < H; j++) {
+      const d = ((j + 0.5) / H) * L;
+      if (d > DC) break;
+      const r = rad(d),
+        u0 = yU(d),
+        l0 = yL(d);
+      for (let i = 0; i < W; i++) {
+        const phi = ((i + 0.5) / W) * 2 * Math.PI,
+          y = -r * Math.sin(phi);
+        if (y > u0 || y < l0) continue;
+        const t = (u0 - y) / Math.max(1e-4, u0 - l0),
+          k = 4 * (j * W + i),
+          m = Math.min(1, Math.max(0, (t - 0.35) / 0.3));
+        D[k] = 10 + m * 185;
+        D[k + 1] = 9 + m * 12;
+        D[k + 2] = 9 + m * 22;
+        D[k + 3] = 255;
+      }
+    }
+    g.putImageData(img, 0, 0);
+    /* a lip on one side: from where it comes over the top (upper) or under the bottom (lower) of the nose back to the corner */
+    const lip = (yf, side, n) => {
+      const out = [];
+      let d0 = 0.002;
+      while (d0 < DC && Math.abs(yf(d0)) >= rad(d0)) d0 += 0.002;
+      for (let i = 0; i <= n; i++) {
+        const d = d0 + (DC - d0) * Math.pow(i / n, 1.25);
+        out.push(PX(d, yf(d), side));
+      }
+      return out;
+    };
+    const draw = (fn) => {
+      for (const off of [0, W, -W]) {
+        g.save();
+        g.translate(off, 0);
+        fn();
+        g.restore();
+      }
+    };
+    for (const side of [1, -1]) {
+      const U = lip(yU, side, 16),
+        Lo = lip(yL, side, 14);
+      /* keep each lip on one copy of the chart (no jump across the seam) */
+      for (const A of [U, Lo]) for (let i = 1; i < A.length; i++) if (Math.abs(A[i][0] - A[i - 1][0]) > W / 2) A[i][0] += A[i][0] < A[i - 1][0] ? W : -W;
+      const teeth = (A, dir, L0) => {
+        for (let i = 2; i < A.length - 1; i++) {
+          const a = A[i],
+            b = A[i + 1],
+            mx = (a[0] + b[0]) / 2,
+            my = (a[1] + b[1]) / 2,
+            dx = b[0] - a[0],
+            dy = b[1] - a[1],
+            l = Math.hypot(dx, dy) || 1,
+            len = Math.min(L0 * (0.55 + 0.45 * (1 - i / A.length)) * (i % 2 ? 0.8 : 1), l * 1.6);
+          /* point toward the mouth: down the body for the upper teeth, up for the lower; phi grows downward to starboard */
+          let nx = -dy / l,
+            ny = dx / l;
+          if (Math.sign(nx) !== dir * side) (nx = -nx), (ny = -ny);
+          g.beginPath();
+          g.moveTo(...a);
+          g.lineTo(mx + nx * len, my + ny * len);
+          g.lineTo(...b);
+          g.closePath();
+          g.fillStyle = '#f4f1e4';
+          g.fill();
+          g.lineWidth = 2.5;
+          g.strokeStyle = '#0c0c0c';
+          g.stroke();
+        }
+      };
+      draw(() => {
+        teeth(U, 1, 30);
+        teeth(Lo, -1, 26);
+        for (const A of [U, Lo]) {
+          g.beginPath();
+          g.moveTo(...A[0]);
+          for (const q of A) g.lineTo(...q);
+          g.lineWidth = 6;
+          g.strokeStyle = '#0c0c0c';
+          g.lineJoin = 'round';
+          g.stroke();
+        }
+      });
+      /* the eye: an almond along the body above the corner, the forward end lower, the pupil forward under the lid */
+      const qb = (p0, p1, p2, t) => [(1 - t) * (1 - t) * p0[0] + 2 * (1 - t) * t * p1[0] + t * t * p2[0], (1 - t) * (1 - t) * p0[1] + 2 * (1 - t) * t * p1[1] + t * t * p2[1]];
+      const F = [0.6, 0.13],
+        B2 = [0.86, 0.2],
+        top = [0.71, 0.27],
+        bot = [0.76, 0.12],
+        E = [];
+      for (let i = 0; i <= 12; i++) E.push(PX(...qb(F, top, B2, i / 12), side));
+      for (let i = 12; i >= 0; i--) E.push(PX(...qb(F, bot, B2, i / 12), side));
+      for (let i = 1; i < E.length; i++) if (Math.abs(E[i][0] - E[0][0]) > W / 2) E[i][0] += E[i][0] < E[0][0] ? W : -W;
+      const pu = PX(0.69, 0.175, side);
+      if (Math.abs(pu[0] - E[0][0]) > W / 2) pu[0] += pu[0] < E[0][0] ? W : -W;
+      draw(() => {
+        g.beginPath();
+        g.moveTo(...E[0]);
+        for (const q of E) g.lineTo(...q);
+        g.closePath();
+        g.fillStyle = '#f4f1e4';
+        g.fill();
+        g.lineWidth = 4;
+        g.strokeStyle = '#0c0c0c';
+        g.stroke();
+        g.beginPath();
+        g.ellipse(pu[0], pu[1], 9, 13, 0, 0, 7);
+        g.fillStyle = '#0c0c0c';
+        g.fill();
+      });
+    }
+    SHK = new THREE.CanvasTexture(c);
+    SHK.anisotropy = 4;
+    return SHK;
+  }
+  function sharks() {
+    const r = 0.291,
+      L = 1.4,
+      n = 28,
+      pts = [];
+    for (let i = n; i >= 0; i--) {
+      const d = (i / n) * L,
+        e = Math.min(1, d / 0.42),
+        rr = d < 0.42 ? r * Math.sqrt(Math.max(0, 1 - (1 - e) * (1 - e))) : r;
+      pts.push(new THREE.Vector2(Math.max(rr, 0.004), -d));
+    }
+    const geo = new THREE.LatheGeometry(pts, 40);
+    geo.rotateZ(-Math.PI / 2);
+    const mat = new THREE.MeshLambertMaterial({ map: sharkTex(), transparent: true, alphaTest: 0.3, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }),
+      grp = new THREE.Group();
+    for (const [x, y, z] of TD) {
+      const m = new THREE.Mesh(geo, mat);
+      m.position.set(x + 0.002, y, z);
+      m.renderOrder = 1;
+      grp.add(m);
+    }
+    return grp;
+  }
+  /* her bow wave, the wake and the rooster tail: sheets of foam (a speckled texture fading away from the boat) */
+  let FOAM = null;
+  function foamTex() {
+    if (FOAM) return FOAM;
+    const c = document.createElement('canvas');
+    c.width = 256;
+    c.height = 64;
+    const g = c.getContext('2d');
+    for (let i = 0; i < 2600; i++) {
+      const u = Math.random(),
+        v = Math.random(),
+        a = (1 - u) * (1 - u) * (1 - Math.abs(v - 0.5) * 1.6) * (0.35 + Math.random() * 0.65);
+      if (a <= 0) continue;
+      g.fillStyle = 'rgba(255,255,255,' + a.toFixed(3) + ')';
+      g.beginPath();
+      g.arc(u * 256, v * 64, 1 + Math.random() * 3.5 * (1 - u * 0.6), 0, 6.3);
+      g.fill();
+    }
+    FOAM = new THREE.CanvasTexture(c);
+    return FOAM;
+  }
+  function spray() {
+    const mat = new THREE.MeshBasicMaterial({ map: foamTex(), transparent: true, depthWrite: false, side: THREE.DoubleSide }),
+      g = new THREE.Group(),
+      /* a quad: a, b at the boat (u = 0), c, d at the far end (u = 1) */
+      quad = (a, b, c, d) => {
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.Float32BufferAttribute([...a, ...b, ...c, ...a, ...c, ...d], 3));
+        geo.setAttribute('uv', new THREE.Float32BufferAttribute([0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0], 2));
+        const m = new THREE.Mesh(geo, mat);
+        m.renderOrder = 2;
+        return m;
+      };
+    for (const k of [1, -1]) {
+      /* the bow wave peeling off the chine and curling out */
+      g.add(quad([X(17.5), 0.15, k * 2.75], [X(16.5), 0.75, k * 3.3], [X(6), 0.9, k * 6.0], [X(7), 0.05, k * 4.2]));
+      /* the wake: an arm opening astern on each side */
+      g.add(quad([X(0.3), 0.06, k * 0.6], [X(0.3), 0.06, k * 3.0], [X(-55), 0.06, k * 20], [X(-55), 0.06, k * 6]));
+    }
+    /* the rooster tail off the three screws */
+    g.add(quad([X(0), 0.2, -1.5], [X(0), 0.2, 1.5], [X(-16), 2.2, 0.8], [X(-16), 2.2, -0.8]));
+    g.add(quad([X(-16), 2.2, -0.8], [X(-16), 2.2, 0.8], [X(-34), 0.06, 2.4], [X(-34), 0.06, -2.4]));
+    return g;
+  }
+  function build() {
+    TD.length = 0;
+    const a = new GX.Acc();
+    a.add(hull(), null);
+    a.add(rails(), null);
+    a.add(details(), null);
+    const m = new THREE.Mesh(a.geometry(), new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide }));
+    m.material.userData.cs = 1;
+    paint(m.material);
+    const grp = new THREE.Group();
+    grp.add(m, number('105'), sharks());
+    const sp = spray();
+    grp.add(sp);
+    grp.userData.spray = sp;
+    return grp;
+  }
+  /* the high-speed target sled: a wooden planing sled about 9 m long, upturned at the bow, on two skids, carrying a canvas screen
+     on a wooden frame painted with a destroyer's silhouette, a flag staff and the towing bridle. Origin at the screen's centre
+     (so the hit box sits on the target), the sled's bottom 1.5 m below it */
+  function sled() {
+    const P = [],
+      { part, bx, cyl } = GX,
+      B = (sx, sy, sz, hex, x, y, z, rx, ry, rz) => P.push(part(bx(sx, sy, sz), hex, x, y, z, rx, ry, rz)),
+      C = (r1, r2, h, hex, x, y, z, rx, ry, rz) => P.push(part(cyl(r1, r2, h, 8), hex, x, y, z, rx, ry, rz)),
+      WOOD = 0x8a6a44,
+      y0 = -1.5;
+    B(8.0, 0.3, 3.4, WOOD, -0.5, y0 + 0.15, 0);
+    B(1.6, 0.3, 3.4, WOOD, 4.1, y0 + 0.45, 0, 0, 0, 0.42) /* the upturned bow */;
+    for (const z of [-1.5, 1.5]) B(9.2, 0.22, 0.22, 0x5e4a30, 0, y0 - 0.02, z);
+    for (const x of [-3.8, -1.3, 1.2]) B(0.2, 0.12, 3.5, 0x6e5434, x, y0 + 0.36, 0);
+    /* the screen: posts, battens and the canvas, with the silhouette of a destroyer on it */
+    for (const x of [-4.0, -1.3, 1.4, 3.6]) C(0.08, 0.1, 3.4, WOOD, x, y0 + 1.95, 0);
+    for (const y of [y0 + 0.75, y0 + 3.55]) B(8.0, 0.12, 0.12, WOOD, -0.2, y, 0);
+    B(7.8, 2.7, 0.05, 0xdcd8c8, -0.2, y0 + 2.15, 0);
+    const SIL = 0x34383c;
+    for (const k of [0.04, -0.04]) {
+      B(7.2, 0.5, 0.02, SIL, -0.2, y0 + 1.05, k);
+      B(1.0, 0.45, 0.02, SIL, 2.2, y0 + 1.5, k);
+      B(1.5, 0.7, 0.02, SIL, 0.9, y0 + 1.65, k);
+      B(0.45, 0.85, 0.02, SIL, -0.2, y0 + 1.7, k);
+      B(0.45, 0.75, 0.02, SIL, -1.2, y0 + 1.65, k);
+      B(0.08, 1.6, 0.02, SIL, 0.6, y0 + 2.4, k);
+      B(1.0, 0.35, 0.02, SIL, -2.6, y0 + 1.45, k);
+    }
+    /* the flag staff with a red flag, the bridle to the tow line */
+    C(0.04, 0.04, 2.0, 0x8a8a7a, -4.2, y0 + 4.3, 1.4);
+    B(0.02, 0.5, 0.8, 0xd02a20, -4.6, y0 + 5.0, 1.4);
+    for (const z of [-1.4, 1.4]) C(0.025, 0.025, 2.4, 0x2a2a24, 4.9 + 1.0, y0 + 0.75, z * 0.5, Math.PI / 2 + Math.sign(z) * 0.95, 0, Math.PI / 2);
+    const a = new GX.Acc();
+    a.add(P, null);
+    const m = new THREE.Mesh(a.geometry(), new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide }));
+    m.material.userData.cs = 1;
+    return m;
+  }
+  return { build, sled, L, X, yd, hb, dy, BITT: [X(0.7), dy(0.7, 0) + 0.45, 0] };
+})();
+
+/* ---------- PT-105 towing the sled ----------
+   She runs an oval round the ship at 30 knots: 1,800 m out ahead and astern, 500 m abeam, centred on the ship and moving with
+   her. The sled, 300 m astern on its tow line, follows exactly in her track, so it passes inside the 20 mm's 1,000 yards on each
+   run down the ship's side and stays inside the 40 mm's 4,000 yards round the ends (a close pass about every four minutes).
+   The oval is laid along the ship's heading when the exercise starts and stays fixed in direction. */
+const PTOW = { A: 1800, B: 500, TOW: 300, KN: 30 };
+function ptTowStart() {
+  const boat = PTB.build(),
+    sl = PTB.sled(),
+    ax = Math.atan2(-Math.cos(SHIP.hdg), -Math.sin(SHIP.hdg)) /* the ship's heading as an angle in x, z */,
+    o = { th: -0.6, c: new THREE.Vector3(pos.x, 0, pos.z), u: new THREE.Vector3(Math.cos(ax), 0, Math.sin(ax)), trail: [], v: PTOW.KN * 0.5144 };
+  o.w = new THREE.Vector3(-o.u.z, 0, o.u.x);
+  scene.add(boat, sl);
+  /* the sled's game-mode marker ring */
+  const r = new THREE.Sprite(PT.ring);
+  r.scale.set(0.045, 0.045, 1);
+  r.renderOrder = 5;
+  r.userData.ptRing = true;
+  sl.add(r);
+  const tb = { kind: 'ptboat', p: new THREE.Vector3(), r: 6, m: boat, o, v: new THREE.Vector3() },
+    ts = { kind: 'sled', p: new THREE.Vector3(), r: 4.5, m: sl, o, v: new THREE.Vector3(), gun: '20' };
+  /* lay her track back along the oval so the sled starts 300 m astern of her, on it */
+  const P = (th) => ptTowAt(o, th, new THREE.Vector3());
+  let th = o.th,
+    d = 0,
+    prev = P(th);
+  o.trail.unshift({ p: prev.clone(), d: 0 });
+  while (d < PTOW.TOW + 40) {
+    th -= 0.002;
+    const q = P(th);
+    d += q.distanceTo(prev);
+    o.trail.push({ p: q.clone(), d });
+    prev = q;
+  }
+  PT.L.push(tb, ts);
+  RADIO.add('PT 105', 'ON STATION WITH THE SLED. THIRTY KNOTS, TOW 300 YARDS. COMMENCE FIRING WHEN READY. AIM AT THE SLED.');
+}
+/* a point on the oval (world), for the angle th */
+function ptTowAt(o, th, v) {
+  return v.copy(o.c).addScaledVector(o.u, PTOW.A * Math.cos(th)).addScaledVector(o.w, PTOW.B * Math.sin(th));
+}
+/* the sled's position d metres behind the boat along her track (d may be negative: ahead of the sled toward the boat) */
+function ptTrail(o, d, v) {
+  const T = o.trail;
+  if (d <= 0) return v.copy(T[0].p);
+  for (let i = 1; i < T.length; i++)
+    if (T[i].d >= d) {
+      const a = T[i - 1],
+        b = T[i],
+        f = (d - a.d) / Math.max(1e-6, b.d - a.d);
+      return v.copy(a.p).lerp(b.p, f);
+    }
+  return v.copy(T[T.length - 1].p);
+}
+function ptTowStep(dt) {
+  const tb = PT.L.find((t) => t.kind === 'ptboat'),
+    ts = PT.L.find((t) => t.kind === 'sled');
+  if (!tb) return OCEAN.U.uB0.value.setW(0), OCEAN.U.uB1.value.setW(0);
+  const o = tb.o,
+    time = OCEAN.U.uTime.value;
+  o.c.set(pos.x, 0, pos.z);
+  /* along the oval at 30 knots (relative to the ship, whose motion the oval shares) */
+  const dP = new THREE.Vector3().addScaledVector(o.u, -PTOW.A * Math.sin(o.th)).addScaledVector(o.w, PTOW.B * Math.cos(o.th)),
+    k = o.v / Math.max(1, dP.length());
+  o.th += k * dt;
+  ptTowAt(o, o.th, tb.p);
+  tb.v.copy(dP).multiplyScalar(k).add(vel);
+  /* her track: the world positions she has passed through, newest first, with the distance back along it */
+  const step = o.trail.length ? Math.hypot(tb.p.x - o.trail[0].p.x, tb.p.z - o.trail[0].p.z) : 0;
+  if (step > 0) {
+    for (const e of o.trail) e.d += step;
+    o.trail.unshift({ p: tb.p.clone(), d: 0 });
+    while (o.trail.length > 4 && o.trail[o.trail.length - 2].d > PTOW.TOW + 60) o.trail.pop();
+  }
+  /* the boat: planing, bow up about 3 degrees, heeled into the turn, riding the sea */
+  const hd = Math.atan2(-tb.v.z, tb.v.x),
+    turn = k * (PTOW.A * PTOW.B) / Math.max(1, dP.lengthSq()) /* rate of turn on the oval, rad/s */;
+  const fx = Math.cos(hd),
+    fz = -Math.sin(hd),
+    hBow = OCEAN.h(tb.p.x + fx * 9, tb.p.z + fz * 9, time),
+    hSt = OCEAN.h(tb.p.x - fx * 10, tb.p.z - fz * 10, time);
+  /* she rides the sea under her bow and stern, lifted about half a metre as she planes, bow up about 3 degrees */
+  tb.p.y = (hBow + hSt) / 2 + 0.5;
+  tb.m.position.copy(tb.p);
+  tb.m.rotation.set(-turn * 1.5, hd, 0.05 + Math.atan2(hBow - hSt, 19), 'YXZ');
+  OCEAN.U.uB0.value.set(tb.p.x, tb.p.z, hd, 1);
+  OCEAN.U.uBY.value.x = tb.p.y;
+  tb.p.y += 1.5; /* the hit point: amidships, above the deck */
+  /* the sled: on her track, 300 m astern, pointing up the track toward her */
+  if (ts) {
+    const s0 = ts.p.clone(),
+      a = ptTrail(o, PTOW.TOW, new THREE.Vector3()),
+      b = ptTrail(o, PTOW.TOW - 6, new THREE.Vector3());
+    a.y = OCEAN.h(a.x, a.z, time) + 1.6;
+    ts.p.copy(a);
+    ts.m.position.copy(a);
+    ts.m.rotation.set(0, Math.atan2(-(b.z - a.z), b.x - a.x), 0.03, 'YXZ');
+    OCEAN.U.uB1.value.set(a.x, a.z, ts.m.rotation.y, 2);
+    OCEAN.U.uBY.value.y = a.y - 1.5;
+    if (s0.lengthSq() && dt > 0) ts.v.lerp(new THREE.Vector3().subVectors(ts.p, s0).divideScalar(dt).setY(0), Math.min(1, dt * 4));
+  }
+}
+
 function ptMesh(kind) {
   const P = [],
     { part, bx, cyl } = GX;
@@ -25315,10 +26470,12 @@ function ptMesh(kind) {
 }
 function ptToggle() {
   PT.on = !PT.on;
+  OCEAN.U.uB0.value.setW(0);
+  OCEAN.U.uB1.value.setW(0);
   PT.L.forEach((t) => t.m && scene.remove(t.m));
   if (PT.g) PT.g.visible = false;
   PT.L = [];
-  PT.hits.raft = PT.hits.sleeve = 0;
+  PT.hits.raft = PT.hits.sleeve = PT.hits.sled = 0;
   if (!PT.on) return note('PRACTICE TARGETS OFF');
   PT.c.set(pos.x, 0, pos.z);
   const fx = -Math.sin(SHIP.hdg),
@@ -25362,22 +26519,25 @@ function ptToggle() {
   });
   /* the exercise submarine for the sonar and the depth charges: 30 m down, 4 knots, circling 1,500 m out (it is not seen) */
   PT.L.push({ kind: 'sub', p: new THREE.Vector3(), v: new THREE.Vector3(), o: { R: 1500, a: Math.random() * 6, w: (4 * 0.5144) / 1500, d: 30 } });
+  ptTowStart();
   RADIO.add('TOW ONE', 'ON STATION WITH SLEEVE. COMMENCE FIRING WHEN READY. DO NOT SHOOT THE TUG.');
   RADIO.add('EXERCISE SUB', 'DIVED AND READY. 4 KNOTS, 100 FEET.');
   if (!PT.g) {
-    PT.g = new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(12), 3)), new THREE.LineBasicMaterial({ color: 0x333333 }));
+    PT.g = new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(18), 3)), new THREE.LineBasicMaterial({ color: 0x333333 }));
     PT.g.frustumCulled = false;
     scene.add(PT.g);
   }
   PT.g.visible = true;
-  note('PRACTICE TARGETS ON - RAFTS 600, 800, 2,000, 4,000, 6,000 YARDS - SLEEVES OVERHEAD');
+  note('PRACTICE TARGETS ON - RAFTS 600 TO 6,000 YARDS - SLEEVES OVERHEAD - PT 105 TOWING A SLED');
 }
 function ptUpdate(dt) {
   if (!PT.on) return;
   for (const t of PT.L) if (t.m) t.m.children.forEach((c) => c.userData.ptRing && (c.visible = !FM.on));
   const cp = PT.g.geometry.attributes.position.array;
   let n = 0;
+  ptTowStep(dt);
   for (const t of PT.L) {
+    if (t.kind === 'ptboat' || t.kind === 'sled') continue;
     if (t.kind === 'raft') {
       t.p.y = OCEAN.h(t.p.x, t.p.z, OCEAN.U.uTime.value) - 0.1;
       continue;
@@ -25409,6 +26569,14 @@ function ptUpdate(dt) {
     cp[n++] = t.p.y;
     cp[n++] = t.p.z;
   }
+  /* PT-105's tow line, from her stern bitt to the sled's bridle */
+  const tb = PT.L.find((t) => t.kind === 'ptboat'),
+    ts = PT.L.find((t) => t.kind === 'sled');
+  if (tb && ts) {
+    const a = tb.m.localToWorld(new THREE.Vector3(...PTB.BITT)),
+      b = ts.m.localToWorld(new THREE.Vector3(5.5, -1.3, 0));
+    cp.set([a.x, a.y, a.z, b.x, b.y, b.z], 12);
+  }
   PT.g.geometry.attributes.position.needsUpdate = true;
 }
 /* a shell's path from a to b: did it hit a practice target? returns true when the shell is spent */
@@ -25423,12 +26591,18 @@ function ptHit(a, b, s) {
   if (!PT.on) return false;
   for (const t of PT.L) {
     if (t.kind === 'sub' || t.gone > 0) continue;
-    const air = t.kind !== 'raft',
+    const air = t.kind === 'tug' || t.kind === 'sleeve',
       sl = t.kind === 'sleeve',
       kr = sl && s.kr ? s.kr[FM.on ? 0 : 1] : t.r,
       r = s.vt && air ? s.vt : kr;
     if (a.distanceToSquared(t.p) > (r + 200) ** 2) continue;
     if (!segHit(a, b, t.p, r)) continue;
+    if (t.kind === 'ptboat') {
+      note('CEASE FIRE - YOU HIT PT 105!');
+      RADIO.add('PT 105', 'CHECK FIRE CHECK FIRE. YOU ARE HITTING THE BOAT, NOT THE SLED.');
+      gunBurst(b, s, true);
+      return true;
+    }
     if (t.kind === 'tug') {
       note('CEASE FIRE - YOU HIT THE TOW PLANE!');
       RADIO.add('TOW ONE', 'CEASE FIRE CEASE FIRE. YOU ARE HITTING THE TUG.');
@@ -25457,8 +26631,8 @@ function ptHit(a, b, s) {
       RADIO.add('TOW ' + (t.gun === '20' ? 'TWO' : 'ONE'), 'SLEEVE SHOT AWAY. NICE SHOOTING. STREAMING A NEW ONE.');
       return true;
     }
-    PT.hits[t.kind]++;
-    note('HIT ON THE RAFT (' + PT.hits[t.kind] + ')');
+    PT.hits[t.kind] = (PT.hits[t.kind] || 0) + 1;
+    note('HIT ON THE ' + (t.kind === 'sled' ? 'SLED' : 'RAFT') + ' (' + PT.hits[t.kind] + ')');
     gunFx(b, 0xffb040, 3, 9, 0.3, 0, true);
     return true;
   }
@@ -28273,6 +29447,18 @@ function frame(now) {
   shipHUD();
   drawMinimap();
   audioUpd();
+  /* the engine room is sealed below the waterline: from in there the camera draws only the ship and the lights (layer 1). Nothing of
+     the sea, the shore or the sky is drawn, so the sea surface, seen edge-on from just under it, cannot show through her walls as
+     a line at the water level (it did on some GPUs, never in photo mode) */
+  {
+    const sealed = camMode == 1 && !PHOTO.on && !ROAM.on && !orbitOn && SHIP.stn === 2 && SHIPM.mesh;
+    if (sealed) {
+      SHIPM.mesh.traverse((o) => o.layers.enable(1));
+      hemi.layers.enable(1);
+      sun.layers.enable(1);
+    }
+    cam.layers.set(sealed ? 1 : 0);
+  }
   R.render(scene, cam);
   if (PHOTO.shot) photoCapture();
 }
