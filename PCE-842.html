@@ -427,6 +427,7 @@ Top bar: &#9776; missions &middot; &#9208; menu &middot; &#128247; camera &middo
 <label><input type="checkbox" data-hc="smoke"> <b>Smoke.</b> Muzzle smoke, shell bursts, splashes and the puff of a K-gun or Hedgehog hang in the air and can hide the target for a moment. Game mode: kept out of your way.</label>
 <label><input type="checkbox" data-hc="walk"> <b>Walk the deck.</b> As torpedoman you walk between the Hedgehog, the K-guns and the stern racks with W A S D (Shift runs), round the gun tubs and down the ladder. Game mode: 6 or J jumps straight there.</label>
 <label><input type="checkbox" data-hc="orders"> <b>Tight orders.</b> On an attack run the OOD's orders must be carried out within 4 seconds (game mode: 6), and you pull the safety forks to arm each position yourself (X at the weapon). Game mode: the charges are armed for you on &ldquo;stand by charges&rdquo;.</label>
+<label><input type="checkbox" data-hc="comms"> <b>Communications by the book.</b> No help on the scopes: the radar does not box the contact nearest your cursor, the sonar does not print the echo's Doppler (judge it by ear), messages for the bridge are not marked, a message must be answered in 12 seconds (game mode: 20), and radar reports must be within 2&deg; (game mode: 3&deg;).</label>
 <label><input type="checkbox" data-hc="dmg"> <b>Shallow charges hurt her.</b> A depth charge set too shallow (under about 75 ft) and dropped at slow speed goes off under her own stern and costs her speed until the run is over.</label>
 </div>
 <h2>What it changes</h2>
@@ -450,7 +451,7 @@ Top bar: &#9776; missions &middot; &#9208; menu &middot; &#128247; camera &middo
 <table class="t2">
 <tr><td><b>1</b> OOD</td><td>The open bridge: conn the ship (W / S rings the engines, A / D the rudder), X for the binoculars.</td></tr>
 <tr><td><b>2</b> Engineering</td><td>The forward engine room: the telegraph rings, the red needle is the order and the black one the answer; the gauges follow the engines.</td></tr>
-<tr><td><b>3</b> Communications</td><td>Radar, sonar and radio: press 3 again for each set.</td></tr>
+<tr><td><b>3</b> Communications</td><td>Radar, sonar and radio (press 3 again for each set). <b>Radar:</b> lay the bearing cursor (Q / E) and range strobe (R / F) on a contact and report it (Space); two reports 40 s apart give its course and speed. <b>Sonar:</b> search with the beam (Q / E), take the cuts (Z / X), call the Doppler (U / B / N) and report (Space): the OOD attacks on your reports, so lose the contact and the attack fails. <b>Radio:</b> acknowledge (Space) and route to the bridge (B). Away from the station an AI operator does it all. <b>T</b> here: the Comms school for the set you are at.</td></tr>
 <tr><td><b>4</b> Quartermaster</td><td>The pilothouse: the wheel, the telegraphs and the compass.</td></tr>
 <tr><td><b>5</b> Gunner</td><td>The 3&Prime;/50 forward, the 20 mm amidships and the twin 40 mm aft (press 5 again for each). The mouse lays the gun; hold the backtick (`) to move it six times faster.</td></tr>
 <tr><td><b>6</b> Torpedoman</td><td>The Hedgehog, the port and starboard K-guns and the stern racks. You cannot steer from here: the OOD cons the ship.</td></tr>
@@ -548,7 +549,7 @@ const _el = {},
                            tolerated; corrupt saved data is reported and ignored.
    logWarn(what, e)      - optional browser features (wake lock, vibration, fullscreen, audio...): a failure is logged, never fatal. */
 /* VERSION: major.minor. The user decides when the major number changes; the minor number goes up with every change. */
-const VERSION = '0.39';
+const VERSION = '0.40';
 document.querySelectorAll('.verTag').forEach((e) => (e.textContent = 'Version ' + VERSION));
 /* the player's ship mesh and her start line (filled in where the world places the PCE) */
 const SHIPM = { mesh: null, wake: null, pts: null, Y: -8.15 /* waterline at the sea plane */ };
@@ -606,7 +607,7 @@ const DC = { depth: 100 /* ft */, rack: [8, 8], kg: [2, 2], dep: { rack: 100, po
 /* the torpedoman walking the deck (Hardcore), the Hedgehog, and the attack run the OOD cons (see THE TORPEDOMAN AT WORK) */
 const TPW = { p: new THREE.Vector2() /* model x, z */, at: 3, bob: 0, ob: [] },
   HH = { n: 24, L: [], q: [], ld: 0, hits: 0 },
-  ASW = { ph: 'idle', t: 0, O: [], f: {}, run: 0, tel: 0, hold: 0, depth: 100, best: 1e9, hh: 0, un: 0, bad: false, msg: '', deb: '', debT: 0 };
+  ASW = { who: 'tp' /* who the attack is for: the torpedoman's run (6) or the sonar test (3) */, ph: 'idle', t: 0, O: [], f: {}, run: 0, tel: 0, hold: 0, depth: 100, best: 1e9, hh: 0, un: 0, bad: false, msg: '', deb: '', debT: 0 };
 const logWarn = (what, e) => console.warn('[PCE-842] ' + what + ':', (e && e.message) || e);
 const store = {
   get(key, fallback) {
@@ -663,6 +664,7 @@ const HC_KEYS = [
   'walk',
   'orders',
   'dmg',
+  'comms',
   /* the P-51's (kept for the flight code the fork still carries; not shown) */
   'torque',
   'spin',
@@ -693,6 +695,7 @@ const FM = {
     walk: true,
     orders: true,
     dmg: true,
+    comms: true,
     torque: true,
     spin: true,
     alt: true,
@@ -4234,8 +4237,8 @@ const PCEM = (() => {
     1: [{ e: [XF(31.7), YG + 1.68, 0], yaw: 0, pitch: -0.06, name: 'OOD - OPEN BRIDGE' }],
     2: [{ e: [ER.x0 + 1.4, ER.y0 + 1.65, -0.35], yaw: 0.62, pitch: -0.12, fov: 52, name: 'ENGINEERING - FORWARD ENGINE ROOM' }],
     3: [
-      { e: [X_RR1 + 2.36, Y2 + 1.22, -0.45], yaw: -0.73, pitch: -0.08, fov: 40, name: 'COMMUNICATIONS - RADAR', dev: 'radar' },
-      { e: [X_RR1 + 2.36, Y2 + 1.22, -0.45], yaw: -1.4, pitch: 0.08, fov: 45, name: 'COMMUNICATIONS - SONAR', dev: 'sonar' },
+      { e: [X_RR1 + 2.36, Y2 + 1.22, -0.45], yaw: -0.73, pitch: -0.08, fov: 27, name: 'COMMUNICATIONS - RADAR', dev: 'radar' },
+      { e: [X_RR1 + 2.36, Y2 + 1.22, -0.45], yaw: -1.4, pitch: 0.08, fov: 38, name: 'COMMUNICATIONS - SONAR', dev: 'sonar' },
       { e: [X_RR1 + 2.36, Y2 + 1.22, -0.45], yaw: -2.67, pitch: 0.04, fov: 38, name: 'COMMUNICATIONS - RADIO', dev: 'radio' },
     ],
     4: [{ e: [X_PH0 - 2.35, Y2 + 1.66, 0], yaw: 0, pitch: -0.04, name: 'QUARTERMASTER - PILOTHOUSE' }],
@@ -23238,8 +23241,8 @@ function helpBox() {
     else if (camMode == 1 && stn === 2) l = ['<b>W / S</b> engines &middot; <b>A / D</b> rudder', 'Red needle: the order &middot; black: the answer', 'Gauges: rpm, shaft, oil, water, exhaust, fuel, air, knots'];
     else if (camMode == 1 && stn === 3)
       l = [
-        dev === 'radar' ? '<b>Page Up / Down</b> radar range' : dev === 'sonar' ? '<b>' + kbText('sTrL') + ' / ' + kbText('sTrR') + '</b> train &middot; <b>Page Up / Down</b> range scale' : 'The receiver prints the traffic',
-        '<b>3</b> next: radar, sonar, radio',
+        dev === 'radar' ? '<b>Q / E</b> cursor &middot; <b>R / F</b> strobe &middot; <b>Space</b> report &middot; <b>Page Up / Down</b> scale' : dev === 'sonar' ? '<b>Q / E</b> train &middot; <b>Z / X</b> cuts &middot; <b>Space</b> report &middot; <b>U / B / N</b> Doppler' : '<b>Space</b> acknowledge &middot; <b>B</b> route to the bridge',
+        '<b>3</b> next: radar, sonar, radio &middot; <b>T</b> Comms school',
       ];
     else if (camMode == 1 && stn === 6)
       l = [
@@ -23581,6 +23584,10 @@ addEventListener('keydown', (e) => {
       return;
     }
     if (e.code == 'KeyP' || e.code == 'Escape') pauseMenu(false);
+    return;
+  }
+  if (!e.repeat && started && !paused && camMode == 1 && SHIP.stn === 3 && commsKey(e.code)) {
+    e.preventDefault();
     return;
   }
   const uid = KEYID[e.code];
@@ -26984,7 +26991,7 @@ function radarContacts() {
   const L = [];
   for (const t of T) if (t.type === 'ship' && !t.dead) L.push([t.c.x, t.c.z, 2]);
   if (typeof AFLD !== 'undefined' && AFLD.a) for (const o of AFLD.a) if (o.kind === 'ship' && o.m && o.m !== SHIPM.mesh) L.push([o.m.position.x, o.m.position.z, 2.5]);
-  if (PT.on) for (const t of PT.L) if (t.kind === 'raft') L.push([t.p.x, t.p.z, 1]);
+  if (PT.on) for (const t of PT.L) if (t.kind === 'raft' || t.kind === 'sled' || t.kind === 'ptboat') L.push([t.p.x, t.p.z, t.kind === 'ptboat' ? 1.5 : 1]);
   return L;
 }
 function radarDraw(f, dt) {
@@ -27075,6 +27082,7 @@ function radarDraw(f, dt) {
   g.textAlign = 'left';
   g.textAlign = 'center';
   g.fillText(RADAR.R[RADAR.ri] + ' NM  RINGS ' + RADAR.R[RADAR.ri] / 4 + ' NM', s / 2, 470);
+  radarOverlay(g, s, R);
   g.restore();
 }
 /* ---------- the sonar: echo ranging; the exercise submarine (practice targets) and the shoals answer ---------- */
@@ -27115,6 +27123,7 @@ function sonarPing(here) {
       E.push({ r, k: 1 - off / 0.2, dop: -rv, w: 3, sub: true, b });
     }
   SONAR.last = { E, t: 0 };
+  commsEcho(E, here);
   /* the paper moves on a step and the stylus writes the reverberation and the echoes */
   const p = SONAR.paper,
     g = p.getContext('2d'),
@@ -27161,8 +27170,13 @@ function sonarStep(dt, here, train) {
     SONAR.t = 0;
     /* searching alone, the operator steps the beam 5 degrees a ping across the bow, 80 degrees each side */
     if (!here) {
-      SONAR.brg += SONAR.dir * 0.087;
-      if (Math.abs(SONAR.brg) > 1.4) SONAR.dir = -SONAR.dir;
+      /* with a contact he holds it: the beam on the last fix, hunting a little either side; without one he searches */
+      const E = subEst();
+      if (E && E.age < 30) SONAR.brg = Math.max(-2.8, Math.min(2.8, cRel(E.p.x, E.p.z)[0] + (SONAR.dir = -SONAR.dir) * 0.04));
+      else {
+        SONAR.brg += SONAR.dir * 0.087;
+        if (Math.abs(SONAR.brg) > 1.4) SONAR.dir = -SONAR.dir;
+      }
     }
     sonarPing(here);
   }
@@ -27194,7 +27208,9 @@ function sonarBrgDraw(f) {
 }
 /* ---------- the radio: what the receiver prints ---------- */
 const RADIO = { log: [], dirty: true };
-RADIO.add = function (from, txt) {
+RADIO.add = function (from, txt, o) {
+  /* traffic from outside the ship comes to the radio operator (the player at the radio, or the AI operator) */
+  if (!(o && o.own) && !['SONAR', 'RADAR', 'PCE 842', 'BRIDGE'].includes(from) && typeof radioIn === 'function') radioIn(from, txt);
   const h = Math.floor(WX.hour || 0),
     m = Math.floor(((WX.hour || 0) % 1) * 60);
   this.log.push(String(h).padStart(2, '0') + String(m).padStart(2, '0') + ' ' + from + ': ' + txt);
@@ -27226,6 +27242,636 @@ function radioDraw(f) {
   g.fillStyle = '#7a1a10';
   g.fillRect(0, H - 12, W, 12);
 }
+/* ---------- COMMUNICATIONS: the operators' work, and the Comms school (T at station 3) ----------
+   Radar: a bearing cursor (Q / E) and a range strobe (R / F) laid on a contact; Space reports it (true bearing, range in yards).
+   Two marks of the same contact at least 40 s apart give its course and speed (the plot).
+   Sonar: Q / E train the beam; Z and X take the left and right cuts (the echo's edges): their centre is his bearing; Space reports
+   bearing and range to the bridge; U / B / N call the Doppler (up, down, none). The OOD attacks on the sonar operator's reports:
+   COMMS.est is what the bridge believes about the submarine. When the player is not on the sonar, an AI operator holds contact and
+   reports (small errors, contact lost inside about 150 yards as she passes over him).
+   Radio: incoming practice traffic must be acknowledged (Space) and, if it concerns the ship, the guns or the exercise, routed to the
+   bridge (B). Away from the radio an AI operator handles it. */
+const COMMS = {
+  rd: { b: 0, r: 3000, M: new Map(), n: 0, good: 0, bad: 0, tr: 0 },
+  sn: { L: null, R: null, tc: 0, echo: null, rep: [], good: 0 },
+  est: null,
+  rq: [],
+  sched: [],
+  out: null,
+  gen: 40,
+  les: null,
+};
+const cTrue = (b) => (((((-SHIP.hdg + b) * 180) / Math.PI) % 360) + 360) % 360;
+const c3 = (d) => String(Math.round(d) % 360).padStart(3, '0');
+const cYd = (m) => (Math.round(m / 0.9144 / 25) * 25).toLocaleString('en-US');
+function cAxes() {
+  return [
+    [-Math.sin(SHIP.hdg), -Math.cos(SHIP.hdg)],
+    [Math.cos(SHIP.hdg), -Math.sin(SHIP.hdg)],
+  ];
+}
+/* the relative bearing (rad, + to starboard) and range (m) of a point */
+function cRel(x, z) {
+  const [bow, stb] = cAxes(),
+    ex = x - pos.x,
+    ez = z - pos.z;
+  return [Math.atan2(ex * stb[0] + ez * stb[1], ex * bow[0] + ez * bow[1]), Math.hypot(ex, ez)];
+}
+function cAt(b, r) {
+  const [bow, stb] = cAxes(),
+    ca = Math.cos(b),
+    sa = Math.sin(b);
+  return new THREE.Vector3(pos.x + (bow[0] * ca + stb[0] * sa) * r, 0, pos.z + (bow[1] * ca + stb[1] * sa) * r);
+}
+/* ---- radar ---- */
+function radarTargets() {
+  const L = [];
+  for (const t of T) if (t.type === 'ship' && !t.dead) L.push({ ref: t, x: t.c.x, z: t.c.z, name: 'SHIP' });
+  if (typeof AFLD !== 'undefined' && AFLD.a) for (const o of AFLD.a) if (o.kind === 'ship' && o.m && o.m !== SHIPM.mesh) L.push({ ref: o, x: o.m.position.x, z: o.m.position.z, name: 'SHIP' });
+  if (PT.on)
+    for (const t of PT.L)
+      if (t.kind === 'raft' || t.kind === 'ptboat' || t.kind === 'sled') L.push({ ref: t, x: t.p.x, z: t.p.z, name: t.kind === 'raft' ? 'RAFT' : t.kind === 'ptboat' ? 'PT 105' : 'SLED' });
+  for (const c of L) [c.b, c.r] = cRel(c.x, c.z);
+  return L.filter((c) => c.r > 60 && c.r < 18520);
+}
+function radarNearest(b, r, L) {
+  let best = null,
+    bs = 1e9;
+  for (const c of L || radarTargets()) {
+    const s = Math.abs(angW(c.b - b)) / 0.05 + Math.abs(c.r - r) / Math.max(150, 0.05 * c.r);
+    if (s < bs) (bs = s), (best = c);
+  }
+  return best ? { c: best, s: bs, bErr: Math.abs(angW(best.b - b)), rErr: Math.abs(best.r - r) } : null;
+}
+function radarReport() {
+  const R = COMMS.rd,
+    hc = FM.use('comms'),
+    n = radarNearest(R.b, R.r),
+    tolB = (hc ? 2 : 3) * (Math.PI / 180);
+  if (!n || n.bErr > tolB || n.rErr > Math.max(hc ? 100 : 150, 0.05 * n.c.r)) {
+    R.bad++;
+    SND.tone(240, 200, 0.18, 0.12, 'square');
+    note('NOTHING THERE - LAY THE CURSOR AND THE STROBE ON THE CONTACT');
+    return null;
+  }
+  const c = n.c;
+  let m = R.M.get(c.ref);
+  if (!m) R.M.set(c.ref, (m = { lab: String.fromCharCode(65 + (R.n++ % 26)), k: [] }));
+  m.k.push({ t: SHIP.t, x: c.x, z: c.z });
+  m.name = c.name;
+  R.good++;
+  let txt = 'CONTACT ' + m.lab + ' (' + c.name + ') BEARING ' + c3(cTrue(R.b)) + ' RANGE ' + cYd(R.r) + ' YDS';
+  const k0 = m.k.find((q) => SHIP.t - q.t >= 40);
+  if (k0) {
+    const dt = SHIP.t - k0.t,
+      vx = (c.x - k0.x) / dt,
+      vz = (c.z - k0.z) / dt;
+    m.trk = { crs: (((Math.atan2(vx, -vz) * 180) / Math.PI) % 360 + 360) % 360, kn: Math.hypot(vx, vz) / 0.5144, vx, vz, t: SHIP.t };
+    R.tr++;
+    txt += '. COURSE ' + c3(m.trk.crs) + ' SPEED ' + Math.round(m.trk.kn) + ' KNOTS';
+  }
+  SND.tone(880, 880, 0.08, 0.1, 'sine');
+  RADIO.add('RADAR', txt, { own: true });
+  note('RADAR: ' + txt);
+  return { c, m };
+}
+function radarOverlay(g, s, R) {
+  const C = COMMS.rd,
+    k = s / 2 / R;
+  g.save();
+  /* the marks: each contact reported, at its plotted position, with its letter, and its course and speed line when tracked */
+  for (const [, m] of C.M) {
+    const q = m.k[m.k.length - 1],
+      [b, r] = cRel(q.x, q.z);
+    if (r > R) continue;
+    const x = s / 2 + Math.sin(b) * r * k,
+      y = s / 2 - Math.cos(b) * r * k;
+    g.strokeStyle = 'rgba(255,220,120,0.9)';
+    g.lineWidth = 2;
+    g.strokeRect(x - 6, y - 6, 12, 12);
+    g.fillStyle = 'rgba(255,220,120,0.95)';
+    g.font = 'bold 18px monospace';
+    g.textAlign = 'left';
+    g.fillText(m.lab, x + 9, y - 6);
+    if (m.trk) {
+      const [b2, r2] = cRel(q.x + m.trk.vx * 180, q.z + m.trk.vz * 180) /* where she will be in 3 minutes */;
+      g.beginPath();
+      g.moveTo(x, y);
+      g.lineTo(s / 2 + Math.sin(b2) * r2 * k, s / 2 - Math.cos(b2) * r2 * k);
+      g.stroke();
+    }
+  }
+  /* game mode: the contact nearest the cursor is boxed */
+  if (!FM.use('comms')) {
+    const n = radarNearest(C.b, C.r);
+    if (n && n.c.r < R && n.bErr < 0.14) {
+      const x = s / 2 + Math.sin(n.c.b) * n.c.r * k,
+        y = s / 2 - Math.cos(n.c.b) * n.c.r * k;
+      g.strokeStyle = 'rgba(120,200,255,0.9)';
+      g.setLineDash([4, 3]);
+      g.strokeRect(x - 11, y - 11, 22, 22);
+      g.setLineDash([]);
+    }
+  }
+  /* the bearing cursor and the range strobe */
+  g.strokeStyle = 'rgba(255,170,90,0.9)';
+  g.lineWidth = 1.5;
+  g.beginPath();
+  g.moveTo(s / 2, s / 2);
+  g.lineTo(s / 2 + Math.sin(C.b) * s * 0.5, s / 2 - Math.cos(C.b) * s * 0.5);
+  g.stroke();
+  const rr = Math.min(R, C.r) * k;
+  g.beginPath();
+  g.arc(s / 2 + Math.sin(C.b) * rr, s / 2 - Math.cos(C.b) * rr, 7, 0, Math.PI * 2);
+  g.stroke();
+  g.setLineDash([2, 6]);
+  g.beginPath();
+  g.arc(s / 2, s / 2, rr, 0, Math.PI * 2);
+  g.stroke();
+  g.setLineDash([]);
+  g.fillStyle = 'rgba(255,190,120,0.95)';
+  g.font = 'bold 20px monospace';
+  g.textAlign = 'center';
+  g.fillText('BRG ' + c3(cTrue(C.b)) + 'T  RNG ' + cYd(C.r) + ' YD', s / 2, 44);
+  g.restore();
+}
+/* ---- sonar ---- */
+/* every ping: the operator's echo (the player's), or the AI operator's report to the bridge */
+function commsEcho(E, here) {
+  const sub = E.find((e) => e.sub);
+  if (here) {
+    if (sub) COMMS.sn.echo = { r: sub.r, dop: sub.dop, b: sub.b, beam: SONAR.brg, t: SHIP.t };
+    return;
+  }
+  /* the AI operator: a fresh fix each echo (about 1 degree and 10 yards of error), none inside about 150 yards */
+  if (sub && sub.r > 140) {
+    const b = sub.b + (Math.random() - 0.5) * 0.035,
+      r = sub.r + (Math.random() - 0.5) * 18,
+      s = PT.L.find((t) => t.kind === 'sub');
+    COMMS.est = { p: cAt(b, r), v: s ? s.v.clone() : new THREE.Vector3(), t: SHIP.t, src: 'ai' };
+  }
+}
+/* what the bridge believes: the last fix carried on at his estimated speed; null with no contact */
+function subEst() {
+  const E = COMMS.est;
+  if (!E) return null;
+  const age = SHIP.t - E.t;
+  return { p: E.p.clone().addScaledVector(E.v, Math.min(age, 60)), v: E.v, age, src: E.src };
+}
+function sonarReport() {
+  const S = COMMS.sn,
+    ping = (2 * SONAR.R[SONAR.ri] * 0.9144) / 1500 + 0.4,
+    e = S.echo;
+  if (!e || SHIP.t - e.t > ping * 2 + 0.5) {
+    SND.tone(240, 200, 0.18, 0.12, 'square');
+    return note('NO ECHO ON THIS BEARING TO REPORT');
+  }
+  const cuts = S.L != null && S.R != null && SHIP.t - S.tc < 30 && Math.abs(angW(S.R - S.L)) < 0.6,
+    b = cuts ? S.L + angW(S.R - S.L) / 2 : SONAR.brg,
+    r = e.r + (Math.random() - 0.5) * 10,
+    p = cAt(b, r),
+    E0 = COMMS.est;
+  let v = new THREE.Vector3();
+  if (E0 && E0.src === 'you' && SHIP.t - E0.t >= 8 && SHIP.t - E0.t < 60) {
+    v.copy(p).sub(E0.p).multiplyScalar(1 / (SHIP.t - E0.t));
+    if (E0.v) v.lerp(E0.v, 0.5);
+    if (v.length() > 6) v.setLength(6);
+  } else if (E0 && E0.v) v.copy(E0.v);
+  COMMS.est = { p, v, t: SHIP.t, src: 'you' };
+  const err = (Math.abs(angW(b - e.b)) * 180) / Math.PI;
+  S.rep.push({ t: SHIP.t, err });
+  if (err < 4) S.good++;
+  const dop = e.dop > 0.8 ? 'UP DOPPLER' : e.dop < -0.8 ? 'DOWN DOPPLER' : 'NO DOPPLER',
+    txt = 'CONTACT BEARING ' + c3(cTrue(b)) + ' RANGE ' + cYd(r) + ' YDS' + (cuts ? ' (CUTS)' : '') + (FM.use('comms') ? '' : ' ' + dop);
+  SND.tone(880, 880, 0.08, 0.1, 'sine');
+  RADIO.add('SONAR', txt, { own: true });
+  note('SONAR: ' + txt);
+  return err;
+}
+function sonarCut(side) {
+  const S = COMMS.sn;
+  S[side] = SONAR.brg;
+  S.tc = SHIP.t;
+  note((side === 'L' ? 'LEFT' : 'RIGHT') + ' CUT ' + c3(cTrue(SONAR.brg)) + (S.L != null && S.R != null && Math.abs(angW(S.R - S.L)) < 0.6 ? ' - CENTRE ' + c3(cTrue(S.L + angW(S.R - S.L) / 2)) : ''));
+}
+function sonarDopCall(c) {
+  const e = COMMS.sn.echo;
+  if (!e || SHIP.t - e.t > 8) return note('NO ECHO TO JUDGE');
+  const a = e.dop > 0.8 ? 'U' : e.dop < -0.8 ? 'B' : 'N',
+    name = { U: 'UP', B: 'DOWN', N: 'NO' };
+  const ok = a === c;
+  COMMS.sn.dc = { ok, t: SHIP.t };
+  SND.tone(ok ? 880 : 240, ok ? 880 : 200, 0.12, 0.1, ok ? 'sine' : 'square');
+  note(ok ? name[a] + ' DOPPLER - RIGHT' : 'NO - THAT WAS ' + name[a] + ' DOPPLER. LISTEN AGAIN');
+}
+/* ---- radio ---- */
+const RQ_BRIDGE = /CHECK FIRE|CEASE FIRE|COMMENCE|DIVED|DIVE |SURFAC|EXERCISE|PASS|TURNING|COURSE|CLOSE IN/;
+function radioIn(from, txt) {
+  const m = { from, txt, route: RQ_BRIDGE.test(txt), t0: SHIP.t, st: 'open' },
+    st = PCEM.STN[3] && PCEM.STN[3][SHIP.sub],
+    atRadio = camMode == 1 && SHIP.stn === 3 && st && st.dev === 'radio' && started;
+  if (!atRadio) m.st = 'ai';
+  else {
+    COMMS.rq.push(m);
+    SND.tone(1400, 1400, 0.05, 0.08, 'square');
+    SND.tone(1400, 1400, 0.05, 0.08, 'square', 0.1);
+  }
+  return m;
+}
+function radioAct(route) {
+  const m = COMMS.rq.find((q) => q.st === 'open');
+  if (!m) {
+    if (!route && COMMS.out) {
+      RADIO.add('PCE 842', COMMS.out, { own: true });
+      note('SENT: ' + COMMS.out);
+      COMMS.out = null;
+      COMMS.sent = (COMMS.sent || 0) + 1;
+      return;
+    }
+    return note('NO TRAFFIC WAITING');
+  }
+  if (route) m.st = 'ok';
+  else m.st = m.route ? 'wrong' : 'ok';
+  SND.tone(m.st === 'ok' ? 880 : 240, m.st === 'ok' ? 880 : 200, 0.1, 0.1, m.st === 'ok' ? 'sine' : 'square');
+  RADIO.add('PCE 842', (route ? 'ROGER, PASSED TO THE BRIDGE: ' : 'ROGER: ') + m.from, { own: true });
+  note(m.st === 'wrong' ? 'THAT ONE WAS FOR THE BRIDGE - NOT PASSED ON' : route ? 'ROGER - PASSED TO THE BRIDGE' : 'ROGER');
+}
+/* practice traffic only: what the tow planes, PT-105 and the exercise sub would say */
+const RQ_GEN = [
+  ['TOW ONE', 'ON STATION, 1,600 YARDS. SLEEVE STREAMED. COMMENCE FIRING WHEN READY.'],
+  ['TOW TWO', 'MAKING MY PASS DOWN YOUR STARBOARD SIDE. CLOSE IN FOR THE 20 MM.'],
+  ['PT 105', 'TURNING FOR ANOTHER PASS. SLED 300 YARDS ASTERN.'],
+  ['PT 105', 'FUEL STATE GOOD. CAN STAY ANOTHER HOUR.'],
+  ['TOW ONE', 'REQUEST FALL OF SHOT REPORT AFTER THIS RUN.'],
+  ['EXERCISE SUB', 'AT PERISCOPE DEPTH. WILL DIVE TO 150 FEET AND COMMENCE MY RUN.'],
+  ['TOW TWO', 'FUEL FOR ONE MORE HOUR.'],
+  ['PT 105', 'SLED TOWING WELL. HOLES IN HER FROM YOUR LAST PASS.'],
+];
+/* ---- each frame ---- */
+function commsUpdate(dt, here) {
+  const st = PCEM.STN[3] && PCEM.STN[3][SHIP.sub],
+    at3 = here && SHIP.stn === 3 && st,
+    R = COMMS.rd;
+  if (at3 && st.dev === 'radar') {
+    const sc = RADAR.R[RADAR.ri] * 1852,
+      f = keys.ShiftLeft || keys.ShiftRight ? 3 : 1;
+    R.b = angW(R.b + (kb('sTrR') - kb('sTrL')) * 0.5 * f * dt);
+    R.r = Math.max(100, Math.min(sc, R.r * Math.exp(((keys.KeyR ? 1 : 0) - (keys.KeyF ? 1 : 0)) * 0.55 * f * dt)));
+  }
+  /* radio: deadlines, the scheduled lesson traffic, the practice traffic */
+  const W = FM.use('comms') ? 12 : 20;
+  for (const m of COMMS.rq)
+    if (m.st === 'open' && SHIP.t - m.t0 > W) {
+      m.st = 'miss';
+      note('RADIO: UNANSWERED - ' + m.from);
+    }
+  if (COMMS.rq.length > 20) COMMS.rq.splice(0, COMMS.rq.length - 20);
+  for (let i = COMMS.sched.length - 1; i >= 0; i--)
+    if (SHIP.t >= COMMS.sched[i].at) {
+      const q = COMMS.sched.splice(i, 1)[0];
+      RADIO.add(q.from, q.txt);
+    }
+  if (PT.on && started && !COMMS.les) {
+    COMMS.gen -= dt;
+    if (COMMS.gen <= 0) {
+      COMMS.gen = 55 + Math.random() * 40;
+      const g = RQ_GEN[Math.floor(Math.random() * RQ_GEN.length)];
+      RADIO.add(g[0], g[1]);
+    }
+  }
+  if (COMMS.les) lesStep(dt, at3);
+}
+/* the station's keys: true when used */
+function commsKey(code) {
+  const st = PCEM.STN[3] && PCEM.STN[3][SHIP.sub];
+  if (!st) return false;
+  if (code === 'KeyT') return lesToggle(st.dev), true;
+  const L = COMMS.les;
+  if (code === 'Space' && L && L.st[L.i] && L.st[L.i].sp) return lesNext(), true;
+  if (code === 'Space' && L && L.done) return true;
+  if (st.dev === 'radar') {
+    if (code === 'KeyR' || code === 'KeyF') return (keys[code] = true), true;
+    if (code === 'Space') return radarReport(), true;
+  } else if (st.dev === 'sonar') {
+    if (code === 'Space') return sonarReport(), true;
+    if (code === 'KeyZ') return sonarCut('L'), true;
+    if (code === 'KeyX') return sonarCut('R'), true;
+    if (code === 'KeyU' || code === 'KeyB' || code === 'KeyN') return sonarDopCall(code[3]), true;
+  } else if (st.dev === 'radio') {
+    if (code === 'Space') return radioAct(false), true;
+    if (code === 'KeyB') return radioAct(true), true;
+  }
+  return false;
+}
+/* ---- the Comms school: T at station 3 teaches the set you are at, one step at a time; the instructor waits for you ---- */
+function lesToggle(dev) {
+  if (COMMS.les) {
+    if (COMMS.les.atk && ASW.ph !== 'idle' && ASW.ph !== 'done') (ASW.ph = 'idle'), (SHIP.hold = SHIP.hdg);
+    COMMS.les = null;
+    ASW.who = 'tp';
+    return note('COMMS SCHOOL ENDED');
+  }
+  if (!PT.on) ptToggle();
+  const st = LES[dev]();
+  COMMS.les = { dev, st, i: -1, t: 0, t0: SHIP.t, sc: {}, done: false };
+  lesNext();
+}
+function lesNext() {
+  const L = COMMS.les;
+  L.i++;
+  L.t = 0;
+  SND.tone(660, 990, 0.18, 0.12, 'sine');
+  if (L.i >= L.st.length) {
+    L.done = true;
+    return;
+  }
+  const s = L.st[L.i];
+  if (s.go) s.go(L);
+}
+function lesStep(dt, at3) {
+  const L = COMMS.les;
+  if (!L) return;
+  /* leaving the Communications station ends the school */
+  if (SHIP.stn !== 3 || camMode != 1) return lesToggle();
+  if (L.done) return;
+  L.t += dt;
+  const s = L.st[L.i];
+  if (s && s.ok && s.ok(L)) lesNext();
+}
+/* the subject of the lesson: PT-105, the rafts */
+const lesT = (k) => (PT.on ? PT.L.find((t) => t.kind === k) : null);
+const lesRep = (L, kind, after) => {
+  let n = 0;
+  for (const [ref, m] of COMMS.rd.M) if ((!kind || ref.kind === kind) && m.k.some((q) => q.t >= after)) n++;
+  return n;
+};
+const LES = {
+  radar: () => [
+    {
+      sp: 1,
+      h: 'RADAR SCHOOL',
+      t: 'This is the <b>PPI scope</b> of the ship\'s SL surface-search radar. <b>We are the centre</b>; the top of the scope is <b>our bow</b> (the line from the centre, the <i>heading flash</i>). The aerial turns 15 times a minute: the <b>sweep</b> paints whatever the beam hits, and the paint fades until the next sweep comes round.',
+      go: () => (RADAR.ri = 1),
+    },
+    {
+      sp: 1,
+      t: '<b>Range rings</b>: at the 5-mile scale they are 1&frac14; miles (2,500 yards) apart. <b>Land</b> paints as big solid shapes that stay put, and throws a <b>shadow</b>: nothing behind it can be seen. The speckle close round the centre is <b>sea clutter</b>, waves, not ships. Small round blobs out on the sea are <b>contacts</b>.',
+    },
+    { t: '<b>Page Up</b>: change to the <b>10-mile scale</b>. Watch the land and the contacts shrink toward the centre.', ok: () => RADAR.ri === 2 },
+    { t: '<b>Page Down</b>: back to the <b>5-mile scale</b>.', ok: () => RADAR.ri === 1 },
+    {
+      t: '<b>Q / E</b> turn the orange <b>bearing cursor</b> (hold Shift for speed). Lay it on <b>PT-105</b>, the boat running round us at about a mile.',
+      ok: () => {
+        const p = lesT('ptboat');
+        return p && Math.abs(angW(cRel(p.p.x, p.p.z)[0] - COMMS.rd.b)) < 0.05;
+      },
+    },
+    {
+      t: '<b>R / F</b> move the <b>range strobe</b> (the dotted ring and the small circle on the cursor) out and in. Put it on PT-105.',
+      ok: () => {
+        const p = lesT('ptboat');
+        if (!p) return false;
+        const [b, r] = cRel(p.p.x, p.p.z);
+        return Math.abs(angW(b - COMMS.rd.b)) < 0.06 && Math.abs(r - COMMS.rd.r) < Math.max(150, 0.05 * r);
+      },
+    },
+    {
+      t: '<b>Space</b>: report the contact. The bearing goes out as <b>true</b> (degrees from north, not from our bow) and the range in <b>yards</b>. A yellow square marks it on the scope.',
+      go: (L) => (L.a = SHIP.t),
+      ok: (L) => lesRep(L, 'ptboat', L.a) > 0,
+    },
+    {
+      t: 'Now the <b>rafts</b>. Two are close in, under 1,000 yards: <b>Page Down</b> to the <b>2-mile scale</b>, find them, and report both.',
+      go: (L) => (L.a = SHIP.t),
+      ok: (L) => {
+        let n = 0;
+        for (const [ref, m] of COMMS.rd.M) if (ref.kind === 'raft' && m.k.some((q) => q.t >= L.a) && cRel(ref.p.x, ref.p.z)[1] < 1000) n++;
+        return n >= 2;
+      },
+    },
+    {
+      t: '<b>Tracking</b>: one report says where a contact <i>is</i>; two, at least 40 seconds apart, say where she is <i>going</i>. Go back to the 5-mile scale and <b>report PT-105 again</b> (wait if it is too soon). The plot works out her course and speed and draws her line.',
+      go: (L) => (L.a = COMMS.rd.tr),
+      ok: (L) => {
+        const p = lesT('ptboat'),
+          m = p && COMMS.rd.M.get(p);
+        return m && m.trk && COMMS.rd.tr > L.a;
+      },
+    },
+    {
+      t: '<b>TEST</b>: report <b>every contact</b> within 5 miles (the rafts, PT-105, her sled, any ship) in <b>2 minutes</b>. Wrong reports count against you.',
+      go: (L) => {
+        L.a = SHIP.t;
+        L.bad0 = COMMS.rd.bad;
+        L.want = radarTargets().filter((c) => c.r < 9260).map((c) => c.ref);
+      },
+      ok: (L) => {
+        const got = L.want.filter((ref) => {
+          const m = COMMS.rd.M.get(ref);
+          return m && m.k.some((q) => q.t >= L.a);
+        }).length;
+        L.prog = got + ' OF ' + L.want.length + ' REPORTED &middot; ' + Math.max(0, Math.ceil(120 - (SHIP.t - L.a))) + ' S LEFT';
+        if (got >= L.want.length || SHIP.t - L.a > 120) {
+          const bad = COMMS.rd.bad - L.bad0,
+            sc = Math.max(0, Math.round((got / Math.max(1, L.want.length)) * 100 - bad * 10));
+          L.res = 'RADAR TEST: ' + got + ' OF ' + L.want.length + ' CONTACTS REPORTED IN ' + Math.round(Math.min(120, SHIP.t - L.a)) + ' S, ' + bad + ' WRONG REPORT' + (bad === 1 ? '' : 'S') + '. SCORE ' + sc + '%.';
+          RADIO.add('RADAR', L.res, { own: true });
+          return true;
+        }
+        return false;
+      },
+    },
+  ],
+  sonar: () => [
+    {
+      sp: 1,
+      h: 'SONAR SCHOOL',
+      t: 'The <b>echo-ranging sonar</b> sends a <b>ping</b> of sound out in a narrow beam (about 10&deg; wide) and listens. Sound goes about 1,600 yards a second in water, out and back: an echo from 1,000 yards comes 1&frac14; seconds after the ping. The <b>range recorder</b> stylus runs down the paper as the sound travels and burns a mark where an echo comes.',
+      go: () => {
+        SONAR.ri = 1;
+        const s = lesT('sub');
+        if (s) {
+          aswPlace(s, 1050, 0.6);
+          s.o.d = 30.5;
+          COMMS.est = null;
+        }
+        SHIP.tel = 1 / 3;
+      },
+    },
+    {
+      sp: 1,
+      t: 'Listen: after each ping comes the <b>reverberation</b>, a fading hiss from the sea itself (the dark band at the top of the paper). An <b>echo</b> is a short, clear note after it. A woolly smear is the <b>bottom</b>, a <b>wake</b> or a shoal of fish.',
+    },
+    { t: '<b>SEARCH</b>: <b>Q / E</b> train the beam. A search covers from 80&deg; on one bow to 80&deg; on the other, 5&deg; a ping. Start on the port bow: train the beam <b>past 70&deg; to port</b>.', ok: () => SONAR.brg < -1.22 },
+    {
+      t: 'Now step to starboard: a short tap of <b>E</b> after each ping (about 5&deg;), and listen after every one. Stop when you hear an <b>echo</b> come back.',
+      go: (L) => (L.a = SHIP.t),
+      ok: (L) => COMMS.sn.echo && COMMS.sn.echo.t > L.a,
+    },
+    {
+      sp: 1,
+      t: '<b>CONTACT!</b> A clear echo that comes back on the same bearing and the same range ping after ping is a <b>target</b>. On the recorder its marks line up across the paper.',
+    },
+    {
+      t: '<b>DOPPLER</b>: listen to the echo\'s pitch against the ping. <b>Higher</b> = <b>up Doppler</b>, he is closing; <b>lower</b> = <b>down Doppler</b>, opening; <b>the same</b> = <b>no Doppler</b>, crossing. Call it: <b>U</b> up, <b>B</b> down, <b>N</b> none.',
+      go: (L) => (L.a = SHIP.t),
+      ok: (L) => COMMS.sn.dc && COMMS.sn.dc.ok && COMMS.sn.dc.t > L.a,
+    },
+    {
+      t: '<b>CUTS</b>: the beam is wide, so find his edges. Train <b>left</b> until the echo just stops and press <b>Z</b> (left cut); then train <b>right</b> across him until it just stops and press <b>X</b> (right cut). His <b>centre bearing</b> is halfway between.',
+      go: (L) => (L.a = SHIP.t),
+      ok: (L) => {
+        const S = COMMS.sn,
+          s = lesT('sub');
+        if (!(S.L != null && S.R != null && S.tc > L.a && s)) return false;
+        const c = S.L + angW(S.R - S.L) / 2,
+          e = Math.abs(angW(c - cRel(s.p.x, s.p.z)[0]));
+        if (e > 0.07 && S.R > S.L && !L.warn) (L.warn = 1), note('YOUR CUTS ARE ' + Math.round((e * 180) / Math.PI) + ' DEGREES OFF HIS CENTRE - TRY AGAIN');
+        return e <= 0.07 && S.R > S.L;
+      },
+    },
+    {
+      sp: 1,
+      t: '<b>RANGE RATE</b>: the slope of his marks on the recorder shows how fast the range is changing. Marks climbing up the paper: the range is <b>closing</b>. In an attack the range closes fast, and inside about <b>150 yards</b> the beam passes over him and the echo is lost.',
+    },
+    {
+      t: '<b>REPORT</b>: <b>Space</b> sends his bearing (the centre of your cuts, or the beam\'s bearing if you have no fresh cuts) and range to the bridge.',
+      go: (L) => (L.a = COMMS.sn.rep.length),
+      ok: (L) => COMMS.sn.rep.length > L.a && COMMS.sn.rep[COMMS.sn.rep.length - 1].err < 5,
+    },
+    {
+      t: '<b>TEST</b>: the OOD will now <b>attack on your reports</b>. Hold the contact: cut him and report <b>at least every 15 seconds</b>. The torpedomen fire on the OOD\'s orders. Lose him, or report him wrong, and the attack misses.',
+      go: (L) => {
+        L.atk = true;
+        L.a = SHIP.t;
+        L.r0 = COMMS.sn.rep.length;
+        ASW.who = 'comms';
+        ASW.ph = 'idle';
+      },
+      ok: (L) => {
+        if (ASW.ph !== 'done') return false;
+        const R = COMMS.sn.rep.slice(L.r0),
+          me = R.length ? R.reduce((a, q) => a + q.err, 0) / R.length : 0;
+        L.res = ASW.deb + ' SONAR: ' + R.length + ' REPORTS, AVERAGE BEARING ERROR ' + me.toFixed(1) + '&deg;, CONTACT HELD ' + Math.round((ASW.held || 0) * 100) + '% OF THE RUN.';
+        return true;
+      },
+    },
+  ],
+  radio: () => {
+    const post = (L, list) => list.forEach(([dt, from, txt], i) => COMMS.sched.push({ at: SHIP.t + dt, from, txt }));
+    return [
+      {
+        sp: 1,
+        h: 'RADIO SCHOOL',
+        t: 'The radio room is the ship\'s <b>message centre</b>. Every message that comes in must be <b>acknowledged</b> (&ldquo;roger&rdquo;) within ' + (FM.use('comms') ? 12 : 20) + ' seconds. Any message about the ship\'s movements, the guns or the exercise must also be <b>routed to the bridge</b>' + (FM.use('comms') ? '' : ' (game mode marks them &#9654; BRIDGE)') + '. The printer keeps the log.',
+        go: () => (COMMS.rq.length = 0),
+      },
+      {
+        t: 'A message: read it. Nothing in it for the bridge, so <b>Space</b> acknowledges it.',
+        go: (L) => ((L.a = SHIP.t), post(L, [[1, 'TOW TWO', 'FUEL FOR ONE MORE HOUR.']])),
+        ok: (L) => COMMS.rq.some((m) => m.t0 >= L.a && m.st === 'ok'),
+      },
+      {
+        t: 'This one tells the bridge about the exercise: <b>B</b> routes it to the bridge (that acknowledges it too).',
+        go: (L) => ((L.a = SHIP.t), post(L, [[1, 'PT 105', 'TURNING FOR ANOTHER PASS. SLED 300 YARDS ASTERN.']])),
+        ok: (L) => COMMS.rq.some((m) => m.t0 >= L.a && m.st === 'ok'),
+      },
+      {
+        t: 'Now four messages, close together. Handle each: <b>Space</b> to acknowledge, <b>B</b> if the bridge needs it.',
+        go: (L) => {
+          L.a = SHIP.t;
+          post(L, [
+            [1, 'TOW ONE', 'ON STATION, 1,600 YARDS. SLEEVE STREAMED. COMMENCE FIRING WHEN READY.'],
+            [7, 'PT 105', 'FUEL STATE GOOD. CAN STAY ANOTHER HOUR.'],
+            [13, 'EXERCISE SUB', 'AT PERISCOPE DEPTH. WILL DIVE TO 150 FEET AND COMMENCE MY RUN.'],
+            [19, 'TOW ONE', 'REQUEST FALL OF SHOT REPORT AFTER THIS RUN.'],
+          ]);
+        },
+        ok: (L) => {
+          const M = COMMS.rq.filter((m) => m.t0 >= L.a);
+          if (M.length < 4 || M.some((m) => m.st === 'open')) return false;
+          L.ok4 = M.filter((m) => m.st === 'ok').length;
+          return true;
+        },
+      },
+      {
+        t: 'Sending: sonar has reported a contact, and the captain wants it sent to the escort commander. With no traffic waiting, <b>Space</b> sends our message.',
+        go: (L) => ((L.a = COMMS.sent || 0), (COMMS.out = 'PCE 842 TO ESCORT COMMANDER: SOUND CONTACT BEARING ' + c3(cTrue(0.4)) + ' RANGE 1,200 YARDS. AM ATTACKING.')),
+        ok: (L) => {
+          if ((COMMS.sent || 0) <= L.a) return false;
+          L.res = 'RADIO TEST: ' + L.ok4 + ' OF 4 MESSAGES HANDLED RIGHT, CONTACT REPORT SENT.';
+          return true;
+        },
+      },
+    ];
+  },
+};
+/* the Comms box: what the operator needs, and the instructor */
+function commsBox(here) {
+  let el = $$('commsBox');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'commsBox';
+    el.style.cssText =
+      'position:fixed;top:214px;right:12px;width:min(430px,38vw);background:rgba(12,20,28,.86);color:#dfe6e8;font:13px/1.45 ui-monospace,Consolas,monospace;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.16);pointer-events:none;z-index:20;display:none';
+    document.body.appendChild(el);
+  }
+  const st = PCEM.STN[3] && PCEM.STN[3][SHIP.sub],
+    show = here && SHIP.stn === 3 && st && !paused;
+  el.style.display = show ? 'block' : 'none';
+  if (!show) return;
+  /* clear of the instruments: beside the radar scope; under the sonar's dial and recorder and the radio's printer */
+  const pl = st.dev === 'radar' ? 'r' : 'b';
+  if (el.dataset.pl !== pl) {
+    el.dataset.pl = pl;
+    Object.assign(el.style, pl === 'r' ? { top: '214px', right: '12px', left: '', bottom: '', width: 'min(430px,38vw)' } : { top: '', right: '', left: 'max(400px,32vw)', bottom: '16px', width: 'min(540px,calc(100vw - 660px))' });
+  }
+  const now = performance.now();
+  if (now - (COMMS.boxT || 0) < 120) return;
+  COMMS.boxT = now;
+  const L = COMMS.les,
+    bk = FM.use('comms');
+  let h = '';
+  if (L) {
+    const s = L.st[L.i];
+    h += '<b style="color:#9fc3d6">COMMS SCHOOL - ' + L.dev.toUpperCase() + (L.done ? ' - COMPLETE' : ' - STEP ' + (L.i + 1) + ' OF ' + L.st.length) + '</b><br>';
+    if (L.done) {
+      const last = L.st[L.st.length - 1];
+      h += '<b style="color:#8fe39a">' + (last.res || L.res || 'WELL DONE.') + '</b>' + (L.dev === 'sonar' && ASW.plot ? '<br><img src="' + ASW.plot + '" style="width:200px;height:200px;margin-top:6px;border-radius:4px">' : '') + '<br><b>' + kbText('targets') + '</b> ends the school.';
+    } else if (s) {
+      h += s.t + (s.sp ? '<br><b style="color:#ffd27a">Space</b> to go on.' : '') + (L.prog ? '<br><b style="color:#ffd27a">' + L.prog + '</b>' : '');
+    }
+    for (const q of L.st) if (q.res) L.res = q.res;
+    h += '<hr style="border:0;border-top:1px solid rgba(255,255,255,.15);margin:6px 0">';
+  } else h += '<span style="color:#9aa"><b>' + kbText('targets') + '</b>: Comms school for this set.</span><br>';
+  if (st.dev === 'radar') {
+    const R = COMMS.rd;
+    h += 'RADAR ' + RADAR.R[RADAR.ri] + ' NM &middot; CURSOR <b>' + c3(cTrue(R.b)) + '&deg;T</b> (' + c3(((R.b * 180) / Math.PI + 360) % 360) + '&deg; REL) &middot; STROBE <b>' + cYd(R.r) + ' YD</b><br><span style="color:#9aa">Q / E cursor &middot; R / F strobe &middot; Space report &middot; reports ' + R.good + (R.bad ? ', ' + R.bad + ' wrong' : '') + '</span>';
+  } else if (st.dev === 'sonar') {
+    const S = COMMS.sn,
+      e = S.echo,
+      ping = (2 * SONAR.R[SONAR.ri] * 0.9144) / 1500 + 0.4,
+      fresh = e && SHIP.t - e.t < ping * 1.5,
+      E = subEst();
+    h += 'SONAR ' + SONAR.R[SONAR.ri] + ' YD &middot; BEAM <b>' + c3(cTrue(SONAR.brg)) + '&deg;T</b>';
+    if (fresh) h += ' &middot; <b style="color:#8fe39a">ECHO ' + cYd(e.r) + ' YD' + (bk ? '' : ' ' + (e.dop > 0.8 ? 'UP' : e.dop < -0.8 ? 'DOWN' : 'NO') + ' DOPPLER') + '</b>';
+    if (S.L != null || S.R != null) h += '<br>CUTS ' + (S.L != null ? 'L ' + c3(cTrue(S.L)) : 'L -') + ' &middot; ' + (S.R != null ? 'R ' + c3(cTrue(S.R)) : 'R -') + (S.L != null && S.R != null ? ' &middot; CENTRE <b>' + c3(cTrue(S.L + angW(S.R - S.L) / 2)) + '</b>' : '');
+    if (ASW.who === 'comms' && ASW.ph !== 'idle' && ASW.ph !== 'done')
+      h += '<br><b style="color:#ffd27a">BRIDGE: ' + (ASW.msg || '') + '</b><br>LAST REPORT <b style="color:' + (E && E.age < 15 ? '#8fe39a' : '#ff8a6a') + '">' + (E && E.src === 'you' ? Math.round(E.age) + ' S AGO' : 'NONE') + '</b>';
+    h += '<br><span style="color:#9aa">Q / E train &middot; Z / X left / right cut &middot; Space report &middot; U / B / N Doppler</span>';
+  } else {
+    const open = COMMS.rq.filter((m) => m.st === 'open'),
+      W = bk ? 12 : 20;
+    h += 'RADIO &middot; ' + (open.length ? open.length + ' WAITING' : 'NO TRAFFIC WAITING') + (COMMS.out ? ' &middot; <b style="color:#ffd27a">TO SEND: ' + COMMS.out + '</b>' : '');
+    for (const m of open)
+      h += '<br><b>' + m.from + ':</b> ' + m.txt + (m.route && !bk ? ' <b style="color:#ffd27a">&#9654; BRIDGE</b>' : '') + ' <span style="color:' + (W - (SHIP.t - m.t0) > 5 ? '#9aa' : '#ff8a6a') + '">' + Math.max(0, Math.ceil(W - (SHIP.t - m.t0))) + ' S</span>';
+    const done = COMMS.rq.filter((m) => m.st !== 'open'),
+      ok = done.filter((m) => m.st === 'ok').length;
+    h += '<br><span style="color:#9aa">Space acknowledge (or send) &middot; B route to the bridge &middot; handled ' + ok + '/' + done.length + '</span>';
+  }
+  el.innerHTML = h;
+}
+
 /* ---------- the torpedoman: depth charges (Mk 6, 300 lb TNT) from the stern racks and the K-guns ---------- */
 /* Page Up / Down at a depth-charge position: that position's pistol depth (each has its own: set them all on the order) */
 function dcDepth(d) {
@@ -27691,17 +28337,19 @@ function aswFired(tp) {
 }
 function aswStep(dt, here) {
   const sub = PT.on ? PT.L.find((t) => t.kind === 'sub') : null,
-    want = SHIP.stn === 6 && started && !RPL.on && !!sub;
+    cm = ASW.who === 'comms',
+    stn = cm ? 3 : 6,
+    want = (cm ? SHIP.stn === 3 && COMMS.les && COMMS.les.atk : SHIP.stn === 6) && started && !RPL.on && !!sub;
   ASW.t += dt;
   /* after a run the score stays up until the player presses T again (a new run) or leaves the station */
   if (ASW.ph === 'done') {
-    if (SHIP.stn !== 6) (ASW.ph = 'idle'), (ASW.deb = '');
-    else if (sub) (ASW.ph = 'idle'), (ASW.deb = '');
+    if (SHIP.stn !== stn) (ASW.ph = 'idle'), (ASW.deb = '');
+    else if (sub && !cm) (ASW.ph = 'idle'), (ASW.deb = '');
     else return;
   }
   if (!want) {
     if (ASW.ph !== 'idle') {
-      if (SHIP.stn !== 6) note('ATTACK BROKEN OFF');
+      if (SHIP.stn !== stn) note('ATTACK BROKEN OFF');
       SHIP.hold = SHIP.hdg;
     }
     ASW.ph = 'idle';
@@ -27710,7 +28358,10 @@ function aswStep(dt, here) {
   const V = THREE.Vector3,
     fw = new V(-Math.sin(SHIP.hdg), 0, -Math.cos(SHIP.hdg)),
     rt = new V(Math.cos(SHIP.hdg), 0, -Math.sin(SHIP.hdg)),
-    S = sub.p,
+    /* the OOD attacks what sonar tells him: the last fix carried on (COMMS.est), not where the sub really is */
+    Est = subEst(),
+    S = Est ? Est.p : pos.clone().addScaledVector(fw, 2000),
+    Sv = Est ? Est.v : new V(),
     stern = pos.clone().addScaledVector(fw, tpXF(90)),
     hh = pos.clone().addScaledVector(fw, tpXF(21.6)),
     rng = Math.hypot(S.x - pos.x, S.z - pos.z),
@@ -27724,15 +28375,16 @@ function aswStep(dt, here) {
     ASW.ph = 'open';
     ASW.t = 0;
     ASW.O = [];
-    aswSay('TORPEDOMAN, BRIDGE. SONAR HAS THE EXERCISE SUB. WE WILL RUN IN ON HIM. MAN YOUR STATIONS.');
+    ASW.heldT = 0;
+    aswSay(cm ? 'SONAR, BRIDGE. FIND THE EXERCISE SUB AND REPORT HIM. I WILL ATTACK ON YOUR REPORTS.' : 'TORPEDOMAN, BRIDGE. SONAR HAS THE EXERCISE SUB. WE WILL RUN IN ON HIM. MAN YOUR STATIONS.');
   }
   if (ASW.ph === 'open') {
     /* steady for a few seconds while the exercise sub repositions (the drill is arranged: he goes deep about 750 m ahead and
        starts his run), then the attack begins */
     ASW.tel = 0.85;
     if (ASW.t < 0.1) ASW.hold = SHIP.hdg;
-    if (ASW.t > (ASW.run ? 15 : 5)) {
-      aswPlace(sub, 340 + 20 * SHIP.u); /* close enough that the first order comes within about half a minute */
+    if (cm ? Est && Est.src === 'you' && Est.age < 10 && rng < 1700 : ASW.t > (ASW.run ? 15 : 5)) {
+      if (!cm) aswPlace(sub, 340 + 20 * SHIP.u); /* close enough that the first order comes within about half a minute */
       ASW.ph = 'run';
       ASW.run++;
       ASW.t = 0;
@@ -27747,6 +28399,7 @@ function aswStep(dt, here) {
       ASW.depth = Math.round(sub.o.d / 0.3048 / 25) * 25;
       ASW.ev = [];
       DC.arm = { rack: false, port: false, stbd: false };
+      if (!cm) COMMS.est = { p: sub.p.clone(), v: sub.v.clone(), t: SHIP.t, src: 'ai' };
       aswSay('ATTACK ' + ASW.run + '. CONTACT ' + Math.round(sub.p.distanceTo(pos) / 0.9144 / 50) * 50 + ' YARDS. SET DEPTH ' + ASW.depth + '.');
     }
   } else if (ASW.ph === 'run') {
@@ -27756,7 +28409,7 @@ function aswStep(dt, here) {
     if (tos > 14 || !f.on) {
       /* until the Hedgehog has fired, lead him for where its pattern lands (about 245 m ahead, 6 s after firing); then for the run over him */
       const tgo = f.hh ? rng / u : Math.max(0, rng - 245) / u + 6;
-      ASW.hold = hdgTo(S.x + sub.v.x * tgo, S.z + sub.v.z * tgo);
+      ASW.hold = hdgTo(S.x + Sv.x * tgo, S.z + Sv.z * tgo);
     }
     if (!f.on && Math.abs(angW(ASW.hold - SHIP.hdg)) < 0.3 && alS > 300) f.on = true;
     if (f.on) {
@@ -27778,15 +28431,39 @@ function aswStep(dt, here) {
       if (!f.kp && tos < 1) (f.kp = 1), aswSay('FIRE PORT K-GUNS!', 'port', true);
       if (!f.r2 && tos < -6) (f.r2 = 1), aswSay('FIRE TWO!', 'rack', true);
     }
+    /* the sonar operator's reports: the OOD calls for them, and without them he loses the attack (unless he is on his final run) */
+    if (Est && Est.age < 20) ASW.heldT += dt;
+    ASW.held = ASW.heldT / Math.max(1, ASW.t);
+    const age = Est ? Est.age : 1e9;
+    if (cm && age > 20 && !f.ask && !(f.on && tos < 20)) (f.ask = 1), aswSay('SONAR, BRIDGE - REPORT THE CONTACT!');
+    if (age < 15) f.ask = 0;
+    if (age > 45 && !(f.on && tos < 20)) {
+      ASW.lost = true;
+      aswSay('LOST CONTACT. ATTACK BROKEN OFF.');
+      return aswDebrief();
+    }
+    /* the sonar test: the torpedomen are AI, and carry out each order two or three seconds after it is given */
+    if (cm)
+      for (const o of ASW.O)
+        if (o.st === 'open' && ASW.t - o.t0 > 2.5) {
+          if (o.k === 'hh') {
+            HH.n = 24;
+            if (hhFire()) aswFired('hh');
+          } else {
+            DC.dep[o.k] = ASW.depth;
+            DC.arm[o.k] = true;
+            if (dcFire(o.k)) aswFired(o.k);
+          }
+        }
     /* an order not carried out within the window plus six seconds is missed */
     for (const o of ASW.O) if (o.st === 'open' && ASW.t - o.t0 > (FM.use('orders') ? 4 : 6) + 6) (o.st = 'miss'), note('MISSED - ' + o.txt);
     if ((f.r2 && tos < -16 && !DC.L.length && !HH.L.length && !HH.q.length && !ASW.O.some((o) => o.st === 'open')) || ASW.t > 360) aswDebrief();
   }
 }
 /* put the exercise sub about d metres ahead of the ship, within 25 degrees of the bow, on a fresh circle of his own */
-function aswPlace(sub, d) {
+function aswPlace(sub, d, rb) {
   const o = sub.o,
-    b = SHIP.hdg + (Math.random() - 0.5) * 0.9,
+    b = SHIP.hdg - (rb != null ? rb : (Math.random() - 0.5) * 0.9) /* rb: his bearing from our bow, + to starboard */,
     P = new THREE.Vector3(pos.x - Math.sin(b) * d, 0, pos.z - Math.cos(b) * d);
   o.a = Math.random() * Math.PI * 2;
   o.c = new THREE.Vector3(P.x - Math.cos(o.a) * o.R, 0, P.z + Math.sin(o.a) * o.R);
@@ -27847,9 +28524,11 @@ function aswDebrief() {
     late = F.filter((o) => o.st === 'late').length,
     miss = F.filter((o) => o.st === 'miss').length,
     yd = ASW.best,
-    v = ASW.hh > 0 || yd <= 25 ? 'KILL' : yd <= 60 ? 'DAMAGED' : 'MISSED';
+    v = ASW.hh > 0 || yd <= 25 ? 'KILL' : yd <= 60 ? 'DAMAGED' : ASW.lost ? 'LOST CONTACT, NO ATTACK' : 'MISSED';
+  ASW.lost = false;
   ASW.deb =
     'ATTACK ' + ASW.run + ': ' + v + '. ORDERS ' + ok + '/' + F.length + ' ON TIME' + (late ? ', ' + late + ' LATE' : '') + (miss ? ', ' + miss + ' MISSED' : '') + (ASW.un ? ', ' + ASW.un + ' FIRED WITHOUT ORDERS' : '') + '. ' + (ASW.bad ? 'WRONG DEPTH SETTING. ' : 'DEPTH RIGHT. ') + 'HEDGEHOG ' + (ASW.hh ? ASW.hh + ' HIT' + (ASW.hh > 1 ? 'S' : '') : 'NO HITS') + '. CLOSEST CHARGE ' + (yd < 1e8 ? yd + ' YD' : 'NONE') + '.';
+  if (v === 'LOST CONTACT, NO ATTACK') ASW.deb = 'ATTACK ' + ASW.run + ': LOST CONTACT - NO ATTACK MADE. SONAR MUST REPORT HIM AT LEAST EVERY 15 SECONDS.';
   if (ASW.dmg) ASW.deb += ' A SHALLOW CHARGE DAMAGED OUR STERN.';
   ASW.dmg = false;
   ASW.plot = aswPlot();
@@ -27866,7 +28545,7 @@ function aswDebrief() {
   ASW.msg = '';
   SHIP.hold = SHIP.hdg;
   ASW.ph = 'done';
-  if (PT.on) ptToggle();
+  if (PT.on && ASW.who !== 'comms') ptToggle();
 }
 /* the phone box: the order, where it has to be carried out, how long is left */
 function aswBox(here) {
@@ -27946,6 +28625,7 @@ function tpUpdate(dt, here, trig) {
   hhStep(dt);
   aswStep(dt, here);
   aswBox(here);
+  commsBox(here);
 }
 
 function dcBoardDraw(f) {
@@ -28080,6 +28760,7 @@ function stnUpdate(dt) {
     const f = !!(kb('guns') || pad.fire);
     tpUpdate(dt, here, f);
     STN.fire0 = f;
+    commsUpdate(dt, here);
   }
   if (STN.ood) STN.ood.visible = !(here && SHIP.stn === 1);
   if (STN.wheel) STN.wheel.rotation.x = SHIP.rud * Math.PI * 3; /* about three turns of the wheel, hard over to hard over */
