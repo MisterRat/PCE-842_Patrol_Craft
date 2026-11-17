@@ -549,7 +549,7 @@ const _el = {},
                            tolerated; corrupt saved data is reported and ignored.
    logWarn(what, e)      - optional browser features (wake lock, vibration, fullscreen, audio...): a failure is logged, never fatal. */
 /* VERSION: major.minor. The user decides when the major number changes; the minor number goes up with every change. */
-const VERSION = '0.40';
+const VERSION = '0.44';
 document.querySelectorAll('.verTag').forEach((e) => (e.textContent = 'Version ' + VERSION));
 /* the player's ship mesh and her start line (filled in where the world places the PCE) */
 const SHIPM = { mesh: null, wake: null, pts: null, Y: -8.15 /* waterline at the sea plane */ };
@@ -4079,28 +4079,53 @@ const PCEM = (() => {
     /* the bulkhead between the radar room and the pilothouse, with a door (as seen from both sides) */
     B(0.06, y1 - y0, 2 * w, INT_W, x1 + 0.03, (y0 + y1) / 2, 0);
     B(0.07, 1.85, 0.75, STEEL, x1 + 0.03, y0 + 0.93, 1.1);
-    /* the surface-search radar console with its PPI scope (glowing green), on the port side forward */
-    B(0.75, 1.3, 0.85, 0x4b5257, x1 - 0.42, y0 + 0.65, -1.35);
-    B(0.55, 0.45, 0.6, 0x3f454b, x1 - 0.42, y0 + 1.5, -1.35);
-    C(0.23, 0.23, 0.04, DARK, x1 - 0.79, y0 + 1.15, -1.35, 0, 0, HP, 20);
-    C(0.19, 0.19, 0.05, GLOW, x1 - 0.8, y0 + 1.15, -1.35, 0, 0, HP, 20);
-    face('radar', [x1 - 0.83, y0 + 1.15, -1.35], 0.38, 0.38, [-1, 0, 0]);
-    for (let i = 0; i < 4; i++) S(0.025, 0xdddddd, x1 - 0.8, y0 + 0.82, -1.62 + i * 0.18);
+    /* the operator's seat (the station's eye): the radar console and the radio receiver are angled in toward it, \__/ with the
+       sonar console in the middle, so each face is seen square on from the chair */
+    const EYE = [X_RR1 + 2.21, -0.45],
+      /* build fn facing +x with the front face's foot at the origin, then stand it at (x, z) facing the operator */
+      toward = (x, z, fn) => {
+        const yaw = Math.atan2(-(EYE[1] - z), EYE[0] - x),
+          T = GX.xf(x, y0, z, yaw),
+          f0 = FACES.length,
+          Q = grab(fn);
+        for (const q of Q) (q.m = q.m ? new M4().multiplyMatrices(T, q.m) : T.clone()), P.push(q);
+        /* the faces it added: into the room's frame */
+        const Rm = new THREE.Matrix4().extractRotation(T);
+        for (let i = f0; i < FACES.length; i++) {
+          const F = FACES[i];
+          F.p = new THREE.Vector3(...F.p).add(new THREE.Vector3(0, -y0, 0)).applyMatrix4(T).toArray();
+          F.n = new THREE.Vector3(...F.n).applyMatrix4(Rm).toArray();
+        }
+      };
+    /* the surface-search radar console with its PPI scope (glowing green), in the port forward corner */
+    toward(x0 + 3.28, -1.22, () => {
+      /* the same cabinet as the radio receiver opposite (mirror image about the chair): the scope sits flush in a bezel the size of
+         the radio's paper window, at the same height, so the two displays line up */
+      const SY = 1.35;
+      B(0.5, 1.85, 0.85, 0x4b5257, -0.25, 0.93, 0);
+      B(0.04, 0.62, 0.72, DARK, 0.01, SY, 0);
+      C(0.27, 0.27, 0.012, GLOW, 0.034, SY, 0, 0, 0, HP, 28);
+      face('radar', [0.045, y0 + SY, 0], 0.54, 0.54, [1, 0, 0]);
+      for (let i = 0; i < 4; i++) dial(0.01, 0.85, -0.27 + i * 0.18, 0.05, 'x');
+    });
     /* the radio transmitter and receiver racks along the port bulkhead, with dials */
-    for (let i = 0; i < 2; i++) {
-      const xr = x0 + 0.55 + i * 1.0;
-      B(0.85, 1.85, 0.5, 0x51585e, xr, y0 + 0.93, -w + 0.27);
-      if (i === 1) for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) dial(xr - 0.25 + c * 0.25, y0 + 1.0 + r * 0.32, -w + 0.53, 0.06, 'z');
+    {
+      const xr = x0 + 1.48;
+      B(0.38, 1.85, 0.5, 0x51585e, xr, y0 + 0.93, -w + 0.27);
+      for (let r = 0; r < 3; r++) for (let c = 0; c < 2; c++) dial(xr - 0.085 + c * 0.17, y0 + 1.0 + r * 0.32, -w + 0.53, 0.05, 'z');
     }
-    /* the receiver on rack 1 prints the radio traffic: its paper window, and the tuning dial */
-    B(0.72, 0.62, 0.04, DARK, x0 + 0.55, y0 + 1.35, -w + 0.53);
-    face('radio', [x0 + 0.55, y0 + 1.35, -w + 0.56], 0.66, 0.56, [0, 0, 1]);
-    dial(x0 + 0.55, y0 + 0.85, -w + 0.53, 0.09, 'z');
+    /* the receiver that prints the radio traffic (its paper window and tuning dial), in the port after corner, angled in */
+    toward(x0 + 1.02, -1.22, () => {
+      B(0.5, 1.85, 0.85, 0x51585e, -0.25, 0.93, 0);
+      B(0.04, 0.62, 0.72, DARK, 0.01, 1.35, 0);
+      face('radio', [0.035, y0 + 1.35, 0], 0.66, 0.56, [1, 0, 0]);
+      dial(0.01, 0.85, 0, 0.09, 'x');
+    });
     /* the sonar repeater console between the radio racks and the radar (the stack itself is in the A/S hut on the open bridge, its
        range recorder and bearing repeater are brought down here so one operator works all three): range recorder, bearing indicator,
        the ping key and the training hand wheel */
     {
-      const xc = x0 + 2.65,
+      const xc = x0 + 2.215,
         zc = -w + 0.3;
       B(1.05, 1.0, 0.55, 0x4b5257, xc, y0 + 0.5, zc);
       B(1.05, 0.8, 0.4, 0x3f454b, xc, y0 + 1.4, zc - 0.07);
@@ -4111,7 +4136,8 @@ const PCEM = (() => {
       S(0.035, 0x8c2020, xc + 0.35, y0 + 1.02, zc + 0.27);
     }
     /* receivers and a typewriter (the "mill") on the desk on the starboard side, headphones */
-    B(2.0, 0.05, 0.65, WOOD, (x0 + x1) / 2, y0 + 0.75, w - 0.33);
+    B(x1 - x0 - 0.08, 0.05, 0.65, WOOD, (x0 + x1) / 2, y0 + 0.75, w - 0.33);
+    for (const xl of [x0 + 0.08, (x0 + x1) / 2, x1 - 0.08]) B(0.05, 0.73, 0.05, STEEL, xl, y0 + 0.365, w - 0.62);
     B(0.55, 0.32, 0.45, 0x51585e, x0 + 0.6, y0 + 0.95, w - 0.3);
     B(0.55, 0.32, 0.45, 0x51585e, x0 + 1.2, y0 + 0.95, w - 0.3);
     for (let c = 0; c < 4; c++) dial(x0 + 0.42 + c * 0.13, y0 + 0.98, w - 0.53, 0.035, 'z');
@@ -4121,7 +4147,7 @@ const PCEM = (() => {
     B(1.15, 0.04, 0.85, 0xe8e4d2, (x0 + x1) / 2 + 0.2, y0 + 0.97, 0.2);
     /* chairs */
     for (const [x, z] of [
-      [x0 + 2.3, -0.5],
+      [x0 + 2.15, -0.5],
       [x0 + 0.9, w - 0.9],
     ]) {
       C(0.2, 0.2, 0.06, RUBBER, x, y0 + 0.5, z, 0, 0, 0, 12);
@@ -4237,9 +4263,9 @@ const PCEM = (() => {
     1: [{ e: [XF(31.7), YG + 1.68, 0], yaw: 0, pitch: -0.06, name: 'OOD - OPEN BRIDGE' }],
     2: [{ e: [ER.x0 + 1.4, ER.y0 + 1.65, -0.35], yaw: 0.62, pitch: -0.12, fov: 52, name: 'ENGINEERING - FORWARD ENGINE ROOM' }],
     3: [
-      { e: [X_RR1 + 2.36, Y2 + 1.22, -0.45], yaw: -0.73, pitch: -0.08, fov: 27, name: 'COMMUNICATIONS - RADAR', dev: 'radar' },
-      { e: [X_RR1 + 2.36, Y2 + 1.22, -0.45], yaw: -1.4, pitch: 0.08, fov: 38, name: 'COMMUNICATIONS - SONAR', dev: 'sonar' },
-      { e: [X_RR1 + 2.36, Y2 + 1.22, -0.45], yaw: -2.67, pitch: 0.04, fov: 38, name: 'COMMUNICATIONS - RADIO', dev: 'radio' },
+      { e: [X_RR1 + 2.21, Y2 + 1.22, -0.45], yaw: -0.61, pitch: 0.075, fov: 38, name: 'COMMUNICATIONS - RADAR', dev: 'radar' },
+      { e: [X_RR1 + 2.21, Y2 + 1.22, -0.45], yaw: -1.61, pitch: 0.08, fov: 38, name: 'COMMUNICATIONS - SONAR', dev: 'sonar' },
+      { e: [X_RR1 + 2.21, Y2 + 1.22, -0.45], yaw: -2.53, pitch: 0.075, fov: 38, name: 'COMMUNICATIONS - RADIO', dev: 'radio' },
     ],
     4: [{ e: [X_PH0 - 2.35, Y2 + 1.66, 0], yaw: 0, pitch: -0.04, name: 'QUARTERMASTER - PILOTHOUSE' }],
     /* the gunner mans a gun (gun: the mount's id): his eye and the way he looks come from the gun itself (see GUN in the game) */
