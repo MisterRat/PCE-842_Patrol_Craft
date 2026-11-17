@@ -322,7 +322,7 @@ Top bar: &#9776; missions &middot; &#9208; menu &middot; &#128247; camera &middo
 <div style="font-size:12px;opacity:.8">For the cleanest controls hold the screen upright, facing you. Hold the phone the way you want to fly, then tap Calibrate. The small box in the top bar shows your stick: the dot should sit in the middle when you hold still.</div>
 <button id="tsCal">Calibrate</button><button id="tsClose">Close</button></div></div>
 <div id="edBar"><span><b>MOVE BOXES</b> &ndash; drag any box to where you want it</span><button id="edReset">Reset</button><button id="edDone" class="pri">Done</button></div>
-<div id="pm"><div class="box" id="pmBox"><div id="pmTabs"><button id="pmTabS" class="on">Settings</button><button id="pmTabM" style="display:none">Missions</button><button id="pmTabA" style="display:none">About</button><button id="pmTabC">Controls</button><button id="pmTabO" style="display:none">Operations</button><button id="pmTabH" style="display:none">Hardcore</button></div>
+<div id="pm"><div class="box" id="pmBox"><div id="pmTabs"><button id="pmTabS" class="on">Settings</button><button id="pmTabM">Missions</button><button id="pmTabA">About</button><button id="pmTabC">Controls</button><button id="pmTabO">Operations</button><button id="pmTabH">Hardcore</button></div>
 <div id="pmPaneS"><h2>PAUSED <small class="verTag" style="font-weight:400;opacity:.6;font-size:12px"></small></h2>
 <div class="row"><button class="pri" id="pmResume">Resume</button><button id="pmRestart">Restart</button><button id="pmBail" style="display:none">Bail out</button><button id="pmPhoto" class="deskOnly">Photo mode</button><button id="pmMove">Move boxes</button><button id="pmDocs" style="display:none">Manual</button><button id="pmTilt" class="mobBtn">Tilt settings</button><button id="pmExit" class="mobBtn">Exit game</button></div>
 <h3>WHAT TO SHOW</h3><div id="pmList"></div>
@@ -352,45 +352,40 @@ Top bar: &#9776; missions &middot; &#9208; menu &middot; &#128247; camera &middo
 </div>
 <div id="pmPaneM" style="display:none"><h2>CHOOSE A MISSION</h2><div id="menuList"></div><div class="sub">Up / Down + Enter, or click &middot; controller: D-pad + A &middot; Tab or LB / RB switch tabs &middot; Esc / B closes &middot; <b>M</b> opens this tab any time</div><div class="row"><button id="pmCloseM">Close</button></div></div>
 <div id="pmPaneA" class="doc" style="display:none">
-<h1>NORTH AMERICAN P-51D MUSTANG</h1>
-<div class="sub">The fighter this simulator is built around &middot; <span class="verTag"></span></div>
-<h2>Brief history</h2>
-<p>North American Aviation designed the NA-73X in 1940 for Britain, and it first flew on 26 October 1940. The early Allison-powered Mustangs were fast down low but weak at altitude. In 1942&ndash;43 the Rolls-Royce Merlin engine (built in the US by Packard as the V-1650) turned it into a high-altitude fighter with a laminar-flow wing.</p>
-<p>The <b>P-51D</b>, introduced in 1944, added the bubble canopy and six .50-caliber machine guns. With drop tanks it could escort bombers deep into Germany and back, which helped win air superiority over Europe. More than 15,000 Mustangs were built, nearly 8,000 of them P-51Ds. It also served in the Pacific and in Korea, and with air forces around the world into the 1980s. Many still fly today.</p>
-<h2>How this app compares with the real aircraft</h2>
-<div class="note"><b>Overall:</b> the airframe is built from our copies of the original factory blueprints and the performance is tuned to the P-51D flight-characteristics manual, as closely as a browser game allows; the low-speed handling, the airspeed placards (stall, flaps, redline), the inverted-flight oil limit and the armament follow the real aircraft closely. By default the app is an arcade-leaning simulation that is fun first: altitude effects, fuel, engine temperatures, spins and engine torque are left out. They are available in the optional <b>Hardcore Simulation Mode</b> (see the Hardcore page, with a master switch and a switch for each part); that page also lists what is still left out. Treat it as a simulation for enjoyment, not a certified model.</div>
+<h1>USS PCE-842</h1>
+<div class="sub">The patrol craft escort this game is built around &middot; <span class="verTag"></span> &middot; Alpha</div>
+<div class="note"><b>Alpha:</b> this game is an early work in progress. Expect missing features, rough edges and changes between versions.</div>
+<h2>The ship</h2>
+<p><b>PCE-842</b> was built by the Pullman-Standard Car Manufacturing Company in Chicago: laid down on 12 June 1943, launched on 14 November 1943 and commissioned on 29 January 1944 at New Orleans. She was the first of the <b>PCE-842 class</b>, the only ships the US Navy ever designated &ldquo;patrol craft escort&rdquo;: 68 were built for the US Navy and 17 more went to the Allies under Lend-Lease. The design was an escort version of the 180 ft hull of the Admirable-class minesweepers, a cheaper stand-in for destroyers and destroyer escorts on coastal and convoy escort work.</p>
+<p>She was 184 ft 6 in (56.24 m) long with a 33 ft 1 in (10.08 m) beam, with two General Motors diesels driving two shafts for about 15.7 knots, and a crew of about 99. She carried a 3&Prime;/50 gun forward, twin 40 mm Bofors and 20 mm Oerlikons, a Hedgehog, four K-gun depth-charge projectors and two stern depth-charge racks.</p>
+<h2>Her war and after</h2>
+<p>In 1944 she escorted convoys between Trinidad and Recife. In January 1945 she sailed by way of Panama to Hollandia, then by the Palaus to the Philippine Sea Frontier, where she patrolled against submarines and escorted shipping round the Philippines until the war ended. <b>The game is set there, in 1945.</b></p>
+<p>She was decommissioned at New Orleans on 7 November 1947 and served the Naval Reserve, was named <b>USS Marfa</b> in 1956, and in 1961 went to the Republic of Korea Navy as <b>ROKS Dangpo</b>. She was sunk by North Korean coastal artillery on 19 January 1967.</p>
+<h2>How this game compares with the real ship</h2>
+<div class="note"><b>Overall:</b> the ship is built from the PCE-874 Booklet of General Plans (a sister ship) and photographs of PCE-842 herself; the guns follow NavWeaps and the Navy's range tables. Her handling is a first pass and will be tuned to trials data when it is found. Where the sources disagree, or a figure is an estimate, the table says so.</div>
 <table class="spec">
-<tr><th>Item</th><th>Real P-51D</th><th>This app</th><th>Match</th></tr>
-<tr><td>Wingspan</td><td>11.28 m (37 ft)</td><td>11.28 m (blueprint planform)</td><td class="m-ok">Match</td></tr>
-<tr><td>Length</td><td>9.83 m (32 ft 3 in)</td><td>9.8 m (blueprint fuselage oval and tail station)</td><td class="m-ok">Match</td></tr>
-<tr><td>Wing area</td><td>233.2 sq ft (21.7 m&sup2;) including flaps, ailerons and fuselage</td><td>about 237 sq ft, from the blueprint planform (1.6% over)</td><td class="m-ok">Match</td></tr>
-<tr><td>Flaps and ailerons</td><td>Flaps 32.2 sq ft in total (part of it under the fuselage); ailerons 12.2 sq ft with tabs</td><td>Flaps and ailerons are shaped from the plan drawing: the flap is about 22 in deep at the fuselage tapering to 17 in, the aileron tapers from 17 in to 7 in. Flaps about 30 sq ft exposed; ailerons about 13 sq ft ; the elevator, rudder and left aileron carry trim tabs that move when you trim in Hardcore mode</td><td class="m-ok">Close</td></tr>
-<tr><td>Tailplane and elevators</td><td>Stabilizer 28.0 sq ft (with 2.1 under the fuselage); elevators 13.05 sq ft with tabs; span 13 ft 2 in</td><td>Stabilizer about 28.2 sq ft; elevators about 13.3 sq ft in two halves with the fuselage gap; span 4.02 m</td><td class="m-ok">Match</td></tr>
-<tr><td>Fin and rudder</td><td>Fin 9.61 sq ft; rudder 10.41 sq ft with tab; total 20.0 sq ft; height 69 9/16 in</td><td>Fin about 9.5 sq ft above the fuselage line; rudder about 10.5 sq ft; height 1.77 m</td><td class="m-ok">Match</td></tr>
-<tr><td>Trim</td><td>Cockpit trim wheels for elevator, rudder and aileron tabs (about 10&deg; of tab travel)</td><td><b>Hardcore mode only</b> (keyboard and controller, not on phones): trim the elevator, rudder and left-aileron tabs; the tabs move on the aircraft and the HUD shows the trim. The hands-off speed follows the elevator trim, and the rudder trim is set against engine torque for take-off. In standard mode the plane holds its own pitch, so there is nothing to trim.</td><td class="m-ok">Close in Hardcore mode</td></tr>
-<tr><td>Landing gear</td><td>Main gear at fuselage station 114, tail wheel at station 313 (wheelbase about 5 m); three-point attitude about 12 degrees</td><td>Gear, wheels and tail wheel at blueprint stations; sits about 11.5 degrees nose-up on the ground, and the wheels touch the runway</td><td class="m-ok">Match</td></tr>
-<tr><td>Canopy and cockpit</td><td>Bubble canopy, windscreen frame and sill from the cockpit drawings; pilot eye just behind the gunsight</td><td>Canopy, windscreen frame, sill, panel and seat at blueprint stations; the cockpit camera sits at the pilot's eyes</td><td class="m-ok">Close</td></tr>
-<tr><td>Engine</td><td>Packard V-1650-7 Merlin, 1,490 hp (1,720 hp with war emergency power); four-blade propeller 11 ft 2 in across; 3,000 rpm limit, 3,240 rpm in a dive</td><td>Power follows the throttle; four-blade propeller 3.4 m (11 ft 2 in) across; the tachometer is marked to 3,000 rpm with the 3,240 rpm dive limit, the manifold-pressure gauge shows the manual's 26&ndash;36 in Hg green arc and red line at 61 in Hg, and the temperature and pressure gauges carry the manual's operating ranges. <b>Hardcore mode:</b> the top 10% of the throttle is war emergency power, and a two-stage supercharger power curve holds power to about 3,000 m and fades above</td><td class="m-ok">Close in Hardcore mode</td></tr>
-<tr><td>Top speed</td><td>703 km/h (437 mph) at 7,600 m (25,000 ft); roughly 580&ndash;610 km/h near sea level</td><td>Standard mode: about 685 km/h near sea level and 705 km/h at height (too fast low down, by about 14%). <b>Hardcore mode</b> (real-performance option): about 610 km/h near sea level and about 700 km/h true speed at 7,600 m, where the gauge shows only about 470 km/h indicated, as in the real aircraft</td><td class="m-ok">Match in Hardcore mode</td></tr>
-<tr><td>Cruise</td><td>about 583 km/h (362 mph) true speed at altitude (typically 4,500&ndash;5,500 m)</td><td>Standard mode: 574 km/h at 65% throttle and 624 km/h at 80% near sea level. <b>Hardcore mode:</b> at 65% throttle about 490 km/h near sea level and about 590 km/h true speed at 5,000 m</td><td class="m-ok">Match in Hardcore mode</td></tr>
-<tr><td>Glide</td><td>about 14 miles (22.5 km) for each 5,000 ft (1,520 m) of height at 175 mph, a glide ratio of about 14.8</td><td>Standard mode: steeper, about 5 (an arcade simplification). <b>Hardcore mode:</b> lift acts square to the airflow and the drag is set so the engine-off glide ratio at 175 mph measures about 14.3, with the climb rate and the top speed kept in line</td><td class="m-ok">Close</td></tr>
-<tr><td>Stall, clean</td><td>about 160 km/h (100 mph) at around 9,000 lb</td><td>about 158 km/h in standard mode and 162 in Hardcore mode (measured at full fuel, a little higher with bombs and rockets)</td><td class="m-ok">Match</td></tr>
-<tr><td>Stall, gear and 45&deg; flaps</td><td>about 151 km/h (94 mph) at 9,000 lb</td><td>about 144 km/h in standard mode and 148 in Hardcore mode</td><td class="m-ok">Close</td></tr>
-<tr><td>Flap speed limits</td><td>10&deg; 400 mph (644 km/h) &middot; 20&deg; 275 mph (443) &middot; 30&deg; 225 mph (362) &middot; 40&deg; 180 mph (290) &middot; 50&deg; 165 mph (265)</td><td>640 &middot; 440 &middot; 360 km/h; flaps retract automatically if exceeded. <b>Hardcore mode:</b> the real six settings and limits</td><td class="m-ok">Close</td></tr>
-<tr><td>Redline</td><td>505 mph (808 km/h) up to 5,000 ft; lower higher up</td><td>800 km/h, buffet from 755 km/h. <b>Hardcore mode:</b> the limit is the same indicated speed low down and Mach 0.75 higher up, so it falls with altitude</td><td class="m-ok">Close</td></tr>
-<tr><td>Climb rate</td><td>about 16 m/s (3,200 ft/min) at sea level</td><td>Standard mode: about 17.8 m/s clean and 16.7 m/s with the rockets and bombs loaded (slightly high). <b>Hardcore mode:</b> about 16 m/s clean and 15.5 m/s loaded at sea level, about 7 m/s at 7,600 m, falling to under 1 m/s at the service ceiling</td><td class="m-ok">Match in Hardcore mode</td></tr>
-<tr><td>Service ceiling</td><td>12,800 m (41,900 ft)</td><td>Standard mode: no limit, performance does not change with height. <b>Hardcore mode:</b> air density, supercharger power and induced drag take the climb rate to zero at about 13,800 m (a little high)</td><td class="m-ok">Close in Hardcore mode</td></tr>
-<tr><td>Takeoff</td><td>roughly 350&ndash;450 m ground roll, rotate near 160 km/h</td><td>Standard mode: about 450 m and 18 s with 10&deg; flaps; rotate at 160, lift off at about 174 km/h at the real 12&deg; ground attitude. Hardcore mode with full fuel, engine torque and take-off trim: about 440 m and 18 s</td><td class="m-ok">Match in Hardcore mode</td></tr>
-<tr><td>Load limits</td><td>Structure rated +8 G / &minus;4 G at design weight, with lower limits at high speed and weight</td><td>Standard mode: the plane simply cannot pull more than about +7 G / &minus;3.5 G; you start to black out above about 4.5 G sustained. <b>Hardcore mode:</b> +8 / &minus;4 G at 8,000 lb, scaled down with weight and 15% lower above 400 mph indicated; overstress bends the airframe (lasting until repaired) and about 1.5 times the limit breaks the wing</td><td class="m-ok">Close in Hardcore mode</td></tr>
-<tr><td>Inverted flight</td><td>Limited to about 10 seconds (oil scavenging)</td><td>Engine cuts after 10 s inverted</td><td class="m-ok">Close</td></tr>
-<tr><td>Guns</td><td>Six .50 cal Brownings, about 1,880 rounds (400 inboard, 270 outboard), about 800 rounds/min each, muzzle velocity about 890 m/s</td><td>Six guns, 1,840 rounds (380 inboard, 270 outboard), 800 rounds/min each, 880 m/s, bullets drop under gravity, converge at 350 m</td><td class="m-ok">Close</td></tr>
-<tr><td>Rockets and bombs</td><td>Up to 6&ndash;10 HVAR rockets, or two 500 lb (227 kg) or 1,000 lb (454 kg) bombs</td><td>6 HVAR (127 mm) rockets, two 230 kg (500 lb) bombs</td><td class="m-ok">Close</td></tr>
-<tr><td>Weight and CG</td><td>3,465 kg empty, 5,490 kg maximum; the fuselage fuel tank moves the CG and affects handling</td><td>Standard mode: only rockets and bombs change the weight (stall speed and handling). <b>Hardcore mode:</b> 269 US gallons of fuel burn off, the plane gets lighter and stalls slower, and a full fuselage tank makes the pitch more sensitive (aft CG)</td><td class="m-ok">Close in Hardcore mode</td></tr>
-<tr><td>Spins, snap rolls</td><td>A power-on spin is hard to recover; snap rolls can cause a spin; engine torque pulls the nose left under power</td><td>Standard mode: stalls are mild and recoverable. <b>Hardcore mode:</b> a stalled wing drops, a stall with the rudder held or a hard snap roll can enter a spin, a power-on spin takes longer to recover, and engine torque and P-factor pull the nose left under power</td><td class="m-ok">Close in Hardcore mode</td></tr>
-<tr><td>Engine temperatures</td><td>Oil, coolant and carburetor limits to watch</td><td>Standard mode: the panel gauges follow the throttle for show; oil is modelled only for inverted flight. <b>Hardcore mode:</b> oil and coolant temperatures really rise during long full-throttle running, and the engine overheats and loses power until it cools. No carburetor icing</td><td class="m-ok">Close in Hardcore mode</td></tr>
-<tr><td>Weather: wind, turbulence, wet runway, icing</td><td>The real aircraft flies through moving air: the wind sets the ground speed, the crosswind needs rudder on a tail-wheel aeroplane, rain makes the brakes weak and can cause hydroplaning, and ice on the wing in cold cloud cuts the lift</td><td>Standard mode: the weather is only a look (sky, fog, rain, lightning, sound). <b>Hardcore mode</b> (each part has its own switch): a wind with gusts that you fly through, crosswinds with a weathercocking tail wheel, rough air in rain and storms, a wet runway with weak brakes and hydroplaning above 160 km/h, and airframe icing in cloud below freezing. The wind speeds, the temperature drop with height and the icing rates are tuned for play, not measured from the aircraft.</td></tr>
+<tr><th>Item</th><th>Real PCE-842</th><th>This game</th><th>Match</th></tr>
+<tr><td>Hull</td><td>184 ft 6 in (56.24 m) overall, 33 ft 1 in (10.08 m) beam</td><td>56 m &times; 10.1 m, lofted from the general plans; the decks, deckhouses, rooms and fittings at their frames</td><td class="m-ok">Match</td></tr>
+<tr><td>Paint</td><td>Measure 32 dazzle (photographs); 20-B Deck Blue decks</td><td>Measure 32 dazzle from her photographs; steel deck plating in Deck Blue, weathered</td><td class="m-ok">Match</td></tr>
+<tr><td>Engines</td><td>Two General Motors diesels, single reduction gear, two shafts (sources disagree on the model and power: 12-278A of 1,000 hp each, or 12-567A)</td><td>The engine-order telegraph and an engine room that answers the bells; two diesels to about 744 rpm (an estimate); their sound, beating against each other</td><td class="m-mid">Close</td></tr>
+<tr><td>Speed</td><td>15.7 knots (other sources 15.5 or 16)</td><td>15.7 knots full ahead; about 6 knots full astern (an estimate)</td><td class="m-ok">Match</td></tr>
+<tr><td>Handling</td><td>Turning circle, acceleration and stopping from trials (not yet found)</td><td>First-pass figures: about 180 m turning radius at full rudder, most of a new speed in about 25 seconds</td><td class="m-mid">Estimate</td></tr>
+<tr><td>Seakeeping</td><td>Heave, pitch and roll in a seaway</td><td>She rides the waves (heave, pitch and roll); in game mode the motion can be switched off at the guns</td><td class="m-mid">Close</td></tr>
+<tr><td>3&Prime;/50 gun</td><td>Mk 22: 2,700 ft/s, 15&ndash;20 rounds a minute hand loaded, 14,590 yd at 43&deg;; VT proximity fuzes against aircraft in 1945</td><td>The same figures; the pointer's telescope; VT bursts; <b>Hardcore:</b> you set the sight range yourself; <b>game mode:</b> the sight-setter ranges for you</td><td class="m-ok">Match</td></tr>
+<tr><td>40 mm Bofors</td><td>Twin mounts: 2,890 ft/s, 120 rounds a minute a barrel, four-round clips</td><td>The twin mount aft: the same figures, loaders feeding clips at the rate a good crew kept up, ring sight</td><td class="m-ok">Match</td></tr>
+<tr><td>20 mm Oerlikon</td><td>2,725 ft/s, 450 rounds a minute, 60-round drums, shoulder rests and a cartwheel sight</td><td>The same figures, drum changes, cartwheel ring sight</td><td class="m-ok">Match</td></tr>
+<tr><td>Against aircraft</td><td>US Navy wartime rounds fired per aircraft destroyed: 3&Prime;/50 338, 40 mm 3,361, 20 mm 7,152</td><td><b>Hardcore:</b> calibrated to those figures; <b>game mode:</b> 24 times easier. Surface targets use their real size</td><td class="m-ok">Match</td></tr>
+<tr><td>Reloading</td><td>Crews' average rates</td><td><b>Hardcore:</b> the averages; <b>game mode:</b> half the time</td><td class="m-ok">Match</td></tr>
+<tr><td>Hedgehog</td><td>24 contact-fuzed bombs thrown in a pattern ahead of the ship</td><td>24 bombs on their spigots, fired in a ripple to land in a ring ahead; they burst only on a hit</td><td class="m-ok">Close</td></tr>
+<tr><td>Depth charges</td><td>Four K-guns and two stern racks; Mk 6 charges (300 lb of TNT)</td><td>Four K-guns, each throwing its charge from the arbor and reloaded by its crew; two stern racks of 8 charges each (fewer than she carried); a pistol depth and safety fork at each position</td><td class="m-mid">Close</td></tr>
+<tr><td>Sonar, radar, radio</td><td>Searchlight-type echo-ranging sonar, surface-search radar, radio</td><td>Simplified working sets: sonar pings and echoes, a radar scope, the radio</td><td class="m-mid">Simplified</td></tr>
+<tr><td>Practice</td><td>Towed sleeves for the AA guns, target rafts, towed target sleds</td><td>Rafts, two sleeve-towing aircraft, PT-105 (a late-war Elco 80) towing a target sled at 30 knots, and a dived exercise submarine</td><td class="m-ok">Close</td></tr>
 </table>
-<div class="note">How the app figures were measured: level speeds after 90 seconds of level flight at constant throttle, stall speed by slowing at idle until the wing stalls, climb with the nose held at fixed angles (best result quoted), glide with the engine at idle and the nose held at fixed angles until the speed settles, takeoff by running the roll at the real ground attitude. Real figures are the standard published P-51D data and the DCS P-51D flight characteristics manual (flap and airspeed limits, stall table). All of these figures were re-measured for version 4.0 with the method above, by running the game's own physics. Where the standard (arcade) mode differs from the real aircraft, Hardcore mode closes the gap; the Hardcore page lists each part and lets you switch it on or off.</div>
+<h2>Still to come</h2>
+<p>The officer of the deck's station (giving orders that an AI crew carries out), real enemy ships, submarines and aircraft, and missions are planned. The ship's handling will be tuned to her trials data when it is found.</p>
+<h2>Sources</h2>
+<p>PCE-874 Booklet of General Plans (BuShips); NavSource Naval History; the Dictionary of American Naval Fighting Ships; HyperWar, <i>Ships of the U.S. Navy, 1940&ndash;1945</i>; Wikipedia (PCE-842-class patrol craft; ROKS Dangpo); NavWeaps; the US Navy's wartime antiaircraft rounds-per-kill figures; NavSource and Wikipedia for PT-105.</p>
+<p>By <a href="https://github.mrrat.org/" target="_blank" rel="noopener noreferrer">MrRat Gaming</a>. Set in the world of P-51D Mustang Flight Sim.</p>
 </div>
 <div id="pmPaneC" class="doc" style="display:none">
 <h1>CONTROLS</h1>
@@ -419,124 +414,78 @@ Top bar: &#9776; missions &middot; &#9208; menu &middot; &#128247; camera &middo
 </div>
 <div id="pmPaneH" class="doc" style="display:none">
 <h1>HARDCORE SIMULATION</h1>
-<div class="sub">Real-aircraft detail for pilots who want it. Off by default: the simulator is fun first.</div>
-<p>Hardcore mode adds the things the real P-51D does that an arcade flight model leaves out. Switch it on here, then keep only the parts you enjoy. Each part has its own switch, so you can, for example, fly with spins and torque but ignore fuel and engine temperature. With the master switch off, none of this affects the game and the gauges stay quiet. The settings are saved.</p>
+<div class="sub">The real ship, for sailors who want it. Off by default: the game is fun first.</div>
+<p>Hardcore mode adds what the real PCE-842 and her crew had to deal with and the game mode leaves out. Switch it on here (or with Settings &gt; Mode), then keep only the parts you enjoy: each part has its own switch, so you can, for example, set your own 3&Prime;/50 range but keep the aiming rings. With the master switch off, none of them apply.</p>
 <label class="hcMaster"><input type="checkbox" id="hcOn" style="accent-color:#ffb43a"> <b>Hardcore Simulation Mode</b> (master switch)</label>
 <div id="hcList">
-<label><input type="checkbox" data-hc="torque"> <b>Engine torque and P-factor.</b> At full power and low speed the propeller pulls the nose to the left, so you need right rudder on the take-off roll and in a slow climb. Propwash over the tail gives you elevator and rudder control even when the plane is slow.</label>
-<label><input type="checkbox" data-hc="spin"> <b>Stall wing-drop and spins.</b> A stalled wing drops. Stall with the rudder held (or snap-roll the plane with a hard pull and rudder) and it can enter a spin. Recover with opposite rudder and the stick forward; idle the throttle for a faster recovery. A power-on spin is slower to recover.</label>
-<label><input type="checkbox" data-hc="alt"> <b>Altitude: thin air, supercharger and ceiling.</b> Air density falls with height, so the wing needs more speed to fly and the engine makes less power above about 5,000 m. Climb slows, and the service ceiling is about 12,800 m. Airspeed gauges read <i>indicated</i> speed, as in the real aircraft. The redline falls with altitude (Mach 0.75).</label>
-<label><input type="checkbox" data-hc="heat"> <b>Engine temperature.</b> More than a few minutes above 90% throttle overheats the engine, which then loses most of its power until it cools. The oil and coolant gauges on the cockpit panel really move, and the HUD shows a TEMP readout.</label>
-<label><input type="checkbox" data-hc="fuel"> <b>Fuel, weight and balance.</b> The engine burns fuel (about 8 gallons an hour at idle, 120 at full power) and the plane gets lighter and stalls slower as the tanks empty. A full fuselage tank puts the centre of gravity aft, which makes the pitch more sensitive. Running dry stops the engine. Landing and stopping at idle refuels you.</label>
-<label><input type="checkbox" data-hc="wep"> <b>War emergency power.</b> The top 10% of the throttle is war emergency power (1,720 hp instead of 1,490 hp). Full throttle gives the same performance as before, 90% becomes the normal maximum, and running above 90% heats the engine if engine temperature is on.</label>
-<label><input type="checkbox" data-hc="perf"> <b>Real-aircraft performance.</b> Adds the extra drag the real P-51D has, so the top speed near sea level is about 610 km/h instead of about 685, the cruise speed, the climb rate and the glide ratio match the published figures, and lift acts square to the airflow, and the bandits fly with the same drag. Turn it off if you prefer the faster arcade speeds.</label>
-<label><input type="checkbox" data-hc="gload"> <b>Structural load limits.</b> With this on, the elevator keeps its full strength at high speed, so a hard pull can really overstress the airframe (in standard mode the plane simply stops at about 7 G). The airframe is rated +8 G / &minus;4 G at its design weight, less when heavy (full ordnance and fuel) and less above 400 mph indicated. The plane no longer stops you at 7 G: pull harder and the airframe is overstressed and stays damaged (it weakens the wing until you land and stop for repairs), and well beyond the limit the wing fails and you crash. The HUD shows the current limit next to your G.</label>
-<label><input type="checkbox" data-hc="wind"> <b>Weather: wind and gusts.</b> The weather brings a wind (calm in clear weather, up to 70 km/h in a thunderstorm) with gusts. The aircraft flies through the air, not over the ground: a headwind shortens the take-off and landing run and slows your ground speed, a tailwind does the opposite, and a crosswind pushes you sideways (crab into it in the air, and on the ground the tail wheel weathercocks into it, so you need rudder). The windsock by the tower shows it, the HUD shows wind direction, speed, and the head or tail and cross components, the clouds drift with it. Set the direction and strength in Settings, Time of day &amp; weather.</label>
-<label><input type="checkbox" data-hc="turb"> <b>Weather: turbulence.</b> Rain, overcast and especially thunderstorms bump and roll the aircraft with updrafts and downdrafts, and a strong wind makes the air rough close to the ground. Ease the controls and slow down for rough air.</label>
-<label><input type="checkbox" data-hc="wet"> <b>Weather: wet runway.</b> After rain starts the runway and the grass are wet (and dry out slowly afterwards). The brakes grip about half as well, the steering is weaker, the tyres squeal less, and above about 160 km/h in heavy rain the aircraft hydroplanes: the brakes and steering hardly work. Land at the start of the runway and brake early.</label>
-<label><input type="checkbox" data-hc="ice"> <b>Weather: icing.</b> Cold, wet cloud below freezing coats the wing with ice. The air gets colder with height and with bad weather (the HUD shows the outside temperature and the ice build-up). Ice cuts the lift, adds drag and costs thrust, so the stall speed rises and the aircraft will not climb; leave the cloud or descend to warmer air to melt it. The cockpit also frosts over. Servicing on the ground clears it.</label>
-<label><input type="checkbox" data-hc="ops"> <b>Real flap settings and gear speed.</b> The flaps have the six real settings (10, 20, 30, 40 and 50 degrees) with the manual's speed limits: 10&deg; 644 km/h, 20&deg; 443, 30&deg; 362, 40&deg; 290, 50&deg; 265. They retract by themselves if you go faster. The landing gear will not come down above 170 mph (273 km/h), and the landing trainer follows the same limit.</label>
-<label><input type="checkbox" data-hc="pwr"> <b>Engine power limits.</b> War emergency power (the top 10% of the throttle) is allowed for 5 minutes: you get a warning at 4:30, and after 5:00 the engine overheats and loses most of its power until it cools. The engine may not turn faster than 3240 rpm: full throttle in a fast dive, above about 800 km/h, damages it the same way after 3 seconds.</label>
-<label><input type="checkbox" data-hc="trim"> <b>Trim tabs.</b> The elevator, rudder and aileron trim tabs work, as on the real aircraft (up to 10&deg; each way). The elevator trim sets the speed the aircraft flies hands-off: faster than that and the nose rises, slower and it drops, so re-trim after a change of speed, flaps or power. The rudder trim cancels the engine torque that pulls the nose left at full power, and the aileron trim removes a steady roll. Everything is trimmed for you at the start of a flight in the air and set for take-off on the runway. Keyboard and controller only (not on phones). With this off the aircraft trims itself.</label>
+<label><input type="checkbox" data-hc="eng"> <b>Engines from the engine room.</b> The engine-order telegraph works only from the engine room (2) and the pilothouse (4), as aboard: from the bridge, the guns or the radio room you can steer, but you cannot ring up the engines. Game mode: W / S works from any station.</label>
+<label><input type="checkbox" data-hc="sea"> <b>The sea always moves her.</b> She always heaves, pitches and rolls with the waves, at the guns too, so you lay the guns on a moving deck. Game mode: Settings &gt; Wave motion can hold her steady at the guns.</label>
+<label><input type="checkbox" data-hc="range"> <b>Set your own 3&Prime;/50 range.</b> The pointer's telescope is laid on the target, and the gun's elevation above the line of sight is whatever range is set on the sight: the mouse wheel or Page Up / Page Down sets it, 100 yards a notch. Guess the range wrong and the shells fall short or over. Game mode: the sight-setter ranges the target nearest your sight for you.</label>
+<label><input type="checkbox" data-hc="rings"> <b>No aiming rings.</b> No ring shows where to point, and the practice targets are not marked: you lead the target yourself with the gun's own sight (the 20 mm's cartwheel, the 40 mm's ring sight, the 3&Prime;/50's telescope).</label>
+<label><input type="checkbox" data-hc="aa"> <b>Real kill rates against aircraft.</b> Hits on the towed sleeves are calibrated to the US Navy's wartime rounds fired per aircraft destroyed: about 338 for the 3&Prime;/50, 3,361 for the 40 mm and 7,152 for the 20 mm. Game mode: 24 times easier. Surface targets (rafts, the sled) always use their real size.</label>
+<label><input type="checkbox" data-hc="reload"> <b>Real reload times.</b> Hand-loading the 3&Prime;/50, changing the 20 mm drum, feeding the 40 mm clips, reloading the K-guns and the Hedgehog take the crews' average times. Game mode: half the time.</label>
+<label><input type="checkbox" data-hc="smoke"> <b>Smoke.</b> Muzzle smoke, shell bursts, splashes and the puff of a K-gun or Hedgehog hang in the air and can hide the target for a moment. Game mode: kept out of your way.</label>
+<label><input type="checkbox" data-hc="walk"> <b>Walk the deck.</b> As torpedoman you walk between the Hedgehog, the K-guns and the stern racks with W A S D (Shift runs), round the gun tubs and down the ladder. Game mode: 6 or J jumps straight there.</label>
+<label><input type="checkbox" data-hc="orders"> <b>Tight orders.</b> On an attack run the OOD's orders must be carried out within 4 seconds (game mode: 6), and you pull the safety forks to arm each position yourself (X at the weapon). Game mode: the charges are armed for you on &ldquo;stand by charges&rdquo;.</label>
+<label><input type="checkbox" data-hc="dmg"> <b>Shallow charges hurt her.</b> A depth charge set too shallow (under about 75 ft) and dropped at slow speed goes off under her own stern and costs her speed until the run is over.</label>
 </div>
-<h2>What it models</h2>
+<h2>What it changes</h2>
 <table class="t2">
-<tr><td>Torque, P-factor, propwash</td><td>On the ground the nose swings left under power; in the air the plane rolls and yaws left at low speed and high power.</td></tr>
-<tr><td>Stalls and spins</td><td>SPIN warning on the screen. Opposite rudder + stick forward recovers.</td></tr>
-<tr><td>Atmosphere</td><td>Standard-atmosphere density and speed of sound, a two-stage-supercharger power curve, indicated airspeed on every gauge, a lower redline up high, and the same thin air for the bandits.</td></tr>
-<tr><td>Engine</td><td>Overheat after about 4 minutes above 90% throttle (sooner when slow); cools in well under a minute at lower power.</td></tr>
-<tr><td>Performance</td><td>Sea-level top speed about 600 km/h, about 703 km/h true speed at 7,600 m, cruise about 475 km/h at sea level and about 580&ndash;600 km/h near 5,000 m, climb about 15&ndash;16 m/s.</td></tr>
-<tr><td>Load limits</td><td>+8 / &minus;4 G at 8,000 lb, scaled down with weight, 15% less at high speed; OVERSTRESS warning, lasting damage, and wing failure at 1.5 times the limit.</td></tr>
-<tr><td>Fuel</td><td>269 US gallon internal tanks, the fuselage tank burned first. FUEL readout on the HUD, LOW FUEL and OUT OF FUEL warnings.</td></tr>
-<tr><td>Not modelled</td><td>Drop tanks, carburetor icing, and gun-recoil or ordnance effects on balance.</td></tr>
+<tr><td>Ship handling</td><td>The bells must be rung from the engine room or the pilothouse; the sea moves her at every station.</td></tr>
+<tr><td>Gunnery</td><td>Your own range, your own lead, the real hit rates, the real loading times, smoke in the way.</td></tr>
+<tr><td>Antisubmarine</td><td>You walk to each weapon, arm it yourself, and have 4 seconds to carry out each order. A shallow charge can damage her.</td></tr>
 </table>
 </div>
 <div id="pmPaneO" class="doc" style="display:none">
 <h1>OPERATIONS</h1>
-<div class="sub">Missions, cockpit warnings, weapons and enemy difficulty</div>
-<h2>Missions &amp; trainers (the Missions tab, or press M)</h2>
+<div class="sub">The stations, practice, gunnery, the torpedoman's work and the ship</div>
+<h2>Missions (the Missions tab, or press M)</h2>
 <table class="t2">
-<tr><td>Free flight</td><td>Fly anywhere. A flag-carrying convoy circles the enemy roads (Yamamoto, Tanaka, Kusaka and back) all the time, with ground targets scattered about, and both enemy bases have anti-aircraft guns and searchlights. No guide path. Convoy messages only appear on the convoy mission.</td></tr>
-<tr><td>Takeoff trainer</td><td>Coached steps from the runway to a safe climb. A green ring shows the line a hidden pilot flew in this same aircraft: put the white flight-path marker in it. Your liftoff speed is scored at the end.</td></tr>
-<tr><td>Landing trainer</td><td>You start on the downwind leg of the circuit and must slow down, lower gear and flaps, turn base and final, fly the glide slope, flare and brake. The green ring follows the pilot's recorded landing. Scored for sink rate, speed and centerline.</td></tr>
-<tr><td>Convoy strafing</td><td>One convoy at a time drives from Airbase Yamamoto to Depot Tanaka: a jeep, supply trucks, a tanker and an APC. You start about 4.5 km out so there is time to line up. The green ring leads you in along the pilot's line behind the rear vehicle; fire from about 500 m and pull up after the front vehicle. Tankers explode and damage vehicles near them.</td></tr>
-<tr><td>Building bombing</td><td>Destroy the 11 depot and base buildings. The green ring takes you level at 900 m, then into the pilot's dive. The red IMPACT circle shows where a bomb would land; the coach says GET READY and then RELEASE NOW. Ordnance resupplies a few seconds after you use it all.</td></tr>
-<tr><td>Replay (every mission)</td><td>Before each mission starts, a hidden pilot flies it first in the same aircraft, flight model and weapons (a progress note shows while it works; Esc skips it). Its successful path is the green ring during your flight. When the mission ends (or after a crash, press <b>\</b>) an outside camera replays the flight with coaching notes: <b>orange</b> is your path and <b>green</b> is the pilot's, with a ghost aircraft flying it; the red marker shows the biggest gap. On the six maneuver trainers the pilot starts from your own entry speed and attitude. If the pilot cannot record a valid line (this can happen on Hardcore convoy) no ring is shown and a note says so. Buttons and a slider pause, scrub, slow down and change the camera (Side, Top, Behind).</td></tr>
-<tr><td>Barrel roll</td><td>Pull the nose up, then corkscrew around an imaginary barrel ahead with a steady roll and a light pull the whole way. Scored for heading error, height change and keeping the G above zero. Hardcore mode: enter faster and use rudder for the torque.</td></tr>
-<tr><td>Immelmann turn</td><td>Half loop up, then a half roll to level: you leave heading the other way and higher. Standard mode: about 520 km/h and 3.5 to 4.5 G. <b>Hardcore mode: about 650 km/h, 4.5 to 5.5 G, right rudder as the speed bleeds off, and watch the stall at the top.</b></td></tr>
-<tr><td>Split S</td><td>Roll onto your back and pull through a half loop down: the fastest way to reverse course and lose height. Start 2,400 m up with the throttle closed; it needs about 1,000 m. Hardcore mode: watch the speed and the G limit.</td></tr>
-<tr><td>Wingover</td><td>A climbing turn that trades speed for height, a pause with the nose falling through the horizon, then a diving turn back to your start height on the reverse heading.</td></tr>
-<tr><td>Low yo-yo</td><td>Against a scripted drone that turns left and never fires: you are in lag behind his turn, so dive below him to gain speed, cut across, then zoom up onto his tail inside 450 m without overshooting. Hardcore mode: you lose energy faster, so keep full power.</td></tr>
-<tr><td>High yo-yo</td><td>The drone is slower than you: you would overshoot, so pull up out of his turn plane, trade the speed for height, then roll over and drop behind him. Hardcore mode: pull up smoothly and keep the speed above 250 km/h.</td></tr>
+<tr><td>Free patrol</td><td>The ship is yours: conn her from the bridge, answer the bells, keep watch. No targets out.</td></tr>
+<tr><td>Gunnery practice</td><td>One for each gun (the 3&Prime;/50, the 20 mm and the twin 40 mm): puts out the practice targets and takes you to that gun.</td></tr>
+<tr><td>Antisubmarine attack run</td><td>Takes you to the torpedoman's station with the exercise submarine out. The OOD runs in on him and phones the orders; you fire the Hedgehog, the K-guns and the racks. One run, then the debrief and the pattern plot stay up until you press T again or leave the station.</td></tr>
+<tr><td>Sonar watch</td><td>The communications station with the exercise submarine out: find him on the sonar and the radar.</td></tr>
+</table>
+<h2>The stations (keys 1 to 6; press again for the next view there)</h2>
+<table class="t2">
+<tr><td><b>1</b> OOD</td><td>The open bridge: conn the ship (W / S rings the engines, A / D the rudder), X for the binoculars.</td></tr>
+<tr><td><b>2</b> Engineering</td><td>The forward engine room: the telegraph rings, the red needle is the order and the black one the answer; the gauges follow the engines.</td></tr>
+<tr><td><b>3</b> Communications</td><td>Radar, sonar and radio: press 3 again for each set.</td></tr>
+<tr><td><b>4</b> Quartermaster</td><td>The pilothouse: the wheel, the telegraphs and the compass.</td></tr>
+<tr><td><b>5</b> Gunner</td><td>The 3&Prime;/50 forward, the 20 mm amidships and the twin 40 mm aft (press 5 again for each). The mouse lays the gun; hold the backtick (`) to move it six times faster.</td></tr>
+<tr><td><b>6</b> Torpedoman</td><td>The Hedgehog, the port and starboard K-guns and the stern racks. You cannot steer from here: the OOD cons the ship.</td></tr>
+<tr><td><b>C</b> chase view</td><td>The camera outside the ship; C again returns to your station.</td></tr>
 </table>
 <div class="cols">
-<div><h2>Takeoff</h2><ol>
-<li><b>Flaps 10&deg;</b> (F once). Gear stays down.</li>
-<li><b>Full power</b>. Keep her straight on the centerline: roll input steers on the ground.</li>
-<li><b>Rotate at about 160 km/h</b>: ease the stick back until the nose is about 10&deg; above the horizon and hold it.</li>
-<li><b>Liftoff</b> at 170&ndash;180 km/h, 17&ndash;20 seconds after you start rolling. Then <b>gear up</b>.</li>
-<li>Hold the nose 8&ndash;10&deg; up while the speed builds to <b>240 km/h</b>, then <b>flaps up</b>.</li>
-<li><b>Climb out</b> at about 250 km/h.</li></ol></div>
-<div><h2>Landing</h2><ol>
-<li>Fly the circuit: downwind, a right turn onto base about 1.5 km past the threshold, a second right turn onto final.</li>
-<li><b>Idle early</b>: 340 to 210 km/h takes about 20 seconds. <b>Gear</b> below 350 km/h, then <b>flaps</b> 10&deg;, 20&deg;.</li>
-<li><b>Final at 210 km/h</b> on a 3&deg; glide slope. Nose for speed, throttle for height.</li>
-<li>Too fast? Idle, nose up a little, flaps 20&deg;. Still over 260 km/h inside 1 km: <b>go around</b>.</li>
-<li><b>Flare</b> about 8 m up: idle, nose to about 8&deg;. Touch down at 160&ndash;180 km/h, sink under 3 m/s, then brakes.</li>
-<li>Stop with the throttle at idle: repairs and rearms in about 4 seconds.</li></ol>
-<div class="note">You crash with a sink rate over about 7 m/s, gear up, steeply tilted, or leaving the runway faster than about 70 km/h.</div></div>
-</div>
-<h2>Flight path guide (trainers)</h2>
-<p>A single <b>green ring</b> (labelled STEER HERE) marks the line the pilot flew. The white flight-path marker shows where the plane is really going: keep it centred in the ring and you are on the pilot's path, and the ring moves ahead to pull you back if you drift. It works on takeoff, landing, bombing, convoy and the six maneuver trainers. In bombing and convoy the gold ring is your gun aiming point. The coach panel says how far off the line you are. L hides or shows the ring; K shrinks the coach panel to one line.</p>
-<div class="cols">
-<div><h2>Cockpit warnings</h2>
+<div><h2>Gunnery</h2>
 <table class="t2">
-<tr><td>STALL</td><td>The wing is stalled. Release the stick, lower the nose, add power. The STALL readout on the left panel shakes within a few km/h of the stall.</td></tr>
-<tr><td>PULL UP</td><td>Low and descending fast.</td></tr>
-<tr><td>Photo mode</td><td>Pause menu &gt; <b>Photo mode</b>, or F9. The game freezes and you get a free camera: W A S D move, Q / E down and up, Z / C roll, left-drag looks around, right-drag moves the camera along the ground (sideways and forward / back), middle-drag moves it up and down, the wheel moves it in and out in small steps (it never runs out), and holding the backtick key (`) makes the drags and the wheel move six times as far. The panel sets the field of view, the time of day and the weather (these revert when you leave), the picture size (up to 4K), the JPG quality, and whether the HUD boxes and your aircraft are shown. &ldquo;Stamp info&rdquo; prints the version, date, mode, position, speed, game time and weather on the photo, which helps when reporting a problem. Enter or Space takes the photo and your browser saves the JPG. H switches the HUD, F hides the panel, Esc leaves. &ldquo;Action: running&rdquo; lets the flight continue while you move the camera.</td></tr>
-<tr><td>Time &amp; weather</td><td>Settings &gt; Time of day &amp; weather. <b>Time</b>: your local clock, dawn, morning, midday, afternoon, evening or night; tick &ldquo;Time passes&rdquo; to run a day in 24 minutes. <b>Weather</b>: clear, partly cloudy, overcast, rain, thunderstorm or fog. Overcast, rain, storm and fog cut how far you can see and dim the sun. Overcast, rain and thunderstorm have a <b>solid cloud deck</b> (about 1,700 m, 1,300 m and 1,000 m up, 450 to 900 m thick, with a few gaps in overcast): you see its grey underside from below, you fly through white-out inside it (the view shrinks to about 100 m, and icing can build), and you climb out onto a bright white top with clear sky, full sun and no rain above it. Searchlight beams and gun crews cannot see through it. At night you get a moon, stars, runway lights, lit building windows, the hangars and the tower, and wingtip and tail lights (red left, green right, white tail). Rain streaks past the canopy; a thunderstorm adds lightning and thunder. Fly the runway lights in, and watch your altitude. <b>Night:</b> the instrument panel dims, and with the landing gear down the landing light puts a pool of light on the ground ahead of the nose.</td></tr>
-<tr><td>DAMAGE</td><td>Enemy hits hurt one system at a time (Settings &gt; Battle damage). <b>Engine</b>: less power, smoke, then fire or a dead engine. <b>Wing</b>: the plane rolls toward the damaged side and the aileron weakens (lost when badly hit). <b>Tail</b>: weaker elevator and rudder. <b>Fuel tank</b>: a leak. <b>Hydraulics</b>: flaps jam and the gear will not retract. A fire burns the hull: dive fast for about 3 seconds to put it out. Land and stop with the throttle at idle to repair everything. If it is hopeless, bail out (J twice, or hold both bumpers, or Pause menu &gt; Bail out): the canopy blows off, you climb out of the seat, fall clear and the parachute opens. <b>Drag the mouse</b> (or use the right stick) to look all around, down at the ground and up at the canopy. You need about 100 m of height when you climb out for the parachute to open in time; Enter restarts at any time. The aircraft is lost.</td></tr>
-<tr><td>Sound</td><td>The engine note follows the throttle and propeller speed, with wind, tyre rumble, guns, rockets, bombs and explosions (heard late when far away), and a chirp and squeal of rubber when you touch down fast. Warning tones: a pulsing buzzer for a stall, a steady wail past the redline, a two-tone warble in a spin, and fast beeps for overstress. Settings &gt; Sound has the overall volume and a separate Engine &amp; Wind volume; U mutes.</td></tr>
-<tr><td>OVERSTRESS <small>(Hardcore)</small></td><td>You are pulling more G than the airframe is rated for. Ease off at once: the damage adds up, and about 1.5 times the limit breaks the wing. Landing and stopping at idle repairs it.</td></tr>
-<tr><td>SPIN <small>(Hardcore)</small></td><td>The aircraft is spinning. Opposite rudder and the stick forward; throttle back. Then pull out gently.</td></tr>
-<tr><td>ENGINE OVERHEAT <small>(Hardcore)</small></td><td>Too long above 90% throttle. Reduce power until the temperature falls. The oil and coolant gauges and the HUD TEMP readout show it.</td></tr>
-<tr><td>LOW FUEL / OUT OF FUEL <small>(Hardcore)</small></td><td>Land soon. With no fuel the engine stops: glide to a landing. Landing and stopping at idle refuels you.</td></tr>
-<tr><td>ICING <small>(Hardcore)</small></td><td>Ice is building on the wing in cloud below freezing. Leave the cloud or descend to warmer air (the HUD shows the outside temperature and the ice). It cuts lift and thrust and adds drag; the cockpit frosts over.</td></tr>
-<tr><td>WIND, GUSTS, TURBULENCE <small>(Hardcore)</small></td><td>The HUD WIND line shows where the wind blows from, its speed, and the head or tail and the left or right cross component for the way you are pointing. Crab into a crosswind in the air; on the ground use rudder against the tail wheel's weathercock. The windsock by the tower shows the surface wind. In rough air ease the controls and slow down.</td></tr>
-<tr><td>WET RUNWAY <small>(Hardcore)</small></td><td>After rain the brakes are weaker and the steering is weak; above about 160 km/h in heavy rain the aircraft hydroplanes and the brakes hardly work. Touch down early and brake gently.</td></tr>
-<tr><td>REDLINE &ndash; COMPRESSIBILITY</td><td>Over about 755 km/h: buffet and stick jitter. Ease off.</td></tr>
-<tr><td>G LIMIT</td><td>Pulling more than about 6.5 G. Above about 4.5 G sustained the screen greys out and you black out.</td></tr>
-<tr><td>OIL PRESSURE</td><td>Inverted for more than 10 seconds cuts the engine. Roll upright to recover.</td></tr>
-<tr><td>Flaps overspeed</td><td>Flaps retract on their own if you exceed their speed limit (10&deg; 640, 20&deg; 440, 30&deg;/45&deg; 360 km/h). In Hardcore mode the flaps have the real six settings: 10&deg; 644, 20&deg; 443, 30&deg; 362, 40&deg; 290, 50&deg; 265 km/h.</td></tr>
-<tr><td>Gear overspeed <small>(Hardcore)</small></td><td>The gear will not come down above 273 km/h (170 mph): the HUD says GEAR OVERSPEED. Slow down and try again.</td></tr>
-<tr><td>WAR EMERGENCY / RPM <small>(Hardcore)</small></td><td>More than 5 minutes above 90% throttle, or more than 3 seconds above 3240 rpm in a fast dive, overheats the engine. Throttle back and let it cool.</td></tr>
-<tr><td>Panel lamps</td><td>GEAR is green with the gear down. FLAPS is amber when flaps are out. STALL is amber near the stall. ENG FAIL is red when the engine has cut. MAGS, BATT, CANOPY and INVERTER are always green.</td></tr>
-<tr><td>Coach colors</td><td>Green: on target. Amber: adjust. Red: danger.</td></tr>
+<tr><td>Fire</td><td>Left mouse button, Space or the controller trigger.</td></tr>
+<tr><td>Aiming rings</td><td>Game mode: a ring on each target shows where to lay the sight so the shells meet it; grey with OUT OF RANGE beyond the gun's effective range.</td></tr>
+<tr><td>3&Prime;/50 range</td><td>Game mode: the sight-setter ranges the target nearest your sight. Hardcore: you set it (mouse wheel, Page Up / Page Down).</td></tr>
+<tr><td>Reloading</td><td>Guns reload by themselves when empty; R reloads on demand. Changing to a gun finds it loaded.</td></tr>
+<tr><td>Practice targets (T)</td><td>Rafts out to 6,000 yards (two inside 20 mm range), sleeves towed by two aircraft (one for the 40 mm, one passing close for the 20 mm), PT-105 towing a target sled at 30 knots, and the exercise submarine. A shot sleeve streams again after 25 seconds. Hitting PT-105 brings &ldquo;check fire&rdquo;.</td></tr>
+<tr><td>Shell cam</td><td>Settings: follow your last shells to the target (off at first). Any key returns to the gun.</td></tr>
 </table></div>
-<div><h2>Weapons</h2>
+<div><h2>The torpedoman</h2>
 <table class="t2">
-<tr><td>Guns</td><td>Six .50 cal (12.7 mm), 1,840 rounds: 380 on each inboard gun, 270 on the other four. About 800 rounds a minute each, muzzle speed 880 m/s. Bullets drop under gravity. The gold ring is where they converge, about 350 m ahead; the orange ring shows where to aim to lead a bandit.</td></tr>
-<tr><td>Rockets</td><td>Six 127 mm HVAR, fired in order from the rails, leaving 60 m/s faster than you with no guidance. Fire from 800&ndash;1,000 m with the gold ring on the target.</td></tr>
-<tr><td>Bombs</td><td>Two 230 kg (500 lb), released with Z / X / the BOMB button. A bomb keeps your speed and falls for about 5 seconds. The blast reaches 75 m and does less damage with distance.</td></tr>
-<tr><td>Weight</td><td>Bombs and rockets add weight and raise the stall speed; it drops as you use them.</td></tr>
-<tr><td>Resupply</td><td>Land and stop with the throttle at idle: about 4 seconds to repair, rearm and (in Hardcore mode) refuel. The trainers also top up ammunition and hull for you.</td></tr>
-<tr><td>Ground fire</td><td>Settings &gt; Ground fire. Each enemy base (the depot and the base) has two <b>Type 96 25 mm</b> twin anti-aircraft guns in sandbagged pits and two <b>Type 96 150 cm searchlights</b> (beam reach about 8 km). The guns open fire from about 2.8 km in free flight, convoy and bombing, in bursts of tracer, with a pause to change magazines. They fire about 220 rounds a minute (15-round magazines, so a pause every few seconds to change them), one round in four a tracer. They are hand-cranked and fire at where they think you will be, so the aim is good on a steady run, bad when you jink, and poor beyond a couple of kilometres (the real gun was judged ineffective past about 2 km). A hit hurts the hull and may damage a system. They shoot back less accurately at Low and more at Hard. At night the lights sweep the sky; once a beam finds you (or the sound locators have given the crews a bearing) the lights lock on and the guns fire at the lit aircraft, and the glare dazzles you, worst below about 1,200 m. The lights follow a hard turn slowly, so jink out of the beam to lose it; held in the beams for more than 20 seconds you are hit about twice as hard. <b>Weather limits them:</b> a beam stops at the first cloud and only lights its underside, so a target behind a cloud is not lit; rain cuts the beam to about 3 km, a thunderstorm to 1.5 km and fog to about 300 m. The gun crews cannot see through cloud either, and by day see only as far as the weather lets them (about 700 m in fog); at night in fog they fire only at what a beam or the close range lights up. The lights can still follow you by sound. The guns and lights are targets (pink squares on the free-flight map) and can be strafed, rocketed or bombed. Training missions other than convoy and bombing, and the replay, are not shot at. Your own airfield has a QF 3.7-inch gun and a searchlight for show.</td></tr>
-<tr><td>Wrecks, smoke and craters</td><td>A destroyed building, vehicle, gun or fuel store leaves a scorch mark and burns for a while, with a smoke column you can see from miles away (fuel and tanker fires burn longest). Bombs leave craters, rockets small scorch marks, and a bandit that hits the ground or your own crash leaves a burning wreck. Smoke leans downwind. They stay for the rest of the flight and are cleared when you restart. Graphics Low shows fewer fires at once.</td></tr>
-<tr><td>The working airfield and the sea</td><td>Your airfield is busy: a fighter taxis out to the hold short line and back, a jeep and a fuel truck drive along the apron edge, and ground crew walk between the parked fighters. They stop and give way if you taxi close. Out over the water a freighter, a tanker and a patrol boat sail steady courses with wakes, a few km from the airfield. They are scenery, not targets.</td></tr>
-<tr><td>ADF Navigation (mission) and Kamome Field</td><td>A small island airfield, <b>Kamome Field</b>, lies 43 km out over the sea to the north-north-west of your airfield (fog hides it until you are within about 15 km). It has a 1,300 m runway, 07 / 25 (heading 070 / 250), a tower, two hangars and a radio beacon, <b>KMM</b>. The <b>ADF radio compass</b> (the round dial on the right) has a red needle that always points at the beacon: the top of the dial is your nose, so the needle straight up means you are flying at the station. Needle to the right: turn right. A crosswind drifts you, so correct a few degrees toward the needle and do not chase it. The dial also shows the beacon bearing, distance and flying time. In free flight, click the dial to switch between KMM and your own field (HOM). The <b>ADF Navigation</b> mission starts you high over your airfield pointed the wrong way and coaches you in five steps: point at the beacon, home on the needle, let down and look for the island, pass over the station (the needle swings to the tail), then land on the runway. The ADF can be hidden in the pause menu (Instruments). Beyond the mapped land the world is open sea.</td></tr>
-<tr><td>Port and airbase (free flight)</td><td>A harbour and a second airbase sit on the north coast, about 7.8 km from your airfield. The port has a quay and pier with a freighter, a tanker, a patrol boat, a Ukuru-class escort (kaib&#333;kan) that patrols up and down the coast off the port, two cranes, warehouses, fuel tanks and vehicles. The airbase has a runway, taxiway and apron with nine parked fighters, hangars, fuel tanks and vehicles, defended by guns and a searchlight at each site. They appear only in free flight; no missions use them yet. The whole airfield is fenced, with guard towers, a control tower and a gravel yard for the buildings. A road runs from the port past the airbase gate to the depot where the convoy starts, and another from the second base, where the convoy ends, back to the port. No road reaches your airfield. Red squares on the map and the compass point to the targets.</td></tr>
-<tr><td>Roam camera</td><td>Press <b>Y</b> to let go of the chase camera: the mouse then moves the camera like photo mode (left-drag looks, right-drag moves along the ground, middle-drag moves up and down, wheel moves in and out; hold the backtick key ` for six times bigger steps) while the flight carries on with all the usual keys. Y again, or C, returns to the chase camera.</td></tr>
-<tr><td>Targets</td><td>The compass shows the nearest target in red (T), home in white (H) and the nearest bandit in pink (B). Fuel tanks and tankers explode. Hull damage from enemy hits shows on the left panel.</td></tr>
+<tr><td>Orders</td><td>The OOD's orders come on the phone box: go to the weapon it names (6 or J in game mode, walk in Hardcore), set the depth, and fire on the order.</td></tr>
+<tr><td>Hedgehog</td><td>24 contact-fuzed bombs thrown in a ring ahead: they burst only if one hits the submarine. R reloads.</td></tr>
+<tr><td>K-guns</td><td>Two each side, thrown about 60 yards abeam; each crew reloads its gun in about a minute (half in game mode).</td></tr>
+<tr><td>Racks</td><td>Two stern racks of 8 charges, dropped port and starboard in turn.</td></tr>
+<tr><td>Depth and arming</td><td>Each position has its own pistol depth setting and safety fork (X arms it). On safe, a charge does not go off.</td></tr>
+<tr><td>Debrief</td><td>After the run: kill, damaged or missed, with a plot of where every charge went off.</td></tr>
 </table></div>
 </div>
-<h2>Enemy difficulty</h2>
-<table class="t2 diff">
-<tr><td>Skill</td><td>Speed, climb and turning</td><td>Toughness</td><td>Aim and range</td></tr>
-<tr><td>LOW (40%)</td><td>40% of the P-51: top speed about 283 km/h, climb about 1,360 ft/min</td><td>Fragile (8 hit points)</td><td>Very inaccurate; opens fire inside 350 m; half damage</td></tr>
-<tr><td>MEDIUM (65%)</td><td>65% of the P-51: top speed about 460 km/h, climb about 2,200 ft/min</td><td>Moderate (15 hit points)</td><td>Modest accuracy; fires inside 500 m; normal damage</td></tr>
-<tr><td>HARD (100%)</td><td>Matches the P-51</td><td>Tough (35 hit points)</td><td>Accurate; fires inside 750 m; double damage</td></tr>
+<h2>The ship</h2>
+<table class="t2">
+<tr><td>Engines</td><td>W / S move the engine order (the telegraph) through Back Full, Back 2/3, Back 1/3, Stop, Ahead 1/3, 2/3, Standard, Full and Flank; it stays where you leave it. The engine room answers in a second or two and she gathers way slowly: about 15.7 knots full ahead, 6 astern.</td></tr>
+<tr><td>Rudder</td><td>A / D put the rudder over; let go and it stays. Away from the bridge the helmsman holds her on her heading.</td></tr>
+<tr><td>Sea</td><td>She rides the waves. Game mode: Settings &gt; Wave motion can hold her steady at the guns.</td></tr>
+<tr><td>Running aground</td><td>She stops if her leading end would be in water shallower than her draft.</td></tr>
+<tr><td>Sound</td><td>Her two diesels follow the engine room's answer, beating against each other; with the blowers, exhaust, screws, wash and wind, mixed for where you are.</td></tr>
+<tr><td>Photo mode</td><td>Pause menu &gt; Photo mode, or F9: the game freezes and you get a free camera.</td></tr>
+<tr><td>Time &amp; weather</td><td>Settings &gt; Time of day &amp; weather.</td></tr>
 </table>
-<div class="note">Choose the skill with the buttons on the start screen, keys 1 / 2 / 3, or a tap of R3 on a controller. One bandit appears at a time (in the air, B or the controller B button calls one, and pressing it again clears it). The bandit flies by the same physics as you: it stalls if it pulls too hard, loses speed and height in hard turns, and crashes if it hits the ground. Make it keep turning, then get on its tail. Roughly one shot-down bandit in three (when it is high enough) has its pilot bail out: watch for the parachute.</div>
 </div>
 </div></div>
 <div class="p" id="rot">Turn your phone sideways (landscape) for the best view<br><small>tap to dismiss</small></div>
@@ -599,7 +548,7 @@ const _el = {},
                            tolerated; corrupt saved data is reported and ignored.
    logWarn(what, e)      - optional browser features (wake lock, vibration, fullscreen, audio...): a failure is logged, never fatal. */
 /* VERSION: major.minor. The user decides when the major number changes; the minor number goes up with every change. */
-const VERSION = '0.32';
+const VERSION = '0.39';
 document.querySelectorAll('.verTag').forEach((e) => (e.textContent = 'Version ' + VERSION));
 /* the player's ship mesh and her start line (filled in where the world places the PCE) */
 const SHIPM = { mesh: null, wake: null, pts: null, Y: -8.15 /* waterline at the sea plane */ };
@@ -703,6 +652,18 @@ const WAVE = { mode: ['on', 'guns', 'off'].includes(store.get('pce842wave', 'on'
    trim      working trim tabs: elevator, rudder and aileron trim set the speed the aircraft holds hands-off (keyboard and controller only)
    FM.use(name) is true only when the master switch AND that option are on. */
 const HC_KEYS = [
+  /* PCE-842: the ship's own Hardcore parts (the Hardcore tab) */
+  'eng',
+  'sea',
+  'range',
+  'rings',
+  'aa',
+  'reload',
+  'smoke',
+  'walk',
+  'orders',
+  'dmg',
+  /* the P-51's (kept for the flight code the fork still carries; not shown) */
   'torque',
   'spin',
   'alt',
@@ -722,6 +683,16 @@ const HC_KEYS = [
 const FM = {
   on: false,
   opt: {
+    eng: true,
+    sea: true,
+    range: true,
+    rings: true,
+    aa: true,
+    reload: true,
+    smoke: true,
+    walk: true,
+    orders: true,
+    dmg: true,
     torque: true,
     spin: true,
     alt: true,
@@ -2483,7 +2454,12 @@ const PCEM = (() => {
   /* ---------- the hull, from the plans ---------- */
   const F_STEM = -1.1,
     F_BRK = 62.8,
-    F_END = 90.2 /* the transom: 183 ft 11.5 in overall from the stem head */;
+    F_END = 91.16 /* the transom at the deck: plate 4 (outboard profile) shows it raked, from frame 90 at the counter's knuckle to
+      the deck at about 91.2 (measured on plate 4); 91.16 makes her the published 184 ft 6 in (56.24 m) overall from the stem head (it was
+      once a square stern at 90.2, 0.6 m short) */,
+    F_KN = 90 /* the transom at the knuckle */;
+  /* the frame of the raked transom at height y (between the knuckle c and the deck t) */
+  const fTr = (y, c, t) => F_KN + (F_END - F_KN) * Math.min(1, Math.max(0, (y - c) / Math.max(0.01, t - c)));
   const HD = [
       [-1.1, 5.77],
       [2.6, 5.62],
@@ -2552,7 +2528,9 @@ const PCEM = (() => {
     Bd = (f) => tab(BD, f),
     Bc = (f) => (f < 0 ? 0 : tab(BC, f));
   /* the knuckle: the waterline under the hull, rising above it at the overhanging counter stern */
-  const yc = (f) => (f < 0 ? 5.77 * (-f / 1.1) : f > 86 ? 0.5 * sst((f - 86) / 4.2) : 0);
+  /* (plate 4: the counter meets the 8 ft 4 in waterline at about frame 89.7, a waterline length of 179 ft 4.5 in; it once rose from frame 86 and
+     ended the waterline at 88.3, 0.85 m short) */
+  const yc = (f) => (f < 0 ? 5.77 * (-f / 1.1) : f > 89.7 ? 0.5 * sst((f - 89.7) / 1.5) : 0);
   /* the keel: a curved forefoot, flat from frame 6 to 70, rising in the run to the counter */
   const yk = (f) => {
     if (f < 0) return yc(f);
@@ -2766,7 +2744,7 @@ const PCEM = (() => {
       th = seat ? 85 * D : pose === 'lean' ? -6 * D : 0,
       sh = seat ? 10 * D : pose === 'lean' ? 6 * D : 0;
     const T = [px + 0.56 * sin(lean), py + 0.56 * cos(lean)] /* top of the trunk */,
-      Hd = [T[0] + 0.24 * sin(lean), T[1] + 0.24 * cos(lean)];
+      Hd = [T[0] + 0.15 * sin(lean), T[1] + 0.15 * cos(lean)] /* the head's centre: 15 cm above the shoulders (it was 24, a long neck) */;
     /* legs */
     for (const s of [-1, 1]) {
       const z = s * 0.11,
@@ -2783,7 +2761,7 @@ const PCEM = (() => {
     for (const s of [-1, 1]) bone([T[0] - 0.02, T[1] - 0.04, s * 0.18], [T[0] - 0.08, T[1] - 0.16, s * 0.22], 0.12, 0.1, KAPOK);
     B(0.26, 0.05, 0.38, 0x3a3326, px, py - 0.02, 0, 0, 0, -lean);
     /* neck, head, Mk 2 helmet with its brim and chin strap */
-    bone([T[0], T[1] - 0.02, 0], [Hd[0] - 0.02, Hd[1] - 0.08, 0], 0.08, 0.08, skin);
+    bone([T[0], T[1] - 0.04, 0], [Hd[0] - 0.02, Hd[1] - 0.06, 0], 0.09, 0.09, skin);
     S(0.1, skin, Hd[0], Hd[1], 0, 0.95, 1.15, 0.92);
     B(0.04, 0.035, 0.035, skin, Hd[0] + 0.1, Hd[1] - 0.01, 0);
     S(0.155, HELM, Hd[0] - 0.01, Hd[1] + 0.06, 0, 1, 0.62, 1.02);
@@ -2873,7 +2851,7 @@ const PCEM = (() => {
     for (let f = 10; f < F_BRK; f += 2.5) FS.push(f);
     const FA = [F_BRK];
     for (let f = 64; f < 86; f += 2.5) FA.push(f);
-    for (const f of [86, 87, 88, 88.3, 89, 89.6, F_END]) FA.push(f);
+    for (const f of [86, 87, 88, 88.3, 89, 89.6, 90, 90.7, F_END]) FA.push(f);
     FS.push(F_BRK);
     const NB = 9,
       NA = 10;
@@ -2883,13 +2861,17 @@ const PCEM = (() => {
         c = yc(f),
         t = top(f),
         pts = [];
+      /* aft of the knuckle each point stops at the raked transom */
+      const at = (y) => (f > F_KN ? Math.min(f, fTr(y, c, t)) : f);
       for (let j = 0; j <= NB; j++) {
-        const y = k + (c - k) * (1 - Math.pow(1 - j / NB, 1.6));
-        pts.push([x, y, side * hb(f, y)]);
+        const y = k + (c - k) * (1 - Math.pow(1 - j / NB, 1.6)),
+          fe = at(y);
+        pts.push([XF(fe), y, side * hb(fe, y)]);
       }
       for (let j = 1; j <= NA; j++) {
-        const y = c + (t - c) * (j / NA);
-        pts.push([x, y, side * hb(f, Math.min(y, t - 1e-4))]);
+        const y = c + (t - c) * (j / NA),
+          fe = at(y);
+        pts.push([XF(fe), y, side * hb(fe, Math.min(y, t - 1e-4))]);
       }
       return pts;
     };
@@ -2913,7 +2895,7 @@ const PCEM = (() => {
       const f = F_END,
         r = ring(f, 1),
         l = ring(f, -1),
-        x = XF(f),
+        x = (XF(F_KN) + XF(F_END)) / 2,
         cy = (yk(f) + top(f)) / 2,
         pos = [];
       /* each triangle both ways round, so the plate is solid whichever way its winding faces (from astern part of it was culled, and
@@ -2936,7 +2918,7 @@ const PCEM = (() => {
       g.computeVertexNormals();
       add(g, KEY, 0, 0, 0);
       /* the deck edge across the transom */
-      B(0.06, 0.12, 2 * hb(f, top(f) - 0.01), KEY, x + 0.02, top(f) + 0.06, 0);
+      B(0.06, 0.12, 2 * hb(f, top(f) - 0.01), KEY, XF(F_END) + 0.02, top(f) + 0.06, 0);
     }
     /* the end of the forecastle deck: a bulkhead across the ship at the break, with doors and the ladder down */
     {
@@ -3085,7 +3067,7 @@ const PCEM = (() => {
     }
     /* the 3"/50 Mk 22 on its pedestal (open mount), ready-service boxes, and the platform ring */
     {
-      const f = 17.5,
+      const f = 16.0 /* plates 4 and 5: the mount at frame 16 (it was at 17.5) */,
         x = XF(f),
         y = yF(f);
       C(2.4, 2.4, 0.05, 0x2f3740, x, y + 0.02, 0, 0, 0, 0, 32);
@@ -3156,7 +3138,7 @@ const PCEM = (() => {
     }
     /* the Hedgehog Mk 10: four cradles of six spigots, loaded, on the centreline ahead of the bridge; its ready boxes */
     {
-      const f0 = 22.2,
+      const f0 = 21.6 /* plate 5: the Mk 10 projector spans frames 20.1 to 23.0 (it was at 22.2) */,
         x = XF(f0),
         y = yF(f0);
       B(2.0, 0.32, 1.85, STEEL, x, y + 0.16, 0);
@@ -3185,15 +3167,16 @@ const PCEM = (() => {
     Y3 = 9.6,
     YG = 10.15 /* the open bridge's raised grating (the compass stands on it, as on plate 3) */,
     YHUT = 11.5;
-  const X_PH0 = XF(23.8),
+  const X_PH0 = XF(25.0) /* plates 4 and 5: the steering station's front at frame 25 (it was 23.8) */,
     X_PH1 = XF(29.0) /* pilothouse */,
     X_RR1 = XF(35.8) /* radar plot / radio room aft end */,
     W_PH = 2.15;
   begin();
   {
-    /* 01: the deckhouse on the forecastle deck, frames 26.6 to 43.4, angled at the forward corners */
+    /* 01: the deckhouse on the forecastle deck, frames 26.6 to 38 (its after wall, behind the blower rooms, on the PCE 874/875
+       upper deck plan; it once ran on to 43.4 and into the 20 mm tub), angled at the forward corners */
     const a = XF(26.6),
-      b = XF(43.4),
+      b = XF(38.0),
       w = 3.85;
     prism(
       [
@@ -3211,8 +3194,8 @@ const PCEM = (() => {
     );
     /* doors and a few portholes in the deckhouse */
     for (const s of [-1, 1]) {
-      B(0.8, 1.8, 0.05, STEEL, XF(40.5), Y1 + 1.0, s * (w + 0.02));
-      for (const f of [30, 33.5, 37]) {
+      B(0.8, 1.8, 0.05, STEEL, XF(36.9), Y1 + 1.0, s * (w + 0.02));
+      for (const f of [30, 33.5]) {
         C(0.16, 0.16, 0.05, BRASS, XF(f), Y1 + 1.55, s * (w + 0.02), HP, 0, 0, 10);
         C(0.12, 0.12, 0.06, WIN, XF(f), Y1 + 1.55, s * (w + 0.03), HP, 0, 0, 10);
       }
@@ -3265,10 +3248,10 @@ const PCEM = (() => {
         B(0.8, 1.85, 0.05, STEEL, XF(31.5), Y2 + 0.95, s * (W_PH + 0.02));
       }
     }
-    /* 20 mm tubs on the wings: two forward (frame 21.8), two aft (frame 34.5) */
+    /* 20 mm tubs on the wings: two forward (frame 24.0, z 3.2), two aft (frame 35.3): the navigating bridge plan (they were at 21.8 and 34.5) */
     for (const s of [-1, 1]) {
-      tub(XF(21.8), Y2 - 0.2, s * 3.45, 1.05, 1.15);
-      tub(XF(34.6), Y2, s * 4.35, 0.95, 1.1);
+      tub(XF(24.0), Y2 - 0.2, s * 3.2, 1.05, 1.15);
+      tub(XF(35.3), Y2, s * 4.35, 0.95, 1.1);
     }
     /* life rafts on the wing sides, and the radio direction-finder cable */
     for (const s of [-1, 1]) {
@@ -3387,8 +3370,27 @@ const PCEM = (() => {
   begin();
   {
     const xm = XF(39.8),
-      y0 = Y2;
-    C(0.1, 0.17, 13.0, STEEL, xm, y0 + 6.5, 0, 0, 0, 0, 10);
+      y0 = Y2,
+      yb = hd(39.8) /* the mast is stepped on the deck abaft the deckhouse (frame 40 on the plan) */;
+    C(0.1, 0.18, y0 + 13.0 - yb, STEEL, xm, (y0 + 13.0 + yb) / 2, 0, 0, 0, 0, 10);
+    /* the pointed platform at the navigating bridge level, from the deckhouse's after wall back round the mast */
+    {
+      const pa = XF(38.0) + 0.05,
+        pb = XF(41.6);
+      prism(
+        [
+          [pb, 0],
+          [xm + 0.3, -0.75],
+          [pa, -1.1],
+          [pa, 1.1],
+          [xm + 0.3, 0.75],
+        ],
+        y0 - 0.12,
+        y0,
+        KEY,
+        DECK,
+      );
+    }
     /* bipod legs to the open bridge's after corners */
     for (const s of [-1, 1]) {
       const ax = XF(33.0) - 0.15,
@@ -3468,12 +3470,12 @@ const PCEM = (() => {
       S(0.3, KEY, XF(f) + 0.12, yd(f) + 1.35, z, 1, 0.9, 1);
       C(0.24, 0.24, 0.05, DARK, XF(f) + 0.36, yd(f) + 1.38, z, 0, 0, HP, 12);
     }
-    /* the 26 ft motor whaleboat on the port side, frames 46 to 57, on chocks, with its boom from the mast */
+    /* the 26 ft motor whaleboat on the port side, frames 44.5 to 57.4, on chocks, with its boom from the mast */
     {
       const L = 7.92,
         Bm = 2.15,
-        x0 = (XF(46) + XF(57)) / 2,
-        z0 = -3.0,
+        x0 = (XF(44.5) + XF(57.4)) / 2 /* plate 5: bow at frame 44.5, stern at 57.4 (it was 46 to 57) */,
+        z0 = -3.1,
         y0 = yd(51) + 0.75;
       const rowsO = [],
         rowsI = [];
@@ -3510,17 +3512,17 @@ const PCEM = (() => {
       Cz(0.22, 0.5, DARK, x, y + 0.62, -1.6, 12);
     }
     /* life nets and floater nets on the sides */
-    for (const s of [-1, 1]) B(3.2, 0.35, 0.3, CANVAS, (XF(43) + XF(48)) / 2, yd(45) + 0.5, s * 4.75);
+    for (const s of [-1, 1]) B(3.6, 0.35, 0.3, CANVAS, (XF(40.6) + XF(46.5)) / 2, yd(43.5) + 0.5, s * 4.8) /* plate 5: frames 40.6 to 46.5 (they were 43 to 48) */;
     /* the starboard 20 mm tub (frame 44.7) */
     tub(XF(44.7), yd(44.7), 3.3, 1.35, 1.05);
-    /* the 40 mm Mk 51 directors, port and starboard (frame 55.7) */
+    /* the 40 mm Mk 51 directors, port and starboard (frame 56.5: plate 4 puts them at 56.8, plate 5 at 56.2; they were at 55.7) */
     for (const s of [-1, 1]) {
-      tub(XF(55.7), yd(55.7), s * 1.25, 0.95, 1.0);
-      C(0.1, 0.13, 1.05, STEEL, XF(55.7), yd(55.7) + 0.52, s * 1.25, 0, 0, 0, 8);
-      B(0.45, 0.35, 0.32, GUNC, XF(55.7), yd(55.7) + 1.2, s * 1.25);
-      for (const d of [-1, 1]) B(0.08, 0.05, 0.42, STEEL, XF(55.7) - 0.24, yd(55.7) + 1.12, s * 1.25 + d * 0.2);
+      tub(XF(56.5), yd(56.5), s * 1.25, 0.95, 1.0);
+      C(0.1, 0.13, 1.05, STEEL, XF(56.5), yd(56.5) + 0.52, s * 1.25, 0, 0, 0, 8);
+      B(0.45, 0.35, 0.32, GUNC, XF(56.5), yd(56.5) + 1.2, s * 1.25);
+      for (const d of [-1, 1]) B(0.08, 0.05, 0.42, STEEL, XF(56.5) - 0.24, yd(56.5) + 1.12, s * 1.25 + d * 0.2);
       /* the director's operator, behind the sight, looking outboard; he is a talker to his mount */
-      man(XF(55.7), yd(55.7) + 0.04, s * 1.25 - s * 0.62, -s * HP, 'stand', 'glass', true);
+      man(XF(56.5), yd(56.5) + 0.04, s * 1.25 - s * 0.62, -s * HP, 'stand', 'glass', true);
     }
     /* RS boxes and the 40 mm barrel stowage */
     for (const s of [-1, 1]) B(1.2, 0.65, 0.55, KEY, XF(58.5), yd(58) + 0.33, s * 4.1);
@@ -3671,14 +3673,14 @@ const PCEM = (() => {
     C(0.007, 0.007, post, DARK, d, -R - post / 2, 0, 0, 0, 0, 5);
     Cx(0.012, d - de + 0.06, DARK, (d + de) / 2, -R - post, 0, 6);
   };
-  /* the two twin 40 mm amidships (frame 61.6, in tubs at the after end of the forecastle deck) */
+  /* the two twin 40 mm amidships (frame 62.1 on plates 4 and 5; it was 61.6, in tubs at the after end of the forecastle deck) */
   for (const s of [-1, 1]) {
     begin();
-    tub(XF(61.6), hd(61.6) + 0.12, s * 2.85, 2.3, 1.08);
+    tub(XF(62.1), hd(62.1) + 0.12, s * 2.85, 2.3, 1.08);
     emit();
     begin();
     P.push(...twin40(0.22));
-    emit(GX.xf(XF(61.6), hd(61.6) + 0.16, s * 2.85, s * 0.6));
+    emit(GX.xf(XF(62.1), hd(62.1) + 0.16, s * 2.85, PI + s * 0.6)) /* at rest trained aft and a little outboard, like the after mount */;
   }
 
   /* ================= THE MAIN DECK AFT: K-guns, the aft twin 40 mm on its platform, its director, the depth-charge racks ================= */
@@ -3686,26 +3688,26 @@ const PCEM = (() => {
   begin();
   {
     const ym = (f) => hm(f) + 0.12;
-    /* the after twin 40 mm platform, 22 in above the deck (frame 74.8), with its splinter shield */
+    /* the after twin 40 mm platform, 22 in above the deck (frame 76.3 on plates 4 and 6; it was 74.8), with its splinter shield */
     {
-      const x = XF(74.8);
-      C(2.55, 2.55, Y_PLAT - ym(74.8), KEY, x, (Y_PLAT + ym(74.8)) / 2, 0, 0, 0, 0, 30);
+      const x = XF(76.3);
+      C(2.55, 2.55, Y_PLAT - ym(76.3), KEY, x, (Y_PLAT + ym(76.3)) / 2, 0, 0, 0, 0, 30);
       C(2.52, 2.52, 0.04, DECK, x, Y_PLAT + 0.02, 0, 0, 0, 0, 30);
       tub(x, Y_PLAT, 0, 2.55, 1.05, DECK);
       for (let i = 0; i < 3; i++) B(0.2, 0.03, 0.7, STEEL, x + 2.75 + i * 0.22, ym(71) + 0.18 + i * 0.18, 0);
     }
-    /* its Mk 51 director on a pedestal platform to port (frame 66.4) */
+    /* its Mk 51 director on a pedestal platform to port (frame 69.5 on plates 4 and 6; it was 66.4) */
     {
-      const x = XF(66.4),
+      const x = XF(69.5),
         z = -1.45,
-        yp = ym(66.4) + 1.15;
+        yp = ym(69.5) + 1.15;
       for (const d of [
         [-0.6, -0.6],
         [0.6, -0.6],
         [-0.6, 0.6],
         [0.6, 0.6],
       ])
-        C(0.04, 0.04, 1.15, STEEL, x + d[0], ym(66.4) + 0.57, z + d[1], 0, 0, 0, 6);
+        C(0.04, 0.04, 1.15, STEEL, x + d[0], ym(69.5) + 0.57, z + d[1], 0, 0, 0, 6);
       B(1.5, 0.06, 1.5, DECK, x, yp, z);
       rails(
         [
@@ -3721,20 +3723,56 @@ const PCEM = (() => {
       B(0.45, 0.35, 0.32, GUNC, x, yp + 1.1, z);
       man(x + 0.6, yp + 0.03, z, PI, 'stand', 'glass', true);
     }
-    /* depth-charge projectors (K-guns Mk 6), two each side (frames 64.6 and 73.7), with roller loaders and arbor stowage */
+    /* depth-charge projectors (K-guns Mk 6), two each side (frames 64.6 and 73.7). Each: a deck foundation, the expansion chamber and
+       breech (the firing lock and lanyard), the barrel laid 45 deg OUTBOARD over the rail; the arbor and its Mk 6 charge in the
+       muzzle are drawn by the game (they leave when she fires and come back when the crew reloads; KG gives their pose). Inboard
+       of each gun, the roller loader: an inclined frame of two rails with three ready charges rolling down toward the gun, and a
+       small loading davit forward of it. A Mk 6 charge: 17.6 in (0.447 m) across, 27.6 in (0.70 m) long */
     for (const s of [-1, 1])
       for (const f of [64.6, 73.7]) {
         const x = XF(f),
           z = s * (hb(f, hm(f)) - 0.75),
-          y = ym(f);
-        B(0.7, 0.12, 0.7, STEEL, x, y + 0.06, z);
-        C(0.17, 0.2, 0.85, GUNC, x, y + 0.48, z + s * 0.08, -s * 0.78, 0, 0, 12);
-        /* the arbor and a Mk 6 charge on it */
-        C(0.06, 0.06, 0.5, STEEL, x, y + 0.92, z + s * 0.38, -s * 0.78, 0, 0, 6);
-        Cz(0.26, 0.68, 0x3f4a3a, x, y + 1.1, z + s * 0.6, 14);
-        /* roller loader and stowed charges inboard */
-        B(1.4, 0.45, 0.6, STEEL, x + 1.0, y + 0.45, z - s * 0.6);
-        for (let k = 0; k < 2; k++) Cz(0.26, 0.6, 0x3f4a3a, x + 0.6 + k * 0.65, y + 0.95, z - s * 0.6, 14);
+          y = ym(f),
+          r45 = s * (PI / 4),
+          c45 = Math.SQRT1_2,
+          py = y + 0.32 /* the barrel's root */;
+        B(0.75, 0.1, 0.75, STEEL, x, y + 0.05, z);
+        C(0.3, 0.34, 0.16, GUNC, x, y + 0.18, z, 0, 0, 0, 14) /* the foundation ring */;
+        C(0.2, 0.2, 0.36, GUNC, x, py + 0.06, z + s * 0.02, r45, 0, 0, 14) /* the expansion chamber */;
+        Cx(0.07, 0.2, 0x2c2e2c, x, py - 0.02, z - s * 0.13, 8) /* the breech and firing lock */;
+        B(0.06, 0.06, 0.3, 0x2c2e2c, x, py - 0.02, z - s * 0.32);
+        C(0.135, 0.135, 0.85, GUNC, x, py + c45 * 0.55, z + s * c45 * 0.55, r45, 0, 0, 14) /* the barrel */;
+        C(0.155, 0.155, 0.05, STEEL, x, py + c45 * 0.96, z + s * c45 * 0.96, r45, 0, 0, 14) /* the muzzle band */;
+        for (const k of [-1, 1]) B(0.04, 0.5, 0.1, GUNC, x + k * 0.2, py + 0.08, z + s * 0.12, 0, r45, 0) /* side brackets */;
+        /* the roller loader: alongside the deck edge just forward of the gun (not inboard, where the 40 mm tubs overhang the deck), two
+           rails sloping down aft toward the gun, three ready charges on them, the end stop by the gun */
+        const dx = f < 70 ? -1 : 1 /* both loaders lie in the clear stretch of deck edge between the two guns */,
+          xi = x + dx * 0.62,
+          xo = x + dx * 2.3,
+          zl = z - s * 0.12,
+          yl = y + 0.5,
+          yh = y + 0.68,
+          Ll = Math.hypot(xo - xi, yh - yl),
+          ang = Math.atan2(yh - yl, xo - xi) + (dx < 0 ? Math.PI : 0);
+        for (const k of [-0.22, 0.22]) {
+          B(Ll, 0.05, 0.05, STEEL, (xi + xo) / 2, (yl + yh) / 2, zl + k, 0, 0, ang);
+          C(0.025, 0.025, yl - y, STEEL, xi, (yl + y) / 2, zl + k, 0, 0, 0, 5);
+          C(0.025, 0.025, yh - y, STEEL, xo, (yh + y) / 2, zl + k, 0, 0, 0, 5);
+        }
+        B(0.04, 0.18, 0.55, STEEL, xi - dx * 0.02, yl + 0.1, zl) /* the stop */;
+        for (let k = 0; k < 3; k++) {
+          const t = (k + 0.5) / 3.1,
+            cx = xi + (xo - xi) * t,
+            cy = yl + (yh - yl) * t + 0.24;
+          Cz(0.224, 0.7, 0x3f4a3a, cx, cy, zl, 14) /* lying athwartships, to roll fore and aft */;
+          for (const e of [-0.33, 0.33]) Cz(0.228, 0.03, 0x2e352b, cx, cy, zl + e, 14);
+        }
+        /* the loading davit: a post, a jib out over the gun, the fall and hook */
+        const xd = x - dx * 0.3;
+        C(0.04, 0.05, 1.9, STEEL, xd, y + 0.95, z - s * 0.55, 0, 0, 0, 8);
+        B(0.05, 0.05, 0.62, STEEL, xd, y + 1.86, z - s * 0.27);
+        C(0.008, 0.008, 0.55, 0x30302a, xd, y + 1.58, z + s * 0.02, 0, 0, 0, 4);
+        B(0.04, 0.08, 0.04, 0x30302a, xd, y + 1.28, z + s * 0.02);
       }
     /* the stern depth-charge racks (Mk 3), port and starboard, sloping to the transom, each loaded with eight Mk 6 charges */
     for (const s of [-1, 1]) {
@@ -3797,7 +3835,7 @@ const PCEM = (() => {
     const g = twin40parts(true);
     mount({
       id: '40',
-      T: GX.xf(XF(74.8), Y_PLAT + 0.02, 0, PI),
+      T: GX.xf(XF(76.3), Y_PLAT + 0.02, 0, PI),
       ry0: PI,
       ...g,
       pivot: T40_PIV,
@@ -3875,10 +3913,10 @@ const PCEM = (() => {
     return [...g.base, ...g.train, ...g.pm, ...g.elev];
   };
   for (const [x, y, z, ry] of [
-    [XF(21.8), Y2 - 0.2, 3.45, -0.5],
-    [XF(21.8), Y2 - 0.2, -3.45, 0.5],
-    [XF(34.6), Y2, 4.35, -1.2],
-    [XF(34.6), Y2, -4.35, 1.2],
+    [XF(24.0), Y2 - 0.2, 3.2, -0.5],
+    [XF(24.0), Y2 - 0.2, -3.2, 0.5],
+    [XF(35.3), Y2, 4.35, -1.2],
+    [XF(35.3), Y2, -4.35, 1.2],
   ]) {
     begin();
     P.push(...oer20());
@@ -4203,13 +4241,13 @@ const PCEM = (() => {
     4: [{ e: [X_PH0 - 2.35, Y2 + 1.66, 0], yaw: 0, pitch: -0.04, name: 'QUARTERMASTER - PILOTHOUSE' }],
     /* the gunner mans a gun (gun: the mount's id): his eye and the way he looks come from the gun itself (see GUN in the game) */
     5: [
-      { gun: '3in', e: [XF(17.5) - 0.63, hd(17.5) + 0.12 + 1.82, -0.6], yaw: 0, pitch: 0, name: 'GUNNER - 3"/50 FORWARD (POINTER)' },
+      { gun: '3in', e: [XF(16.0) - 0.63, hd(16.0) + 0.12 + 1.82, -0.6], yaw: 0, pitch: 0, name: 'GUNNER - 3"/50 FORWARD (POINTER)' },
       { gun: '20', e: [XF(44.7), hd(44.7) + 0.12 + 1.63, 3.3], yaw: 1.4, pitch: 0, name: 'GUNNER - 20 MM STARBOARD AMIDSHIPS' },
-      { gun: '40', e: [XF(74.8) + 0.6, Y_PLAT + 1.8, 1.0], yaw: PI, pitch: 0, name: 'GUNNER - TWIN 40 MM AFT (POINTER)' },
+      { gun: '40', e: [XF(76.3) + 0.6, Y_PLAT + 1.8, 1.0], yaw: PI, pitch: 0, name: 'GUNNER - TWIN 40 MM AFT (POINTER)' },
     ],
     6: [
       /* the torpedoman's four positions, bow to stern: the Hedgehog, the K-guns each side, the stern racks and their control board */
-      { tp: 'hh', e: [XF(24.7), hd(24.7) + 0.12 + 1.65, -1.6], yaw: 0.3, pitch: -0.32, name: 'TORPEDOMAN - HEDGEHOG' },
+      { tp: 'hh', e: [XF(24.1), hd(24.1) + 0.12 + 1.65, -1.6], yaw: 0.3, pitch: -0.32, name: 'TORPEDOMAN - HEDGEHOG' },
       { tp: 'port', e: [XF(69.0), hm(69.0) + 0.12 + 1.65, -2.7], yaw: -1.0, pitch: -0.33, name: 'TORPEDOMAN - PORT K-GUNS' },
       { tp: 'stbd', e: [XF(67.4), hm(67.4) + 0.12 + 1.65, 2.6], yaw: 1.05, pitch: -0.33, name: 'TORPEDOMAN - STARBOARD K-GUNS' },
       { tp: 'rack', e: [XF(81.2), hm(81.2) + 0.12 + 1.65, 0], yaw: PI, pitch: -0.32, name: 'TORPEDOMAN - DEPTH-CHARGE RACKS' },
@@ -4243,16 +4281,76 @@ const PCEM = (() => {
     return `if((${s})||(${s2}))k=${q[0]}.0;`;
   };
   const GL_DZ = 'float dazzle(vec2 v){float k=0.0;' + DZ.map(glQuad).join('') + 'return k;}';
+  /* the weather decks and the outside of her: steel deck plates painted 20-B Deck Blue, the superstructure and fittings weathered.
+     Painted in the shader (no textures to load), the deck told apart by its colour and by facing up */
+  const XGLSL = (() => {
+    const v = (n) => [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255].map((x) => x.toFixed(5)).join(', ');
+    return {
+      head: `
+float xH(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float xN(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(xH(i), xH(i + vec2(1.0, 0.0)), f.x), mix(xH(i + vec2(0.0, 1.0)), xH(i + vec2(1.0, 1.0)), f.x), f.y); }
+float xF(vec2 p){ return 0.5 * xN(p) + 0.25 * xN(p * 2.03 + 7.1) + 0.125 * xN(p * 4.1 + 3.3) + 0.0625 * xN(p * 8.3 + 1.7); }
+float xL(float u, float s){ float f = fract(u / s); return min(f, 1.0 - f) * s; }
+`,
+      body: `
+{
+  vec3 N = normalize(vMN);
+  float m = 1.0;
+  if (distance(vColor, vec3(XDECK)) < 0.012 && N.y > 0.6) {
+    /* the deck: plates in strakes running fore and aft, 1.5 m wide, each strake's butt welds every 6 m staggered from its
+       neighbours'; a dark seam with a raised bead either side */
+    float sk = floor((vMP.z + 0.2) / 1.524);
+    float dz = xL(vMP.z + 0.2, 1.524), dx = xL(vMP.x + 3.0 * mod(sk, 2.0) + 1.1 * sk, 6.1);
+    float d = min(dz, dx);
+    m *= 1.0 - 0.22 * (1.0 - smoothstep(0.004, 0.011, d)) + 0.05 * (smoothstep(0.011, 0.016, d) - smoothstep(0.016, 0.028, d));
+    /* each plate a slightly different age of paint; touch-up patches of fresher, darker paint */
+    vec2 pid = vec2(floor((vMP.x + 3.0 * mod(sk, 2.0) + 1.1 * sk) / 6.1), sk);
+    m *= 0.95 + 0.08 * xH(pid);
+    float tp = step(0.82, xH(floor(vMP.xz / vec2(1.3, 0.9)) + 3.7)) * step(0.4, xN(vMP.xz * 0.8));
+    diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vec3(0.86, 0.9, 1.0), tp * 0.6);
+    /* the non-skid: a fine grit, and a slow mottle */
+    m *= 0.92 + 0.12 * xH(floor(vMP.xz * 140.0));
+    m *= 0.9 + 0.14 * xF(vMP.xz * 0.7);
+    /* worn walkways: the paint scuffed lighter along the side decks and down the centre */
+    float walk = smoothstep(0.55, 0.85, xN(vec2(vMP.x * 0.35, vMP.z * 1.6)));
+    diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.42, 0.45, 0.48), walk * 0.22 * (0.6 + 0.4 * xN(vMP.xz * 9.0)));
+    /* salt: pale tide marks where spray dried */
+    float salt = smoothstep(0.62, 0.8, xF(vMP.xz * 0.45 + 2.0)) * (1.0 - smoothstep(0.8, 0.95, xF(vMP.xz * 0.45 + 2.0)));
+    diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.7, 0.72, 0.72), salt * 0.28);
+    /* rust: small blooms where the paint is chipped, a few bleeding along the seams */
+    float rs = smoothstep(0.84, 0.95, xN(vMP.xz * 3.3 + 11.0)) * smoothstep(0.55, 0.85, xN(vMP.xz * 17.0));
+    rs = max(rs, (1.0 - smoothstep(0.0, 0.04, d)) * smoothstep(0.78, 0.93, xN(vMP.xz * 2.1 + 5.0)) * 0.6);
+    diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.3, 0.21, 0.15) * (0.8 + 0.4 * xN(vMP.xz * 40.0)), rs * 0.5);
+  } else {
+    /* the superstructure, the hull above the boot top and the fittings: a slow mottle in the paint, rust runs from fittings and
+       seams streaking down the vertical faces, salt haze low on them */
+    float vert = (1.0 - abs(N.y)) * (1.0 - smoothstep(0.06, 0.12, max(max(vColor.r, vColor.g), vColor.b) - min(min(vColor.r, vColor.g), vColor.b))) /* paintwork only (greys), not the crew or the coloured fittings */;
+    vec2 uv = vec2(vMP.x + vMP.z, vMP.y);
+    m *= 0.94 + 0.1 * xF(uv * 1.6 + N.xz);
+    float run = smoothstep(0.7, 0.9, xN(vec2(uv.x * 7.0, 0.0))) * smoothstep(0.35, 0.8, xN(vec2(uv.x * 2.0, uv.y * 0.9 + 3.0))) * vert;
+    diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.36, 0.24, 0.16), run * 0.32);
+    float hz = smoothstep(0.55, 0.85, xF(uv * 0.8 + 4.0)) * vert;
+    diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.75, 0.77, 0.77), hz * 0.08);
+  }
+  diffuseColor.rgb *= m;
+}
+`.replace(/vec3\(XDECK\)/g, 'vec3(' + v(DECK) + ')'),
+    };
+  })();
   const material = new THREE.MeshLambertMaterial({ vertexColors: true });
   material.onBeforeCompile = (sh) => {
-    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vMP;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvMP=position;');
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vMP;varying vec3 vMN;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMP=position;vMN=normal;');
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\nvarying vec3 vMP;\n' + GL_DZ + '\n')
+      .replace('#include <common>', '#include <common>\nvarying vec3 vMP;varying vec3 vMN;\n' + GL_DZ + '\n' + XGLSL.head)
       .replace(
         '#include <color_fragment>',
         '#include <color_fragment>\nif(vColor.r>0.99&&vColor.b>0.99&&vColor.g<0.02){' +
           'if(vMP.y<-0.32)diffuseColor.rgb=vec3(0.36,0.14,0.12);else if(vMP.y<0.28)diffuseColor.rgb=vec3(0.075,0.08,0.085);' +
-          'else{float k=dazzle(vMP.xy);diffuseColor.rgb=k>1.5?vec3(0.11,0.115,0.125):k>0.5?vec3(0.36,0.4,0.43):vec3(0.62,0.645,0.65);}}',
+          'else{float k=dazzle(vMP.xy);diffuseColor.rgb=k>1.5?vec3(0.11,0.115,0.125):k>0.5?vec3(0.36,0.4,0.43):vec3(0.62,0.645,0.65);}}\n' +
+          XGLSL.body,
       );
   };
   material.userData.key = 'pce842dazzle';
@@ -4422,6 +4520,17 @@ bool iIs(vec3 c, vec3 k){ return distance(c, k) < 0.012; }
     /* for other craft (PT-105): a 20 mm Oerlikon on its Mk 4 mount with gunner and loader, a twin 40 mm, and a crewman, as parts at their own origins */
     oer20: () => oer20(),
     twin40: (k) => twin40(k),
+    /* the K-guns' loaded arbors: for each gun (port forward, port aft, starboard forward, starboard aft) the muzzle (where the arbor
+       sits) and the charge's centre on the arbor's tray, model frame */
+    KG: [-1, 1].flatMap((s) =>
+      [64.6, 73.7].map((f) => {
+        const x = XF(f),
+          z = s * (hb(f, hm(f)) - 0.75),
+          py = hm(f) + 0.12 + 0.32 /* ym(f) + 0.32, as the model */,
+          c45 = Math.SQRT1_2;
+        return { f, s, mz: [x, py + c45 * 0.96, z + s * c45 * 0.96], ch: [x, py + c45 * 1.32 + 0.12, z + s * c45 * 1.32] };
+      }),
+    ),
     single40: (k) => single40(k) /* the single 40 mm (Army M1 / Navy Mk 3 type) for small craft */,
     oer20pt: () => oer20(true) /* the 20 mm on the four-legged Mk 10 pedestal, for small craft */,
     crew: (x, y, z, yaw, pose, arms) => grab(() => man(x, y, z, yaw, pose, arms)) };
@@ -13281,13 +13390,14 @@ const OCEAN = (() => {
           /* foam: steep crests, the beaches, the ship's bow wave and her wake */
           'float wc=uQ<0.5?0.0:smoothstep(' + f(0.6 * ATOT) + ',' + f(0.98 * ATOT) + ',cr)*smoothstep(0.62,0.8,ofb(P*0.11+vec2(uTime*0.04,0.0)));float fo=uQ>0.5?wc*0.6*(1.0-smoothstep(1.0,4.0,fp)):0.0;\n' +
           'if(dep<3.0){float sw=0.55+0.45*sin(uTime*0.9+ofb(P*0.02)*9.0);float band=smoothstep(0.15,0.45,dep)*(1.0-smoothstep(0.5+0.9*sw,1.4+1.2*sw,dep));fo=max(fo,band*0.7*smoothstep(0.3,0.7,ofb(P*0.3+vec2(uTime*0.08,-uTime*0.05))));}\n' +
-          'float sp=uShip.w;vec2 rl=P-uShip.xy;float sd=length(rl);\n' +
+          'float sp=abs(uShip.w);float sg=uShip.w<0.0?-1.0:1.0;vec2 rl=P-uShip.xy;float sd=length(rl);\n' +
           'if(sd<900.0){vec2 fw=vec2(-sin(uShip.z),-cos(uShip.z));vec2 rt=vec2(-fw.y,fw.x);float al=dot(rl,fw),ac=abs(dot(rl,rt));' +
           'float fq=clamp(((27.75-al)/0.6096-(' + f(PCEM.F_STEM) + '))/' + f(PCEM.F_END - PCEM.F_STEM) + '*31.0,0.0,30.999);int iq=int(fq);float hb=mix(uWL[iq],uWL[iq+1],fract(fq));' +
           /* no water inside the hull: the engine room and the bilges stay dry */
           "if(al>-28.0&&al<27.7&&ac<hb-0.12)discard;" +
           'float sk=clamp(sp/8.0,0.0,1.0);' +
-          'if(al>-29.0&&al<31.0){float bowK=smoothstep(-5.0,24.0,al);float wbw=0.4+3.2*sk*(0.25+0.75*bowK);float b=smoothstep(hb-0.3,hb+0.15,ac)*(1.0-smoothstep(hb+0.1,hb+wbw,ac));fo=max(fo,b*sk*(0.35+0.65*bowK)*smoothstep(0.25,0.6,ofb(P*0.6+vec2(0.0,uTime*1.2))));}' +
+          /* the bow wave builds at the end that leads: the bow going ahead, the stern going astern */
+          'if(al>-29.0&&al<31.0){float bowK=sg>0.0?smoothstep(-5.0,24.0,al):smoothstep(5.0,-24.0,al);float wbw=0.4+3.2*sk*(0.25+0.75*bowK);float b=smoothstep(hb-0.3,hb+0.15,ac)*(1.0-smoothstep(hb+0.1,hb+wbw,ac));fo=max(fo,b*sk*(0.35+0.65*bowK)*smoothstep(0.25,0.6,ofb(P*0.6+vec2(0.0,uTime*1.2))));}' +
           'float tw=0.0;float nT=uQ<0.5?9.0:uQ<1.5?15.0:' + f(NTR - 1) + ';for(int i=0;i<' + (NTR - 1) + ';i++){if(float(i)>=nT)break;vec3 a=uTr[i],c=uTr[i+1];if(a.z<0.0||c.z<0.0)continue;vec2 ab=c.xy-a.xy;float l2=max(dot(ab,ab),1e-3);float h=clamp(dot(P-a.xy,ab)/l2,0.0,1.0);float d=length(P-a.xy-ab*h);float age=max(0.0,uTime-mix(a.z,c.z,h));float w=4.0+age*0.28;tw=max(tw,(1.0-smoothstep(w*0.25,w,d))*exp(-age/34.0));}' +
           '{float n=ofb(P*0.16+vec2(uTime*0.05,uTime*0.03));fo=max(fo,sk*smoothstep(0.15,0.95,tw*1.15+(n-0.5)*0.9)*min(1.0,tw*1.6));}}\n' +
           'fo=clamp(fo,0.0,1.0);\n' +
@@ -13357,13 +13467,14 @@ const OCEAN = (() => {
   const trail = { last: -1e9 };
   /* lay the wake: a point every 2.5 s while she has way on */
   function wake(x, z, hdg, u, t) {
-    U.uShip.value.set(x, z, hdg, Math.abs(u));
+    U.uShip.value.set(x, z, hdg, u) /* signed: going astern, the wash builds at her stern and the wake trails from her bow */;
     const T = U.uTr.value;
     if (Math.abs(u) > 0.3 && t - trail.last > 2.5) {
       trail.last = t;
       for (let i = T.length - 1; i > 0; i--) T[i].copy(T[i - 1]);
     }
-    if (Math.abs(u) > 0.3) T[0].set(x + Math.sin(hdg) * 26, z + Math.cos(hdg) * 26, t); /* the newest point is always under her stern */
+    const e = u >= 0 ? 26 : -27; /* the newest point is always under her trailing end: the stern going ahead, the bow going astern */
+    if (Math.abs(u) > 0.3) T[0].set(x + Math.sin(hdg) * e, z + Math.cos(hdg) * e, t);
   }
   function clearWake() {
     U.uTr.value.forEach((v) => v.set(0, 0, -1));
@@ -20825,19 +20936,14 @@ function updGuide(dt) {
 }
 
 /* mission menu */
+/* PCE-842's missions: [id, title, what it is, station, view there, practice targets out] */
 const MENU = [
-  ['free', 'Free Flight', 'Fly around. A convoy runs on the road, with ground targets, flak guns and searchlights.'],
-  ['takeoff', 'Takeoff Trainer', 'Step-by-step coaching from the runway to a safe climb.'],
-  ['landing', 'Landing Trainer', 'Start on approach: gear, flaps, flare and stop. Scored.'],
-  ['convoy', 'Convoy Strafing', 'Hunt the timed convoy between the depot and the base, under flak (Settings > Ground fire).'],
-  ['bomb', 'Building Bombing', 'Destroy the depot and base buildings under flak (Settings > Ground fire). Ordnance resupplies itself.'],
-  ['barrel', 'Barrel Roll', 'A coached corkscrew roll around a point ahead. Scored.'],
-  ['immelmann', 'Immelmann Turn', 'Half loop up, half roll to level: reverse course and gain height. Hardcore needs more speed.'],
-  ['splits', 'Split S', 'Roll inverted and pull through a half loop down. Needs height.'],
-  ['wingover', 'Wingover', 'Climbing turn over the top and a diving turn back: reverse course at the same height.'],
-  ['lowyoyo', 'Low Yo-Yo', 'Dive below a turning target to gain speed, then zoom up onto his tail.'],
-  ['adf', 'ADF Navigation: Kamome Field', 'Fly 43 km out over the sea with the ADF radio compass, find the island airfield by its radio beacon and land there. Fuel is topped up.'],
-  ['highyoyo', 'High Yo-Yo', 'Pull up out of a turn plane to bleed a speed excess, then drop onto his tail.'],
+  ['patrol', 'Free Patrol', 'The ship is yours: conn her from the open bridge, answer the bells, keep watch. No targets out.', 1, 0, false],
+  ['gun3', 'Gunnery Practice: 3"/50', 'The forward 3"/50 with the target rafts out to 6,000 yards, PT-105 and her target sled, and the towed sleeves.', 5, 0, true],
+  ['gun20', 'Gunnery Practice: 20 mm', 'The 20 mm amidships: the rafts inside 1,000 yards, the sleeve that passes close, and the sled on PT-105\'s passes.', 5, 1, true],
+  ['gun40', 'Gunnery Practice: Twin 40 mm', 'The twin 40 mm aft against the towed sleeves and the target sled.', 5, 2, true],
+  ['asw', 'Antisubmarine Attack Run', 'The torpedoman\'s station with the exercise submarine out: the OOD runs in on him and phones the orders. Hedgehog, K-guns and racks. Scored.', 6, -1, true],
+  ['sonar', 'Sonar Watch', 'Communications, with the exercise submarine out: find him on the sonar and the radar.', 3, 1, true],
 ];
 let menuOpen = false,
   menuSel = 0; /* menuOpen = the pause popup is showing its Missions tab */
@@ -20862,7 +20968,8 @@ function toggleMenu() {
   else pmShow(true, 'mis');
 }
 function menuPick(i) {
-  trn.mode = MENU[i][0];
+  const it = MENU[i];
+  trn.mode = 'free';
   pmOpen = false;
   menuOpen = false;
   $$('pm').style.display = 'none';
@@ -20872,8 +20979,17 @@ function menuPick(i) {
     started = true;
     audio();
     $$('start').style.display = 'none';
+    reset();
   }
-  reset();
+  paused = false;
+  /* the practice targets out (or in) as the mission wants them, then the station and the view there */
+  if (!!PT.on !== it[5]) ptToggle();
+  const list = PCEM.STN[it[3]] || [];
+  camMode = 1;
+  SHIP.stn = it[3] === 6 ? 1 : it[3];
+  SHIP.sub = it[4] < 0 ? 0 : (it[4] - 1 + list.length) % Math.max(1, list.length);
+  shipStation(it[3]);
+  note(it[1].toUpperCase());
 }
 $$('goMenu').onclick = () => toggleMenu();
 
@@ -22252,11 +22368,11 @@ function pmBuild() {
     .querySelectorAll('button')
     .forEach((b) => b.classList.toggle('on', b.dataset.q === QL.mode));
 }
-/* PCE-842: only Settings and Controls for now; Missions, About, Operations and Hardcore are the P-51's pages and come back rewritten for the ship */
-const PM_TABS = ['set', 'ctl'],
+/* PCE-842: the P-51's six tabs, rewritten for the ship: Settings, Missions, About, Controls, Operations, Hardcore */
+const PM_TABS = ['set', 'mis', 'about', 'ctl', 'ops', 'hc'],
   PM_PANE = { set: 'pmPaneS', mis: 'pmPaneM', about: 'pmPaneA', ctl: 'pmPaneC', ops: 'pmPaneO', hc: 'pmPaneH' },
   PM_BTN = { set: 'pmTabS', mis: 'pmTabM', about: 'pmTabA', ctl: 'pmTabC', ops: 'pmTabO', hc: 'pmTabH' },
-  INFO_TABS = ['ctl'];
+  INFO_TABS = ['about', 'ctl', 'ops', 'hc'];
 let pmInfo = 'ctl';
 function pmSetTab(tab) {
   pmTab = tab;
@@ -22362,12 +22478,14 @@ $$('hcOn').onchange = (e) => {
   FM.on = e.target.checked;
   FM.save();
   hcSync();
+  if (typeof modeSync === 'function') modeSync();
   note('HARDCORE SIMULATION: ' + (FM.on ? 'ON' : 'OFF'));
 };
 document.querySelectorAll('#hcList input').forEach((i) => {
   i.onchange = () => {
     FM.opt[i.dataset.hc] = i.checked;
     FM.save();
+    if (typeof modeSync === 'function') modeSync();
   };
 });
 hcSync();
@@ -23102,7 +23220,7 @@ function helpBox() {
   const gun = typeof GUN !== 'undefined' && GUN.cur && camMode == 1 ? GUN.cur.id : '',
     stn = typeof SHIP !== 'undefined' ? SHIP.stn : 1,
     dev = (PCEM.STN[stn] && PCEM.STN[stn][SHIP.sub] && PCEM.STN[stn][SHIP.sub].dev) || '',
-    ctx = gun || (camMode == 1 ? 's' + stn + dev + SHIP.sub + (stn === 6 && FM.on ? 'h' : '') : 'c');
+    ctx = gun || (camMode == 1 ? 's' + stn + dev + SHIP.sub + (stn === 6 && FM.use('walk') ? 'h' : '') : 'c');
   if (ctx === helpCtx) return;
   helpCtx = ctx;
   const mk = (pad) => {
@@ -23125,7 +23243,7 @@ function helpBox() {
       ];
     else if (camMode == 1 && stn === 6)
       l = [
-        FM.on ? '<b>W A S D</b> walk the deck &middot; <b>Shift</b> run &middot; drag to look' : '<b>6</b> next position &middot; <b>' + t('tpJump') + '</b> go to the ordered one',
+        FM.use('walk') ? '<b>W A S D</b> walk the deck &middot; <b>Shift</b> run &middot; drag to look' : '<b>6</b> next position &middot; <b>' + t('tpJump') + '</b> go to the ordered one',
         '<b>' + (pad ? t('guns') : 'Space') + '</b> fire the weapon you are at',
         '<b>Page Up / Down</b> its depth &middot; <b>' + t('gSight') + '</b> arm / safe',
         '<b>' + t('hhLoad') + '</b> load the Hedgehog (at it) &middot; <b>' + t('targets') + '</b> the exercise sub',
@@ -23402,7 +23520,7 @@ const UIACT = {
     }
   },
 };
-['missions', 'bail', 'guide', 'coach'].forEach((k) => (UIACT[k] = () => {})); /* PCE-842: no missions, bail-out or path guide yet */
+['bail', 'guide', 'coach'].forEach((k) => (UIACT[k] = () => {})); /* PCE-842: no bail-out or path guide */
 addEventListener('keydown', (e) => {
   if (e.target && e.target.tagName === 'INPUT' && e.target.type === 'text') {
     if (e.code == 'Escape') e.target.blur();
@@ -24365,7 +24483,7 @@ function updHUD() {
 function shipStation(n) {
   const list = PCEM.STN[n];
   if (!list) return;
-  if (n === 6 && FM.on && camMode == 1 && SHIP.stn === 6) return note('HARDCORE: WALK THE DECK - W A S D, SHIFT RUNS');
+  if (n === 6 && FM.use('walk') && camMode == 1 && SHIP.stn === 6) return note('HARDCORE: WALK THE DECK - W A S D, SHIFT RUNS');
   SHIP.sub = camMode == 1 && SHIP.stn === n ? (SHIP.sub + 1) % list.length : n === 6 ? list.length - 1 /* the torpedoman starts at the racks */ : 0;
   SHIP.stn = n;
   const st = list[SHIP.sub];
@@ -24411,7 +24529,7 @@ function shipStep(dt) {
   /* W / S ring the engines and A / D put the rudder over from every station. Let go of the rudder away from the bridge (a gun, the
      engine room, comms, the fantail) and the helmsman steadies her on the heading she has then */
   const tp6 = SHIP.stn === 6 && (camMode == 1 || ASW.ph !== 'idle') /* the torpedoman cannot conn her: the OOD does */,
-    engOK = !tp6 && (!FM.on || (camMode == 1 && (SHIP.stn === 2 || SHIP.stn === 4))) /* Hardcore: only the engine room and the pilothouse work the engines */,
+    engOK = !tp6 && (!FM.use('eng') || (camMode == 1 && (SHIP.stn === 2 || SHIP.stn === 4))) /* Hardcore: only the engine room and the pilothouse work the engines */,
     ord = engOK ? kb('thrUp') - kb('thrDn') + pad.thr : 0,
     hand = tp6 ? 0 : kb('rollR') - kb('rollL') + pad.y + TC.oR + TC.oY + (GUN.cur && camMode == 1 ? 0 : pad.r),
     atGun = (!atHelm() || ASW.ph !== 'idle') && !hand;
@@ -24475,7 +24593,7 @@ function shipPose(dt) {
   SHIPW.vr += (w0 * w0 * (rT - SHIPW.ro) - 2 * 0.18 * w0 * SHIPW.vr) * dt;
   SHIPW.ro += SHIPW.vr * dt;
   /* the Wave motion setting: the ship is eased level (and to the still waterline) when it is off, or off at the guns and the player is on one */
-  const wm = FM.on ? 'on' : WAVE.mode /* Hardcore: the sea always moves her */,
+  const wm = FM.use('sea') ? 'on' : WAVE.mode /* Hardcore: the sea always moves her */,
     wk = wm === 'off' || (wm === 'guns' && GUN.cur && camMode == 1) ? 0 : 1;
   SHIPW.k += (wk - SHIPW.k) * Math.min(1, dt * 1.5);
   pos.y = SHIPM.Y + SHIPW.hv * SHIPW.k;
@@ -24704,7 +24822,7 @@ const gunOf = (id) => GUN.M.find((g) => g.id === id) || null;
 /* take or leave the gun as the station changes */
 /* reload times: Hardcore the real average, game mode half of it */
 function rldK() {
-  return FM.on ? 1 : 0.5;
+  return FM.use('reload') ? 1 : 0.5;
 }
 /* the easter egg: whichever gun the player takes is fully loaded at once (both modes) */
 function gunFill(G) {
@@ -24843,7 +24961,7 @@ function gunSightToggle() {
 }
 function gunRange(d) {
   if (!GUN.cur || GUN.cur.s.sight !== 'scope') return;
-  if (!FM.on) return note('GAME MODE: THE SIGHT-SETTER RANGES FOR YOU (HARDCORE: YOU SET IT)');
+  if (!FM.use('range')) return note('THE SIGHT-SETTER RANGES FOR YOU (HARDCORE: YOU SET IT)');
   GUN.rng = Math.max(200, Math.min(13000, GUN.rng + d));
 }
 /* is the line of fire clear of the ship? (the firing cutout cam): steps along the bore from the muzzle, in the model frame */
@@ -24895,7 +25013,7 @@ function gunSplash(p, s) {
 }
 function gunBurst(p, s, air) {
   gunFx(p, 0xffb040, s.splash * 6, s.splash * 16, 0.3, 0, true);
-  if (FM.on) gunFx(p, air ? 0x1c1c1c : 0x4a4038, s.splash * 6, s.splash * 26, air ? 6 : 3, air ? 0.3 : 2, false);
+  if (FM.use('smoke')) gunFx(p, air ? 0x1c1c1c : 0x4a4038, s.splash * 6, s.splash * 26, air ? 6 : 3, air ? 0.3 : 2, false);
   else gunFx(p, air ? 0x303030 : 0x4a4038, s.splash * 3, s.splash * 7, 0.8, 0, false) /* game mode: a small, short puff */;
   if (s.blast) blast(p, s.blast[0], s.blast[1]);
   gunSnd('burst', p, s.splash);
@@ -24938,7 +25056,7 @@ function gunFire(G, i) {
   G.fl[i].visible = true;
   G.fl[i].material.rotation = Math.random() * 6;
   G.flT = 0.05;
-  if (FM.on) gunFx(GUN.V[1].copy(p).addScaledVector(d, s.flash * 0.6), 0xb8b8b4, s.flash * 0.6, s.flash * 3, 1.2 + s.flash * 0.4, 0.4, false); /* muzzle smoke: Hardcore only (in game mode smoke never hides the target) */
+  if (FM.use('smoke')) gunFx(GUN.V[1].copy(p).addScaledVector(d, s.flash * 0.6), 0xb8b8b4, s.flash * 0.6, s.flash * 3, 1.2 + s.flash * 0.4, 0.4, false); /* muzzle smoke: Hardcore only (in game mode smoke never hides the target) */
   gunSnd(G.id, null, 1);
 }
 /* per frame: lay the guns, fire the player's, fly the shells */
@@ -24959,7 +25077,7 @@ function gunUpdate(dt) {
     if (dtr || del) gunLay(dtr * dt, del * dt);
     /* the 3"/50's sight: the gun is laid above the line of sight by the superelevation for the range set on the sight */
     if (G.s.sight === 'scope') {
-      if (!FM.on) {
+      if (!FM.use('range')) {
         /* game mode: a rangefinder on the point of aim. Ten times a second the line of sight is followed out from the eye to whatever
            it meets first (a hillside, the beach, the water), so land targets range right and a small move of the sight near the
            horizon does not throw the range about; above the horizon (nothing met) the range is held. The sight-setter then
@@ -25240,7 +25358,7 @@ function ptAt(tg) {
 function gunRings() {
   const c = $$('gunRing'),
     G = GUN.cur,
-    on = !!(G && !FM.on && UI.vis('gring') && camMode == 1 && !PHOTO.on && !ROAM.on && !orbitOn && !SCAM.on);
+    on = !!(G && !FM.use('rings') && UI.vis('gring') && camMode == 1 && !PHOTO.on && !ROAM.on && !orbitOn && !SCAM.on);
   if (!on) {
     if (c.dataset.on) {
       c.getContext('2d').clearRect(0, 0, c.width, c.height);
@@ -26532,7 +26650,7 @@ function ptToggle() {
 }
 function ptUpdate(dt) {
   if (!PT.on) return;
-  for (const t of PT.L) if (t.m) t.m.children.forEach((c) => c.userData.ptRing && (c.visible = !FM.on));
+  for (const t of PT.L) if (t.m) t.m.children.forEach((c) => c.userData.ptRing && (c.visible = !FM.use('rings')));
   const cp = PT.g.geometry.attributes.position.array;
   let n = 0;
   ptTowStep(dt);
@@ -26593,7 +26711,7 @@ function ptHit(a, b, s) {
     if (t.kind === 'sub' || t.gone > 0) continue;
     const air = t.kind === 'tug' || t.kind === 'sleeve',
       sl = t.kind === 'sleeve',
-      kr = sl && s.kr ? s.kr[FM.on ? 0 : 1] : t.r,
+      kr = sl && s.kr ? s.kr[FM.use('aa') ? 0 : 1] : t.r,
       r = s.vt && air ? s.vt : kr;
     if (a.distanceToSquared(t.p) > (r + 200) ** 2) continue;
     if (!segHit(a, b, t.p, r)) continue;
@@ -26642,11 +26760,12 @@ function ptHit(a, b, s) {
 function modeSync() {
   $$('gmMode').value = FM.on ? 'hard' : 'game';
   $$('gmNote').textContent = FM.on
-    ? 'Hardcore: the engines answer only from the engine room (2) and the pilothouse (4); the sea always moves the ship; muzzle and burst smoke; you set the 3"/50 sight range.'
+    ? 'Hardcore: the real ship, part by part (the Hardcore tab picks which parts): engines only from the engine room and pilothouse, the sea always moving her, your own 3"/50 range, no aiming rings, real kill rates and reloads, smoke, walking the deck.'
     : 'Game: engines from any station, wave motion can be turned off, smoke kept out of the way, the sight-setter ranges for you, the practice targets are marked.';
   const w = $$('wvMode');
-  w.disabled = FM.on;
-  w.title = FM.on ? 'Always on in Hardcore' : '';
+  w.disabled = FM.use('sea');
+  w.title = FM.use('sea') ? 'Always on in Hardcore' : '';
+  if (typeof hcSync === 'function') hcSync();
 }
 $$('gmMode').onchange = () => {
   FM.on = $$('gmMode').value === 'hard';
@@ -26689,7 +26808,7 @@ function gunHUD() {
   if (s.mag) st = G.rl > 0 ? 'NEW DRUM ' + Math.ceil(G.rl) + 's' : G.cut ? st : G.rnd + ' / ' + s.mag;
   if (s.auto) st = (G.cut ? 'CUTOUT &middot; ' : '') + 'LOADED ' + G.al[0] + ' &middot; ' + G.al[1];
   if (s.sight === 'scope' && !G.cut && G.ft > 0.15) st = 'LOADING';
-  const rng = s.sight === 'scope' ? '<br>SIGHT <b>' + Math.round(GUN.rng / 0.9144 / 50) * 50 + '</b> yd' + (FM.on ? ' (you set it)' : '') : '';
+  const rng = s.sight === 'scope' ? '<br>SIGHT <b>' + Math.round(GUN.rng / 0.9144 / 50) * 50 + '</b> yd' + (FM.use('range') ? ' (you set it)' : '') : '';
   return MOB
     ? `<br>${s.name}: ${Math.round(brg).toString().padStart(3, '0')}&deg; ${el.toFixed(0)}&deg; ${st}`
     : `<br><b>${s.name}</b><br>TRAIN <b>${Math.round(brg).toString().padStart(3, '0')}</b>&deg; rel &middot; ELEV <b>${el.toFixed(1)}</b>&deg;<br>${st}${rng}`;
@@ -27149,14 +27268,15 @@ function dcFire(kind) {
     if (g < 0) return note((s ? 'STARBOARD' : 'PORT') + ' K-GUNS EMPTY'), false;
     DC.kl[s * 2 + g] = 0;
     DC.kg[s] = DC.kl[s * 2] + DC.kl[s * 2 + 1];
-    const z = s ? 4.0 : -4.0;
-    p = m.localToWorld(new V(PCEM.XF(g ? 73.7 : 64.6), 3.9, z));
+    const z = s ? 4.0 : -4.0,
+      kg = PCEM.KG && PCEM.KG[s * 2 + g];
+    p = m.localToWorld(kg ? new V(...kg.ch) : new V(PCEM.XF(g ? 73.7 : 64.6), 3.9, z)) /* she throws the charge from the arbor */;
     v = new V(0, 0, z > 0 ? 1 : -1).transformDirection(m.matrixWorld).multiplyScalar(19).add(vel);
     v.y = 15; /* thrown about 60 yards abeam */
     SND.burst(1600, 120, 0.5, 0.6, 0.8);
-    if (FM.on) gunFx(p, 0xb8b8b4, 1.5, 6, 2, 0.5, false);
+    if (FM.use('smoke')) gunFx(p, 0xb8b8b4, 1.5, 6, 2, 0.5, false);
   }
-  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.7, 12), new THREE.MeshLambertMaterial({ color: 0x3f4a3a }));
+  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.224, 0.224, 0.7, 12), new THREE.MeshLambertMaterial({ color: 0x3f4a3a }));
   mesh.position.copy(p);
   mesh.rotation.x = Math.PI / 2;
   scene.add(mesh);
@@ -27193,7 +27313,7 @@ function dcStep(dt) {
       DC.L.splice(i, 1);
       aswEv('dc', c.p);
       /* Hardcore: a shallow charge going off under her own stern at slow speed damages her (shafts, rudder, plating) */
-      if (FM.on && c.d < 23.5) {
+      if (FM.use('dmg') && c.d < 23.5) {
         const st = pos.clone().addScaledVector(new V(-Math.sin(SHIP.hdg), 0, -Math.cos(SHIP.hdg)), PCEM.XF(90));
         if (Math.hypot(c.p.x - st.x, c.p.z - st.z) < 45 && SHIP.u < 10 * 0.5144) {
           SHIP.dmgK = Math.min(SHIP.dmgK || 1, 0.6);
@@ -27256,8 +27376,8 @@ function tpDeck(f) {
    aft along the port side of the deckhouse and outboard of the whaleboat, in past the 40 mm directors to the centreline, between
    the twin 40 mm tubs and down the ladder at the break, then the main deck aft: round the K-guns either side to the racks */
 const TPLANE = [
-  [[24.6, 0], [25.0, -4.15]],
-  [[24.6, 0], [25.0, 4.15]],
+  [[24.0, 0], [25.0, -4.15]],
+  [[24.0, 0], [25.0, 4.15]],
   [[25.0, 4.15], [43.6, 4.35]] /* the starboard side passage (the 20 mm tub closes it aft) */,
   [[25.0, -4.15], [43.9, -4.35]],
   [[43.9, -4.35], [57.4, -4.4]] /* outboard of the whaleboat */,
@@ -27307,7 +27427,7 @@ function tpNear() {
   return -1;
 }
 /* the weapon he is at: Hardcore by where he stands, game mode by the position he jumped to */
-const tpAt = () => (FM.on ? TPW.at : SHIP.sub);
+const tpAt = () => (FM.use('walk') ? TPW.at : SHIP.sub);
 /* game mode: go straight to a position */
 /* the easter egg: the weapon the torpedoman arrives at is fully loaded at once (both modes) */
 function tpFill(i) {
@@ -27335,7 +27455,7 @@ function tpGo(i) {
 /* J: to the weapon the latest order needs */
 function tpJump() {
   if (camMode != 1 || SHIP.stn !== 6) return;
-  if (FM.on) return note('HARDCORE: WALK THERE - W A S D, SHIFT RUNS');
+  if (FM.use('walk')) return note('HARDCORE: WALK THERE - W A S D, SHIFT RUNS');
   const o = ASW.O.filter((o) => o.k && (o.st === 'open' || o.st === 'info')).pop();
   if (!o) return note('NO ORDERS');
   tpGo(tpIdx(o.k));
@@ -27384,6 +27504,41 @@ function hhFire() {
   note('HEDGEHOG FIRED - ' + n + ' BOMBS');
   return true;
 }
+/* the K-guns' loaded arbors: each gun's arbor (the stem in the muzzle, the curved tray) and its Mk 6 charge lying fore and aft on
+   the tray, drawn apart from the ship so a gun shows empty once she has fired it and loaded again when her crew have reloaded it */
+function kgArbors() {
+  if (!SHIPM.mesh || !PCEM.KG) return;
+  if (!DC.arb) {
+    const grey = new THREE.MeshLambertMaterial({ color: 0x55605a }),
+      green = new THREE.MeshLambertMaterial({ color: 0x3f4a3a }),
+      band = new THREE.MeshLambertMaterial({ color: 0x2e352b });
+    DC.arb = PCEM.KG.map((k) => {
+      const g = new THREE.Group(),
+        s = k.s,
+        dir = new THREE.Vector3(0, Math.SQRT1_2, s * Math.SQRT1_2),
+        stem = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.55, 8), grey);
+      stem.position.set(...k.mz).addScaledVector(dir, 0.12);
+      stem.rotation.x = s * (Math.PI / 4);
+      const tray = new THREE.Mesh(new THREE.CylinderGeometry(0.235, 0.235, 0.5, 14, 1, true, Math.PI, Math.PI).rotateZ(Math.PI / 2), grey);
+      tray.position.set(k.ch[0], k.ch[1] - 0.02, k.ch[2]);
+      tray.material = grey;
+      tray.geometry.computeVertexNormals();
+      const dg = new THREE.CylinderGeometry(0.224, 0.224, 0.7, 14).rotateZ(Math.PI / 2),
+        ch = new THREE.Mesh(dg, green);
+      ch.position.set(...k.ch);
+      g.add(stem, tray, ch);
+      for (const e of [-0.33, 0.33]) {
+        const b = new THREE.Mesh(new THREE.CylinderGeometry(0.228, 0.228, 0.03, 14).rotateZ(Math.PI / 2), band);
+        b.position.set(k.ch[0] + e, k.ch[1], k.ch[2]);
+        g.add(b);
+      }
+      SHIPM.mesh.add(g);
+      return g;
+    });
+  }
+  /* KG is port forward, port aft, starboard forward, starboard aft: the same order as DC.kl */
+  DC.arb.forEach((g, i) => (g.visible = !!DC.kl[i]));
+}
 /* the Hedgehog's 24 bombs on their spigots (four rows of six): drawn separately from the ship, so each one leaves its spigot as it
    is fired and appears as it is loaded. Each bomb: the warhead, its nose, the tail tube over the spigot and the ring fin */
 function hhBombs() {
@@ -27414,8 +27569,8 @@ function hhBombs() {
     E = new THREE.Euler(),
     P = new THREE.Vector3(),
     S = new THREE.Vector3(),
-    x0 = PCEM.XF(22.2),
-    y0 = PCEM.hd(22.2) + 0.12;
+    x0 = PCEM.XF(21.6),
+    y0 = PCEM.hd(21.6) + 0.12;
   for (let k = 0; k < 24; k++) {
     const c = k & 3,
       r = k >> 2,
@@ -27449,8 +27604,8 @@ function hhStep(dt) {
       HH.q.splice(k, 1);
       const r = q.i >> 2,
         c = q.i & 3,
-        y0 = PCEM.hd(22.2) + 0.12 + 1.1,
-        p0 = m.localToWorld(new V(tpXF(22.2) + 0.7 - c * 0.46 + 0.27, y0 - 0.08, -0.72 + (r % 6) * 0.29)),
+        y0 = PCEM.hd(21.6) + 0.12 + 1.1,
+        p0 = m.localToWorld(new V(tpXF(21.6) + 0.7 - c * 0.46 + 0.27, y0 - 0.08, -0.72 + (r % 6) * 0.29)),
         D = 200,
         T = Math.sqrt((2 * D) / 9.81),
         a = (q.i / 24) * Math.PI * 2,
@@ -27470,7 +27625,7 @@ function hhStep(dt) {
       scene.add(mesh);
       HH.L.push({ m: mesh, p: p0, v, wet: false });
       SND.burst(700, 160, 0.12, 0.22, 0.5);
-      if (FM.on) gunFx(p0, 0xc8c8c0, 0.5, 2.5, 1.2, 0.4, false); /* a puff from the spigot (game mode: no smoke in the way) */
+      if (FM.use('smoke')) gunFx(p0, 0xc8c8c0, 0.5, 2.5, 1.2, 0.4, false); /* a puff from the spigot (game mode: no smoke in the way) */
     }
   }
   const sub = PT.on ? PT.L.find((t) => t.kind === 'sub') : null;
@@ -27530,7 +27685,7 @@ function aswFired(tp) {
   if ((tp === 'rack' || tp === 'port' || tp === 'stbd') && DC.dep[tp] !== ASW.depth) ASW.bad = true;
   const o = ASW.O.find((o) => o.k === tp && o.st === 'open');
   if (!o) return ASW.un++;
-  const late = ASW.t - o.t0 > (FM.on ? 4 : 6);
+  const late = ASW.t - o.t0 > (FM.use('orders') ? 4 : 6);
   o.st = late ? 'late' : 'ok';
   if (late) note('LATE - ' + o.txt);
 }
@@ -27557,7 +27712,7 @@ function aswStep(dt, here) {
     rt = new V(Math.cos(SHIP.hdg), 0, -Math.sin(SHIP.hdg)),
     S = sub.p,
     stern = pos.clone().addScaledVector(fw, tpXF(90)),
-    hh = pos.clone().addScaledVector(fw, tpXF(22.2)),
+    hh = pos.clone().addScaledVector(fw, tpXF(21.6)),
     rng = Math.hypot(S.x - pos.x, S.z - pos.z),
     alS = (S.x - stern.x) * fw.x + (S.z - stern.z) * fw.z,
     alH = (S.x - hh.x) * fw.x + (S.z - hh.z) * fw.z,
@@ -27616,7 +27771,7 @@ function aswStep(dt, here) {
         f.sbc = 1;
         aswSay('STAND BY CHARGES.', 'rack');
         /* game mode: the crews pull the safety forks on "stand by"; Hardcore: the torpedoman arms each position himself (X) */
-        if (!FM.on) DC.arm = { rack: true, port: true, stbd: true };
+        if (!FM.use('orders')) DC.arm = { rack: true, port: true, stbd: true };
       }
       if (!f.r1 && tos < 9) (f.r1 = 1), aswSay('FIRE ONE!', 'rack', true);
       if (!f.ks && tos < 5) (f.ks = 1), aswSay('FIRE STARBOARD K-GUNS!', 'stbd', true);
@@ -27624,7 +27779,7 @@ function aswStep(dt, here) {
       if (!f.r2 && tos < -6) (f.r2 = 1), aswSay('FIRE TWO!', 'rack', true);
     }
     /* an order not carried out within the window plus six seconds is missed */
-    for (const o of ASW.O) if (o.st === 'open' && ASW.t - o.t0 > (FM.on ? 4 : 6) + 6) (o.st = 'miss'), note('MISSED - ' + o.txt);
+    for (const o of ASW.O) if (o.st === 'open' && ASW.t - o.t0 > (FM.use('orders') ? 4 : 6) + 6) (o.st = 'miss'), note('MISSED - ' + o.txt);
     if ((f.r2 && tos < -16 && !DC.L.length && !HH.L.length && !HH.q.length && !ASW.O.some((o) => o.st === 'open')) || ASW.t > 360) aswDebrief();
   }
 }
@@ -27731,7 +27886,7 @@ function aswBox(here) {
   ASW.boxT = now;
   const at = tpAt(),
     atN = at >= 0 && tpList()[at] ? TPNAME[tpList()[at].tp] : 'ON DECK',
-    W = FM.on ? 4 : 6;
+    W = FM.use('orders') ? 4 : 6;
   let h = '<b style="color:#9fc3d6">PHONE - BRIDGE</b>';
   if (ASW.ph === 'done')
     h +=
@@ -27745,7 +27900,7 @@ function aswBox(here) {
         there = at >= 0 && tpList()[at].tp === o.k;
       h +=
         '<br><b style="font-size:17px;color:' + (left > 0 ? '#ffd27a' : '#ff8a6a') + '">' + o.txt + '</b>' +
-        '<br>' + (there ? '<b style="color:#8fe39a">AT THE ' + TPNAME[o.k] + '</b>' : 'GO TO THE <b>' + TPNAME[o.k] + '</b>' + (FM.on ? '' : ' &middot; <b>' + kbText('tpJump') + '</b> jumps there')) +
+        '<br>' + (there ? '<b style="color:#8fe39a">AT THE ' + TPNAME[o.k] + '</b>' : 'GO TO THE <b>' + TPNAME[o.k] + '</b>' + (FM.use('walk') ? '' : ' &middot; <b>' + kbText('tpJump') + '</b> jumps there')) +
         '<div style="height:5px;background:rgba(255,255,255,.12);margin-top:4px"><div style="height:5px;width:' + (left / W) * 100 + '%;background:' + (left > 0 ? '#ffd27a' : '#ff8a6a') + '"></div></div>';
     } else h += '<br>' + (ASW.msg || '');
     const tpc = at >= 0 && tpList()[at] ? tpList()[at].tp : null,
@@ -27760,7 +27915,7 @@ function aswBox(here) {
 /* the torpedoman's station each frame: walk (Hardcore), fire what he is at, load the Hedgehog, and the attack */
 function tpUpdate(dt, here, trig) {
   const at6 = here && SHIP.stn === 6;
-  if (at6 && FM.on) tpWalk(dt);
+  if (at6 && FM.use('walk')) tpWalk(dt);
   if (at6) {
     const i = tpAt(),
       tp = i >= 0 && tpList()[i] ? tpList()[i].tp : null;
@@ -27787,6 +27942,7 @@ function tpUpdate(dt, here, trig) {
       DC.kt[i] = 0;
       DC.kg = [DC.kl[0] + DC.kl[1], DC.kl[2] + DC.kl[3]];
     }
+  kgArbors();
   hhStep(dt);
   aswStep(dt, here);
   aswBox(here);
