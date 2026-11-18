@@ -56,7 +56,7 @@ The model is built from the PCE-874 Booklet of General Plans and photographs of 
 ## Files
 - `PCE-842.html`: the whole game (three.js r128 inside). The site serves it as `index.html`.
 
-Version 0.44 (alpha).
+Version 0.51 (alpha).
 
 ## License
 Free for noncommercial use under the PolyForm Noncommercial License 1.0.0. See [LICENSE](LICENSE).
